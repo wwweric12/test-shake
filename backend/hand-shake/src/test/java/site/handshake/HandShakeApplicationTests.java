@@ -1,4 +1,4 @@
-package site.hand_shake;
+package site.handshake;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
