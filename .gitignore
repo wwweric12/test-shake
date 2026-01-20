@@ -41,6 +41,7 @@ backend/**/application.yml
 backend/**/application-*.yml
 backend/**/application.properties
 backend/**/application-*.properties
+backend/**/postgres-data
 
 ################################
 # STS (Spring Tool Suite)
