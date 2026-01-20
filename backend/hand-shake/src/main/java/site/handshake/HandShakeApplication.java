@@ -1,4 +1,4 @@
-package site.hand_shake;
+package site.handshake;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
