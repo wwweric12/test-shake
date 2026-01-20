@@ -1,0 +1,84 @@
+################################
+# Global (All projects)
+################################
+.DS_Store
+Thumbs.db
+
+################################
+# IntelliJ IDEA (Global)
+################################
+.idea/
+*.iws
+*.iml
+*.ipr
+out/
+
+################################
+# VS Code (Global)
+################################
+.vscode/
+
+################################
+# Gradle (Backend)
+################################
+backend/**/.gradle/
+backend/**/build/
+
+# Keep Gradle Wrapper
+!backend/**/gradle/wrapper/gradle-wrapper.jar
+
+################################
+# Java / Spring (Backend)
+################################
+backend/**/bin/
+backend/**/out/
+backend/**/logs/
+
+################################
+# Spring Boot config (SECRET)
+################################
+backend/**/application.yml
+backend/**/application-*.yml
+backend/**/application.properties
+backend/**/application-*.properties
+
+################################
+# STS (Spring Tool Suite)
+################################
+backend/**/.apt_generated/
+backend/**/.classpath
+backend/**/.factorypath
+backend/**/.project
+backend/**/.settings/
+backend/**/.springBeans
+backend/**/.sts4-cache/
+
+################################
+# Frontend (Node / Vite / React)
+################################
+front/**/node_modules/
+front/**/dist/
+front/**/build/
+front/**/.env
+front/**/.env.*
+
+################################
+# AI (Python)
+################################
+ai/**/__pycache__/
+ai/**/*.pyc
+ai/**/.venv/
+ai/**/venv/
+ai/**/.env
+ai/**/.env.*
+
+################################
+# Logs
+################################
+*.log
+logs/
+
+################################
+# Ignore specific files
+################################
+backend/hand-shake/HELP.md
