@@ -1,16 +1,35 @@
-# 🚀 Release Merge Request
+<!-- Quick Actions -->
+/label ~"Type::Chore"
+/label ~"Status::Needs Review"
 
-## 📦 버전
-- v1.0.0 → v1.1.0
+# ⚙️ Chore Merge Request
+<!-- 필요없는 부분은 markdown에서 삭제해서 사용가능능 -->
+## 🔖 Part
+- [ ] FE
+- [ ] BE
+- [ ] Data Preprocessing
+- [ ] Infra
+- [ ] Etc
 
-## 📝 포함 내용
+## 🛠 작업 내용 (What)
+<!-- 설정/의존성/CI/CD/폴더 구조/템플릿 등 -->
+- 
 - 
 
-## 🔗 관련 MR / 이슈
-- 
+## 🎯 목적 (Why)
+<!-- 왜 필요한지 -->
 
-## ⚠️ 배포 체크리스트
-- [ ] 마이그레이션 필요 여부 확인
-- [ ] 환경변수 변경 확인
-- [ ] 롤백 전략 확인
-- [ ] 태그 생성
+## 🔗 관련이슈(Jira Epic)
+- Epic Key:
+- (선택) Task:
+
+## 🧪 검증 방법
+<!-- lint/build/ci 결과 등 -->
+- [ ] build 통과
+- [ ] lint 통과
+- [ ] ci 통과
+
+## ✅ Checklist
+- [ ] 커밋 메시지 컨벤션 준수
+- [ ] 변경 범위 최소화
+- [ ] 팀 공용 설정/문서 업데이트(해당 시)
