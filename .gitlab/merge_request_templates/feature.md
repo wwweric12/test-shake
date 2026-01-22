@@ -1,3 +1,15 @@
+<!-- Quick Actions -->
+/label ~"Type::Feature"
+
+<!--
+제목 규칙:
+[FE] or [BE] + 한글 영어 요약
+
+예)
+[FE] 메타정보 수정
+[BE] 설정 파일 정리
+-->
+
 # ✨ Feature Merge Request
 
 ## 🔖 Part
