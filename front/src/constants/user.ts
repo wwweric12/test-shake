@@ -1,0 +1,70 @@
+import { Career, Network, Position, TechSkill } from '@/types/user';
+
+export const CAREER_LABELS: Record<Career, string> = {
+  employed: '재직중',
+  job_seeking: '구직중',
+  freelancer: '프리랜서',
+  student: '학생',
+};
+
+export const POSITION_LABELS: Record<Position, string> = {
+  frontend_developer: '프론트엔드',
+  backend_developer: '백엔드',
+  data_ai_engineer: 'AI/Data',
+  game_developer: '게임 개발',
+  embedded_systems_engineer: '임베디드',
+  mobile_app_developer: '모바일',
+  devops_infra_engineer: 'Infra/DevOps',
+};
+
+export const TECH_SKILL_LABELS: Record<TechSkill, string> = {
+  javascript: 'JavaScript',
+  typescript: 'TypeScript',
+  react: 'React',
+  vue: 'Vue.js',
+  nextjs: 'Next.js',
+  svelte: 'Svelte',
+  java: 'Java',
+  spring_framework: 'Spring',
+  python: 'Python',
+  django: 'Django',
+  fastapi: 'FastAPI',
+  nodejs: 'Node.js',
+  nestjs: 'NestJS',
+  go_language: 'Go',
+  mysql: 'MySQL',
+  postgresql: 'PostgreSQL',
+  mongodb: 'MongoDB',
+  redis_cache: 'Redis',
+  oracle_database: 'Oracle',
+  pytorch: 'PyTorch',
+  tensorflow: 'TensorFlow',
+  scikit_learn: 'Scikit-learn',
+  pandas: 'pandas',
+  spark_engine: 'Spark',
+  hadoop_platform: 'Hadoop',
+  csharp_language: 'C#',
+  cpp_language: 'C++',
+  unity_engine: 'Unity',
+  unreal_engine: 'Unreal Engine',
+  opengl_api: 'OpenGL',
+  c_language: 'C',
+  raspberry_pi_platform: 'Raspberry Pi',
+  arduino_platform: 'Arduino',
+  swift_language: 'Swift',
+  kotlin: 'Kotlin',
+  flutter: 'Flutter',
+  react_native: 'React Native',
+  aws: 'AWS',
+  docker: 'Docker',
+  kubernetes: 'Kubernetes',
+  firebase: 'Firebase',
+  jenkins: 'Jenkins',
+  github_actions: 'GitHub Actions',
+};
+
+export const NETWORK_LABELS: Record<Network, string> = {
+  coffee_chat: '커피챗',
+  study_group: '스터디',
+  side_project: '프로젝트',
+};
