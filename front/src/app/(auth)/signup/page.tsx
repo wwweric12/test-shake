@@ -60,9 +60,9 @@ export default function SignupPage() {
   };
 
   return (
-    <div className="flex flex-1 flex-col">
+    <div className="flex flex-col">
       {/* 헤더 영역 */}
-      <header className="py-6">
+      <header className="px-5 py-6">
         <div className="mb-4 flex items-center justify-between">
           <button
             onClick={() => {
@@ -86,7 +86,7 @@ export default function SignupPage() {
       </header>
 
       {/* 단계별 콘텐츠 영역 */}
-      <main className="flex-1 overflow-y-auto pb-10">
+      <main className="px-5">
         <Step name="step1">
           <Step1Profile
             data={formData}

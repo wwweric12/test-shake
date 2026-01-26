@@ -109,20 +109,20 @@ export default function Step1Profile({ data, onUpdate, onNext }: StepProps) {
   ];
 
   return (
-    <div className="flex h-full flex-col">
-      <div className="flex-1 space-y-5 overflow-y-auto pb-5">
+    <div className="flex flex-col">
+      <div className="space-y-5">
         {/* 1. 닉네임 섹션 */}
 
         <section>
-          <div className="mb-3">
+          <div>
             <label className="subhead2 text-custom-realblack block">닉네임</label>
-
             <p className="caption3 text-custom-deepgray mt-1">
               ※ 한 번 생성한 닉네임은 수정할 수 없습니다. (2~10자, 공백 불가)
             </p>
           </div>
 
-          <div className="flex gap-2">
+          {/* input 박스 영역 */}
+          <div className="mt-3 flex gap-2">
             <input
               type="text"
               placeholder="닉네임을 입력해주세요"
@@ -132,12 +132,11 @@ export default function Step1Profile({ data, onUpdate, onNext }: StepProps) {
               value={localNickname}
               onChange={handleNicknameChange}
             />
-
             <button
               type="button"
               onClick={handleCheckNickname}
               disabled={status.type === 'loading' || localNickname.length < 2}
-              className="bg-custom-realwhite text-custom-deepgray caption1 rounded-lg border px-4 py-2 shadow-xs active:bg-gray-50 disabled:opacity-50"
+              className="bg-custom-realwhite text-custom-deepgray caption1 rounded-lg border px-4 py-2 whitespace-nowrap shadow-xs active:bg-gray-50 disabled:opacity-50"
             >
               중복 확인
             </button>
@@ -242,10 +241,10 @@ export default function Step1Profile({ data, onUpdate, onNext }: StepProps) {
 
       {/* 다음 이동 버튼 */}
 
-      <div className="pt-4 pb-[15px]">
+      <div className="mt-20 mb-10">
         <button
           onClick={handleNextStep}
-          className="bg-custom-realblack subhead1 text-custom-realwhite w-full rounded-[6px] px-3 py-4 shadow-lg transition-transform active:scale-[0.98]"
+          className="bg-custom-realblack subhead1 text-custom-realwhite w-full rounded-[6px] px-3 py-4 shadow-[0_4px_10px_rgba(0,0,0,0.15)] transition-transform active:scale-[0.98]"
         >
           다음으로
         </button>

@@ -12,12 +12,14 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="ko">
-      <body className="flex justify-center bg-gray-100">
+    <html lang="ko" className="h-full">
+      <body className="flex h-full justify-center bg-white md:bg-gray-100">
         <QueryProvider>
           <MSWProvider>
-            <div className="bg-custom-white relative flex min-h-screen w-full max-w-[440px] min-w-[375px] flex-col overflow-x-hidden shadow-xl">
-              <main className="flex h-full flex-1 flex-col px-5">{children}</main>
+            <div className="relative flex h-dvh w-full max-w-[440px] min-w-[375px] flex-col overflow-hidden bg-white shadow-xl">
+              <main className="custom-scrollbar flex flex-1 flex-col overflow-y-auto">
+                {children}
+              </main>
             </div>
           </MSWProvider>
         </QueryProvider>
