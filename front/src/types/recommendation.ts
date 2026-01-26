@@ -9,22 +9,20 @@ export interface CandidateResponse {
   };
 }
 
-export type ActionType = 'LIKE';
+export type ActionType = 'LIKE' | 'PASS';
 
 export interface ActionRequest {
   exposureId: number;
-  targetUserId: number;
+  userId: number;
   actionType: ActionType;
 }
 
 export interface ActionResponse {
   statusCode: number;
   message: string;
-  data: object;
 }
 
 export interface ResetPreferencesResponse {
   statusCode: number;
   message: string;
-  data: object;
 }
