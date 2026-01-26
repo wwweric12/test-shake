@@ -10,6 +10,7 @@ import Step1Profile from '@/features/auth/components/Step1Profile';
 import Step2Networking from '@/features/auth/components/Step2Networking';
 import Step3DSTI from '@/features/auth/components/Step3DSTI';
 import { useFunnel } from '@/features/auth/hooks/useFunnel';
+import { userApi } from '@/services/user/api';
 import { Career, UserProfile } from '@/types/user';
 
 export default function SignupPage() {
@@ -33,6 +34,22 @@ export default function SignupPage() {
     setFormData((prev) => ({ ...prev, ...newData }));
   };
 
+  const handleFinalSubmit = async (dstiResult: string) => {
+    try {
+      const finalData = { ...formData, dsti: dstiResult };
+
+      const { nickname, dsti, ...infoRequestData } = finalData;
+
+      await userApi.registerUserProfile(infoRequestData);
+
+      alert('가입이 완료되었습니다!');
+      router.push('/home');
+    } catch (error) {
+      console.error('회원가입 실패:', error);
+      alert('회원가입 처리 중 오류가 발생했습니다.');
+    }
+  };
+
   const stepToNumber = { step1: 1, step2: 2, step3: 3, step4: 4 };
 
   const stepTitles = {
@@ -48,9 +65,11 @@ export default function SignupPage() {
       <header className="py-6">
         <div className="mb-4 flex items-center justify-between">
           <button
-            onClick={() =>
-              step === 'step1' ? router.back() : setStep(step === 'step2' ? 'step1' : 'step2')
-            }
+            onClick={() => {
+              if (step === 'step1') router.back();
+              else if (step === 'step2') setStep('step1');
+              else if (step === 'step3') setStep('step2');
+            }}
             className="flex h-6 w-6 items-center justify-center transition-opacity hover:opacity-70"
           >
             <Image src={backIcon} alt="뒤로가기" />
@@ -91,13 +110,7 @@ export default function SignupPage() {
         </Step>
 
         <Step name="step3">
-          <Step3DSTI
-            onNext={() => {
-              console.log('최종 데이터:', formData);
-              alert('가입 완료!');
-            }}
-            onPrev={() => setStep('step2')}
-          />
+          <Step3DSTI onNext={handleFinalSubmit} onPrev={() => setStep('step2')} />
         </Step>
       </main>
     </div>

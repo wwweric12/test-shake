@@ -16,7 +16,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="flex justify-center bg-gray-100">
         <QueryProvider>
           <MSWProvider>
-            <div className="bg-custom-white flex min-h-screen w-full max-w-[440px] min-w-[375px] flex-col overflow-x-hidden shadow-xl">
+            <div className="bg-custom-white relative flex min-h-screen w-full max-w-[440px] min-w-[375px] flex-col overflow-x-hidden shadow-xl">
               <main className="flex h-full flex-1 flex-col px-5">{children}</main>
             </div>
           </MSWProvider>

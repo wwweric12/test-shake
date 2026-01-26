@@ -56,17 +56,20 @@ export type TechSkill =
 
 export type Network = 'coffee_chat' | 'study_group' | 'side_project';
 
-export interface UserProfile {
-  nickname: string;
+export interface UserInfoRequest {
   profileImageUrl: string;
   experience: boolean;
   career: Career;
-  dsti: string;
   positions: Position[];
   techSkills: TechSkill[];
   networks: Network[];
   githubId: string;
   selfIntro: string;
+}
+
+export interface UserProfile extends UserInfoRequest {
+  nickname: string;
+  dsti: string;
 }
 
 export interface UserCard {

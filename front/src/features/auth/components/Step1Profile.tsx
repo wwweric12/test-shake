@@ -45,41 +45,24 @@ export default function Step1Profile({ data, onUpdate, onNext }: StepProps) {
 
     setStatus({ type: 'loading', message: '확인 중...' });
 
-    // --- 테스트용 가짜 로직 ---
-
-    setTimeout(() => {
-      if (localNickname === 'test') {
-        setStatus({ type: 'error', message: '이미 사용 중인 닉네임입니다.' });
-
-        setVerifiedNickname('');
-      } else {
+    try {
+      const response = await userApi.checkNickname({ nickname: localNickname });
+      if (response.possible) {
         setStatus({ type: 'success', message: '사용 가능한 닉네임입니다.' });
-
         setVerifiedNickname(localNickname);
-
         onUpdate({ nickname: localNickname });
+      } else {
+        setStatus({ type: 'error', message: '이미 사용 중인 닉네임입니다.' });
+        setVerifiedNickname('');
       }
-    }, 500);
-
-    // --- 실제 API 연결 시 사용할 로직 (주석 해제 시 위는 삭제/주석처리) ---
-    // try {
-    //   const response = await userApi.checkNickname({ nickname: localNickname });
-    //   if (response.possible) {
-    //     setStatus({ type: 'success', message: '사용 가능한 닉네임입니다.' });
-    //     setVerifiedNickname(localNickname);
-    //     onUpdate({ nickname: localNickname });
-    //   } else {
-    //     setStatus({ type: 'error', message: '이미 사용 중인 닉네임입니다.' });
-    //     setVerifiedNickname('');
-    //   }
-    // } catch (error: unknown) {
-    //   let errorMsg = '중복 확인 중 오류가 발생했습니다.';
-    //   if (error && typeof error === 'object' && 'response' in error) {
-    //     const axiosError = error as { response?: { data?: { message?: string } } };
-    //     errorMsg = axiosError.response?.data?.message || errorMsg;
-    //   }
-    //   setStatus({ type: 'error', message: errorMsg });
-    // }
+    } catch (error: unknown) {
+      let errorMsg = '중복 확인 중 오류가 발생했습니다.';
+      if (error && typeof error === 'object' && 'response' in error) {
+        const axiosError = error as { response?: { data?: { message?: string } } };
+        errorMsg = axiosError.response?.data?.message || errorMsg;
+      }
+      setStatus({ type: 'error', message: errorMsg });
+    }
   };
 
   const handleNextStep = () => {
