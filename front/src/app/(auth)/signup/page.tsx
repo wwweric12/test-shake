@@ -10,7 +10,7 @@ import Step1Profile from '@/features/auth/components/Step1Profile';
 import Step2Networking from '@/features/auth/components/Step2Networking';
 import Step3DSTI from '@/features/auth/components/Step3DSTI';
 import { useFunnel } from '@/features/auth/hooks/useFunnel';
-import { UserProfile } from '@/types/user';
+import { Career, UserProfile } from '@/types/user';
 
 export default function SignupPage() {
   const router = useRouter();
@@ -19,8 +19,8 @@ export default function SignupPage() {
   const [formData, setFormData] = useState<UserProfile>({
     nickname: '',
     profileImageUrl: 'https://cdn.yogiattacku.n-e.kr/profile/123.png',
-    experience: true,
-    career: 'student',
+    experience: null as unknown as boolean,
+    career: '' as Career,
     dsti: 'NONE',
     positions: [],
     techSkills: [],

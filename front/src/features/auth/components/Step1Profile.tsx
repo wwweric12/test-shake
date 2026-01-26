@@ -90,7 +90,15 @@ export default function Step1Profile({ data, onUpdate, onNext }: StepProps) {
 
       return;
     }
+    if (data.experience === null || data.experience === undefined) {
+      alert('실무 개발 경험 여부를 선택해주세요.');
+      return;
+    }
 
+    if (!data.career) {
+      alert('현재 상태를 선택해주세요.');
+      return;
+    }
     onNext({ ...data, nickname: localNickname });
   };
 
