@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 
+import { MSWProvider } from '@/providers/MSWProvider';
 import { QueryProvider } from '@/providers/QueryProvider';
 
 import './globals.css';
@@ -17,7 +18,9 @@ export default function RootLayout({
   return (
     <html lang="ko">
       <body>
-        <QueryProvider>{children}</QueryProvider>
+        <QueryProvider>
+          <MSWProvider>{children}</MSWProvider>
+        </QueryProvider>
       </body>
     </html>
   );
