@@ -7,7 +7,8 @@ export const homeHandlers = [
   http.get(`${BASE_URL}/home/summary`, () => {
     const mockSummary: HomeSummaryResponse = {
       nickname: '싸피테스트',
-      dsti: 'I S J T',
+      dsti: 'PDAR',
+      profileImageUrl: 'https://picsum.photos/100',
       totalUnreadMessages: 5,
       totalLikeCount: 12,
       recentLikeImages: ['https://picsum.photos/100', 'https://picsum.photos/101'],
