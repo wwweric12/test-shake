@@ -8,30 +8,23 @@ import { Button } from '@/components/ui/Button';
 import { Checkbox } from '@/components/ui/Checkbox';
 import { Input } from '@/components/ui/Input';
 import { Textarea } from '@/components/ui/Textarea';
+import { NETWORK_LIST, SIGNUP_MESSAGES, SIGNUP_PLACEHOLDERS } from '@/constants/auth';
 import { Network, UserProfile } from '@/types/user';
-
-import { NETWORK_LIST, SIGNUP_MESSAGES } from '../constants';
 
 import { SelectButton } from './Button';
 
 interface StepProps {
   data: UserProfile;
-
   onUpdate: (data: Partial<UserProfile>) => void;
-
   onNext: () => void;
-
   onPrev: () => void;
 }
 
 export default function Step2Networking({ data, onUpdate, onNext }: StepProps) {
   const [localGithubId, setLocalGithubId] = useState(data.githubId || '');
-
   const [localSelfIntro, setLocalSelfIntro] = useState(data.selfIntro || '');
-
   const [noGithub, setNoGithub] = useState(false);
 
-  /** 네트워킹 목적 선택 핸들러 */
   const handleNetworkClick = (value: Network) => {
     const current = data.networks || [];
 
@@ -42,48 +35,37 @@ export default function Step2Networking({ data, onUpdate, onNext }: StepProps) {
     });
   };
 
-  /** Github ID 입력 핸들러 (영문, 숫자, 하이픈만 허용) */
   const handleGithubChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const filteredValue = e.target.value.replace(/[^a-zA-Z0-9-]/g, '');
 
     setLocalGithubId(filteredValue);
   };
 
-  /** Github 없음 체크박스 핸들러 */
   const handleNoGithubChange = (checked: boolean | string) => {
     const isChecked = !!checked;
-
     setNoGithub(isChecked);
-
     if (isChecked) {
       setLocalGithubId('');
     }
   };
 
-  /** 자기소개 입력 핸들러 (200자 제한) */
   const handleSelfIntroChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setLocalSelfIntro(e.target.value.slice(0, 200));
   };
 
-  /** 다음 단계 이동 핸들러 */
   const handleNextStep = () => {
-    // 1. 유효성 검사 (실패 시 return 필수)
     if (!data.networks || data.networks.length === 0) {
       return alert(SIGNUP_MESSAGES.ERROR_NETWORKS_REQUIRED);
     }
-
     if (!noGithub && !localGithubId.trim()) {
       return alert(SIGNUP_MESSAGES.ERROR_GITHUB_REQUIRED);
     }
-
     if (!localSelfIntro.trim()) {
       return alert(SIGNUP_MESSAGES.ERROR_INTRO_REQUIRED);
     }
 
-    // 2. 최종 데이터 확정 (체크박스 여부에 따라 ID 값 처리)
     const finalGithubId = noGithub ? '' : localGithubId;
 
-    // 3. 부모에게 데이터 전달 및 이동
     onUpdate({
       ...data,
       githubId: finalGithubId,
@@ -99,7 +81,7 @@ export default function Step2Networking({ data, onUpdate, onNext }: StepProps) {
         <section>
           <label className="subhead2 text-custom-realblack mb-1 block">네트워킹 목적</label>
 
-          <p className="text-custom-deepgray caption3 mb-3">복수 선택 가능합니다.</p>
+          <p className="text-custom-deepgray caption3 mb-3">{SIGNUP_MESSAGES.INTRO_GUIDE}</p>
 
           <div className="flex flex-wrap gap-2">
             {NETWORK_LIST.map((item) => (
@@ -132,11 +114,11 @@ export default function Step2Networking({ data, onUpdate, onNext }: StepProps) {
               <span
                 className={`subhead3 ml-10 select-none ${noGithub ? 'text-gray-400' : 'text-custom-deepgray'}`}
               >
-                https://github.com/
+                {SIGNUP_MESSAGES.GITHUB_GUIDE}
               </span>
 
               <Input
-                placeholder="ID"
+                placeholder={SIGNUP_PLACEHOLDERS.GITHUB_ID}
                 disabled={noGithub}
                 className="text-custom-realblack subhead3 flex-1 border-none bg-transparent pl-0 shadow-none focus-visible:ring-0 disabled:cursor-not-allowed"
                 value={localGithubId}
@@ -152,7 +134,7 @@ export default function Step2Networking({ data, onUpdate, onNext }: StepProps) {
               htmlFor="noGithub"
               className="subhead3 text-custom-deepgray cursor-pointer select-none"
             >
-              Github 주소가 없어요.
+              {SIGNUP_MESSAGES.GITHUB_NO_CHECK}
             </label>
           </div>
         </section>
@@ -163,7 +145,7 @@ export default function Step2Networking({ data, onUpdate, onNext }: StepProps) {
 
           <div className="relative">
             <Textarea
-              placeholder={`나누고 싶은 대화 주제 또는 간단한 자기소개를 적어주세요!\nex) 함께 Spring에 deep dive할 개발자를 찾고 있습니다. 편하게 좋아요 눌러주세요!`}
+              placeholder={SIGNUP_PLACEHOLDERS.SELF_INTRO}
               className="subhead3 bg-custom-realwhite text-custom-realblack border-gray min-h-[200px] w-full resize-none p-4 leading-relaxed transition-all outline-none focus:border-blue-400 focus-visible:ring-0"
               value={localSelfIntro}
               onChange={handleSelfIntroChange}

@@ -1,10 +1,15 @@
 import { useState } from 'react';
 
 import { Button } from '@/components/ui/Button';
+import {
+  CAREER_LIST,
+  EXPERIENCE_LIST,
+  SIGNUP_MESSAGES,
+  SIGNUP_PLACEHOLDERS,
+} from '@/constants/auth';
 import { useCheckNicknameMutation } from '@/services/user/hooks';
 import { UserProfile } from '@/types/user';
-
-import { CAREER_LIST, EXPERIENCE_LIST, SIGNUP_MESSAGES } from '../constants';
+import { getErrorMessage } from '@/utils/error';
 
 import { SelectButton } from './Button';
 
@@ -40,7 +45,7 @@ export default function Step1Profile({ data, onUpdate, onNext }: StepProps) {
       return;
     }
 
-    setStatus({ type: 'loading', message: '확인 중...' });
+    setStatus({ type: 'loading', message: SIGNUP_MESSAGES.STATUS_LOADING });
 
     checkNickname(localNickname, {
       onSuccess: (response: { possible: boolean }) => {
@@ -49,19 +54,15 @@ export default function Step1Profile({ data, onUpdate, onNext }: StepProps) {
           setVerifiedNickname(localNickname);
           onUpdate({ nickname: localNickname });
         } else {
-          setStatus({ type: 'error', message: '이미 사용 중인 닉네임입니다.' });
+          setStatus({ type: 'error', message: SIGNUP_MESSAGES.ERROR_NICKNAME_DUPLICATE });
           setVerifiedNickname('');
         }
       },
       onError: (error: unknown) => {
-        let errorMsg = '중복 확인 중 오류가 발생했습니다.';
-
-        if (error && typeof error === 'object' && 'response' in error) {
-          const axiosError = error as { response?: { data?: { message?: string } } };
-          errorMsg = axiosError.response?.data?.message || errorMsg;
-        }
-
-        setStatus({ type: 'error', message: errorMsg });
+        setStatus({
+          type: 'error',
+          message: getErrorMessage(error, SIGNUP_MESSAGES.ERROR_NICKNAME_CHECK_FAILED),
+        });
       },
     });
   };
@@ -101,7 +102,7 @@ export default function Step1Profile({ data, onUpdate, onNext }: StepProps) {
           <div className="mt-3 flex gap-2">
             <input
               type="text"
-              placeholder="닉네임을 입력해주세요"
+              placeholder={SIGNUP_PLACEHOLDERS.NICKNAME}
               className={`bg-custom-realwhite footnote flex-1 rounded-lg border px-4 py-2 shadow-xs outline-none focus:border-blue-400 ${
                 status.type === 'error' ? 'border-red-500' : 'border-gray'
               }`}
@@ -163,7 +164,7 @@ export default function Step1Profile({ data, onUpdate, onNext }: StepProps) {
         <div className="space-y-5">
           <section>
             <label className="subhead2 text-custom-realblack mb-1 block">직무</label>
-            <p className="text-custom-deepgray caption3 mb-3">최대 5개를 선택할 수 있습니다.</p>
+            <p className="text-custom-deepgray caption3 mb-3">{SIGNUP_MESSAGES.POSITION_GUIDE}</p>
             <button
               onClick={handleOpenPositionModal}
               className="subhead1 text-custom-blue border-custom-blue bg-custom-realwhite flex w-full items-center justify-center gap-2 rounded-[10px] border px-2.5 py-3 active:bg-blue-50"
@@ -174,7 +175,7 @@ export default function Step1Profile({ data, onUpdate, onNext }: StepProps) {
 
           <section>
             <label className="subhead2 text-custom-realblack mb-1 block">스택</label>
-            <p className="text-custom-deepgray caption3 mb-3">최대 5개를 선택할 수 있습니다.</p>
+            <p className="text-custom-deepgray caption3 mb-3">{SIGNUP_MESSAGES.STACK_GUIDE}</p>
             <button
               onClick={handleOpenStackModal}
               className="subhead1 text-custom-blue border-custom-blue bg-custom-realwhite flex w-full items-center justify-center gap-2 rounded-[10px] border px-2.5 py-3 active:bg-blue-50"
