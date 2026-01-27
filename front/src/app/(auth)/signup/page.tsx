@@ -6,14 +6,15 @@ import { useRouter } from 'next/navigation';
 
 import backIcon from '@/assets/icon/back.svg';
 import { Progress } from '@/components/ui/Progress';
+import { INITIAL_SIGNUP_DATA, STEP_INFO } from '@/constants/auth';
 import { useRegisterUserProfileMutation } from '@/services/user/hooks';
 import { UserProfile } from '@/types/user';
+
+import { useFunnel } from '../../../hooks/useFunnel';
 
 import Step1Profile from './components/Step1Profile';
 import Step2Networking from './components/Step2Networking';
 import Step3DSTI from './components/Step3DSTI';
-import { useFunnel } from './hooks/useFunnel';
-import { INITIAL_SIGNUP_DATA, STEP_INFO } from './constants';
 
 export default function SignupPage() {
   const router = useRouter();
@@ -75,8 +76,7 @@ export default function SignupPage() {
           <Step1Profile
             data={formData}
             onUpdate={updateFormData}
-            onNext={(data) => {
-              updateFormData(data);
+            onNext={() => {
               setStep('step2');
             }}
           />
@@ -86,8 +86,7 @@ export default function SignupPage() {
           <Step2Networking
             data={formData}
             onUpdate={updateFormData}
-            onNext={(data: Partial<UserProfile>) => {
-              updateFormData(data);
+            onNext={() => {
               setStep('step3');
             }}
             onPrev={() => setStep('step1')}
