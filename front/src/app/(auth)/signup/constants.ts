@@ -27,6 +27,9 @@ export const SIGNUP_MESSAGES = {
   ERROR_EXPERIENCE_REQUIRED: '실무 개발 경험 여부를 선택해주세요.',
   ERROR_CAREER_REQUIRED: '현재 상태를 선택해주세요.',
   SUCCESS_NICKNAME: '사용 가능한 닉네임입니다.',
+  ERROR_NETWORKS_REQUIRED: '네트워킹 목적을 최소 하나 선택해주세요.',
+  ERROR_GITHUB_REQUIRED: 'Github 아이디를 입력해주세요.',
+  ERROR_INTRO_REQUIRED: '자기소개를 입력해주세요.',
 } as const;
 
 export const EXPERIENCE_LIST = [
@@ -41,7 +44,7 @@ export const CAREER_LIST: { label: string; value: Career }[] = [
   { label: '학생', value: 'student' },
 ];
 
-export const NETWORK_OPTIONS: { label: string; value: Network }[] = [
+export const NETWORK_LIST: { label: string; value: Network }[] = [
   { label: '#커피챗', value: 'coffee_chat' },
   { label: '#프로젝트', value: 'side_project' },
   { label: '#스터디', value: 'study_group' },
@@ -50,5 +53,4 @@ export const NETWORK_OPTIONS: { label: string; value: Network }[] = [
 export const SIGNUP_ERROR_MESSAGES = {
   NICKNAME_TOO_SHORT: '닉네임은 2자 이상 입력해주세요.',
   NICKNAME_DUPLICATE: '이미 사용 중인 닉네임입니다.',
-  INTRODUCTION_TOO_SHORT: '자기소개를 10자 이상 입력해주세요.',
 } as const;

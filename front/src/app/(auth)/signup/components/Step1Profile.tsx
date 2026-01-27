@@ -11,7 +11,7 @@ import { SelectButton } from './Button';
 interface StepProps {
   data: UserProfile;
   onUpdate: (data: Partial<UserProfile>) => void;
-  onNext: (data: Partial<UserProfile>) => void;
+  onNext: () => void;
 }
 
 interface FormStatus {
@@ -84,7 +84,8 @@ export default function Step1Profile({ data, onUpdate, onNext }: StepProps) {
       return alert(SIGNUP_MESSAGES.ERROR_EXPERIENCE_REQUIRED);
     if (!data.career) return alert(SIGNUP_MESSAGES.ERROR_CAREER_REQUIRED);
 
-    onNext({ ...data, nickname: localNickname });
+    onUpdate({ ...data, nickname: localNickname });
+    onNext();
   };
 
   return (
@@ -93,15 +94,15 @@ export default function Step1Profile({ data, onUpdate, onNext }: StepProps) {
         {/* 1. 닉네임 섹션 */}
         <section>
           <div>
-            <label className="subhead2 text-custom-realblack block">닉네임</label>
-            <p className="caption3 text-custom-deepgray mt-1">{SIGNUP_MESSAGES.NICKNAME_GUIDE}</p>
+            <label className="subhead2 text-custom-realblack mb-1 block">닉네임</label>
+            <p className="caption3 text-custom-deepgray mb-3">{SIGNUP_MESSAGES.NICKNAME_GUIDE}</p>
           </div>
 
           <div className="mt-3 flex gap-2">
             <input
               type="text"
               placeholder="닉네임을 입력해주세요"
-              className={`focus:border-gray bg-custom-realwhite footnote flex-1 rounded-lg border px-4 py-2 shadow-xs outline-none ${
+              className={`bg-custom-realwhite footnote flex-1 rounded-lg border px-4 py-2 shadow-xs outline-none focus:border-blue-400 ${
                 status.type === 'error' ? 'border-red-500' : 'border-gray'
               }`}
               value={localNickname}
@@ -130,7 +131,7 @@ export default function Step1Profile({ data, onUpdate, onNext }: StepProps) {
 
         {/* 2. 실무 개발 경험 */}
         <section>
-          <label className="subhead2 text-custom-realblack mb-3 block">실무 개발 경험</label>
+          <label className="subhead2 text-custom-realblack mb-1 block">실무 개발 경험</label>
           <div className="flex gap-2">
             {EXPERIENCE_LIST.map((item) => (
               <SelectButton
@@ -145,7 +146,7 @@ export default function Step1Profile({ data, onUpdate, onNext }: StepProps) {
 
         {/* 3. 현재 상태 */}
         <section>
-          <label className="subhead2 text-custom-realblack mb-3 block">현재 상태</label>
+          <label className="subhead2 text-custom-realblack mb-1 block">현재 상태</label>
           <div className="flex flex-wrap gap-2">
             {CAREER_LIST.map((item) => (
               <SelectButton

@@ -75,8 +75,7 @@ export default function SignupPage() {
           <Step1Profile
             data={formData}
             onUpdate={updateFormData}
-            onNext={(data) => {
-              updateFormData(data);
+            onNext={() => {
               setStep('step2');
             }}
           />
@@ -86,8 +85,7 @@ export default function SignupPage() {
           <Step2Networking
             data={formData}
             onUpdate={updateFormData}
-            onNext={(data: Partial<UserProfile>) => {
-              updateFormData(data);
+            onNext={() => {
               setStep('step3');
             }}
             onPrev={() => setStep('step1')}
