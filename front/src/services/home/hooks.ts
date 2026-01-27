@@ -1,11 +1,13 @@
 import { QUERY_KEYS } from '@/constants/queryKeys';
 import { homeApi } from '@/services/home/api';
 
-import { useQuery } from '@tanstack/react-query';
+import { useSuspenseQuery } from '@tanstack/react-query';
 
 export const useHomeSummary = () => {
-  return useQuery({
+  return useSuspenseQuery({
     queryKey: QUERY_KEYS.HOME.SUMMARY(),
     queryFn: homeApi.getSummary,
+    staleTime: 1000 * 60,
+    gcTime: 1000 * 60 * 5,
   });
 };
