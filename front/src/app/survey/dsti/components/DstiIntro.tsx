@@ -1,58 +1,24 @@
 'use client';
 
-import { StaticImageData } from 'next/image';
-
-import EmptyFolderIcon from '@/assets/icon/empty-folder.svg';
-import FullFolderIcon from '@/assets/icon/full-folder.svg';
 import { Button } from '@/components/ui/Button';
+
+import FolderIcons from './FolderIcons';
 
 interface DstiIntroProps {
   onNext: () => void;
 }
 
 export default function DstiIntro({ onNext }: DstiIntroProps) {
-  const emptyIcon = EmptyFolderIcon as StaticImageData;
-  const fullIcon = FullFolderIcon as StaticImageData;
-
   return (
     <div className="flex min-h-[calc(100vh-180px)] flex-col px-5">
       <div className="flex-grow" />
 
       <div className="flex flex-col">
         {/* 1. 폴더 아이콘 영역 */}
-        <div className="mb-3 flex justify-start gap-[18px] pl-[16px]">
-          <div
-            className="bg-custom-blue h-6 w-6"
-            style={{
-              mask: `url(${emptyIcon.src}) no-repeat center / contain`,
-              WebkitMask: `url(${emptyIcon.src}) no-repeat center / contain`,
-            }}
-          />
-          <div
-            className="bg-custom-blue h-6 w-6"
-            style={{
-              mask: `url(${fullIcon.src}) no-repeat center / contain`,
-              WebkitMask: `url(${fullIcon.src}) no-repeat center / contain`,
-            }}
-          />
-          <div
-            className="bg-custom-purple h-6 w-6"
-            style={{
-              mask: `url(${emptyIcon.src}) no-repeat center / contain`,
-              WebkitMask: `url(${emptyIcon.src}) no-repeat center / contain`,
-            }}
-          />
-          <div
-            className="bg-custom-purple h-6 w-6"
-            style={{
-              mask: `url(${fullIcon.src}) no-repeat center / contain`,
-              WebkitMask: `url(${fullIcon.src}) no-repeat center / contain`,
-            }}
-          />
-        </div>
+        <FolderIcons />
 
         {/* 2. 메인 카드 */}
-        <div className="border-custom-gray relative flex h-[240px] w-full flex-col items-center justify-center rounded-2xl border bg-white shadow-lg">
+        <div className="border-custom-gray bg-custom-realwhite relative flex h-[240px] w-full flex-col items-center justify-center rounded-2xl border shadow-lg">
           <div className="absolute top-4 right-5 flex items-center gap-2">
             <div className="h-[2px] w-3 bg-gray-300" />
             <div className="h-3 w-3 border border-gray-300" />
@@ -74,9 +40,7 @@ export default function DstiIntro({ onNext }: DstiIntroProps) {
         {/* 3. 설명 문구 */}
         <div className="mt-9 space-y-1 text-center">
           <p className="body2 text-custom-deepnavy">비즈니스 지향성과 협업 스타일 등을 분석해,</p>
-          <p className="body2 text-custom-deepnavy">
-            당신과 딱 맞는 최적의 파트너를 연결해 드립니다.
-          </p>
+          <p className="body2 text-custom-deepnavy">당신과 딱 맞는 개발 동료를 연결해 드립니다.</p>
         </div>
 
         {/* 4. 버튼 */}
