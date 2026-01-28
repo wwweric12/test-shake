@@ -40,11 +40,11 @@ export function RoomList({ rooms, onSelectRoom, isLoading, error }: RoomListProp
 
   return (
     <div className="flex h-screen flex-col bg-gray-50">
-      <div className="border-b bg-white px-4 py-3 shadow-sm">
+      <div className="bg-custom-white border-b px-4 py-3 shadow-sm">
         <h1 className="title2">채팅</h1>
       </div>
 
-      <div className="flex-1 overflow-y-auto">
+      <div className="bg-custom-white flex-1 overflow-y-auto">
         {rooms.length === 0 ? (
           <div className="flex h-full flex-col items-center justify-center text-gray-400">
             {/* <MessageCircle size={48} className="mb-2" /> */}
@@ -60,7 +60,7 @@ export function RoomList({ rooms, onSelectRoom, isLoading, error }: RoomListProp
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: index * 0.05 }}
                 onClick={() => onSelectRoom(room)}
-                className="w-full bg-white p-4 text-left hover:bg-gray-50"
+                className="bg-custom-white w-full p-4 text-left hover:bg-gray-50"
               >
                 <div className="flex items-center justify-between">
                   <div className="flex-1">
@@ -69,10 +69,10 @@ export function RoomList({ rooms, onSelectRoom, isLoading, error }: RoomListProp
                   </div>
 
                   <div className="footnote ml-3 flex flex-col items-end text-gray-500">
-                    <span>{formatTime(room.lastMessageAt)}</span>
+                    {/* <span>{formatTime(room.lastMessageAt)}</span> */}
                     <div className="flex items-center">
                       {/* <Users size={12} className="mr-1" /> */}
-                      <span className="flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white">
+                      <span className="footnote flex h-5 w-5 items-center justify-center rounded-full bg-red-500 font-bold text-white">
                         {room.unreadCount}
                       </span>
                     </div>

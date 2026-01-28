@@ -18,6 +18,14 @@ export const chatHandlers = [
           lastMessageAt: '2026-01-23T10:00:00',
           unreadCount: 2,
         },
+        {
+          chatRoomId: 102,
+          otherUserNickname: '대화상대2',
+          otherUserProfileImageUrl: 'https://picsum.photos/301',
+          lastMessage: '안녕하세요!',
+          lastMessageAt: '2026-01-23T10:00:00',
+          unreadCount: 2,
+        },
       ],
     };
     return HttpResponse.json(response);
