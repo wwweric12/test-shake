@@ -6,6 +6,7 @@ import { RoomList } from '@/app/chat/components/RoomList';
 import { ChatRoomContainer } from '@/app/chat/containers/ChatRoomContainer';
 import { useChatRooms } from '@/app/chat/hooks/useChatRooms';
 import type { ChatRoom } from '@/app/chat/types/models';
+import BottomNavigation from '@/components/common/BottomNavigation';
 
 export default function ChatPage() {
   const [selectedRoom, setSelectedRoom] = useState<ChatRoom | null>(null);
@@ -13,7 +14,15 @@ export default function ChatPage() {
 
   if (!selectedRoom) {
     return (
-      <RoomList rooms={rooms} isLoading={isLoading} error={error} onSelectRoom={setSelectedRoom} />
+      <div>
+        <RoomList
+          rooms={rooms}
+          isLoading={isLoading}
+          error={error}
+          onSelectRoom={setSelectedRoom}
+        />
+        <BottomNavigation />
+      </div>
     );
   }
 

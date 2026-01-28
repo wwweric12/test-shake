@@ -6,8 +6,8 @@ import Image from 'next/image';
 import { ChatMessage } from '@/app/chat/types/models';
 import BackIcon from '@/assets/icon/back.svg';
 import SendIcon from '@/assets/icon/paper-plane-right.svg';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/Button';
+import { Input } from '@/components/ui/Input';
 
 import { MESSAGE_MAX_LENGTH } from '../types/constants';
 

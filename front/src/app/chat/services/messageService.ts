@@ -1,6 +1,7 @@
 import { chatBus } from '@/app/chat/events/chatEventBus';
 import { ChatMessage } from '@/app/chat/types/models';
-import { ChatMessagesResponse } from '@/types/chat';
+import { chatApi } from '@/services/chat/api';
+import { ChatMessage as ApiChatMessage } from '@/types/chat';
 
 interface SendMessageParams {
   roomId: number;
@@ -15,17 +16,19 @@ interface SendMessageParams {
  */
 export const messageService = {
   async fetch(roomId: number): Promise<ChatMessage[]> {
-    const res = await fetch(`/api/chat/rooms/${roomId}/messages`);
-    const json: ChatMessagesResponse = await res.json();
+    const res = await chatApi.getChatMessages(roomId);
+    const msgResponse = res.data;
 
-    return json.data.map((msg) => ({
-      id: crypto.randomUUID(),
-      roomId,
-      senderId: 'other-user', // ⚠️ API에 senderId 없음 → 임시
-      content: String(msg.lastMessage ?? msg.content),
-      createdAt: new Date().toISOString(),
-      isMine: false,
-    }));
+    return msgResponse.map(
+      (msg: ApiChatMessage): ChatMessage => ({
+        id: crypto.randomUUID(),
+        roomId,
+        senderId: 'other-user', // API에 없음 → 임시
+        content: String(msg.lastMessage ?? msg.content),
+        createdAt: msg.sendTime,
+        isMine: false,
+      }),
+    );
   },
 
   async send({ roomId, content, senderId }: SendMessageParams): Promise<ChatMessage> {
