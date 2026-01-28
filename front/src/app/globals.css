@@ -1,8 +1,8 @@
 /* Pretendard Font Import */
-@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css");
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css');
 @import 'tailwindcss';
 
-@plugin "tailwindcss-animate";
+@plugin 'tailwindcss-animate';
 
 @custom-variant dark (&:is(.dark *));
 
@@ -14,7 +14,7 @@
   --radius-2xl: calc(var(--radius) + 8px);
   --radius-3xl: calc(var(--radius) + 12px);
   --radius-4xl: calc(var(--radius) + 16px);
-  
+
   /* System Colors Mapped to Custom Palette */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -54,65 +54,67 @@
   --color-sidebar-ring: var(--sidebar-ring);
 
   /* Custom Colors Extended */
-  --color-custom-blue: #879EFE;
-  --color-custom-sky-blue: #88D0FC;
-  --color-custom-purple: #B4A6FF;
-  --color-custom-white: #F9F8FE;
-  --color-custom-border-gray: #E5E5E5;
-  --color-custom-green: #70AD25;
-  --color-custom-red: #FF5454;
-  --color-custom-navy: #4A5568;
-  --color-custom-deepnavy: #1A202C;
+  --color-custom-blue: #879efe;
+  --color-custom-sky-blue: #88d0fc;
+  --color-custom-purple: #b4a6ff;
+  --color-custom-white: #f9f8fe;
+  --color-custom-border-gray: #e5e5e5;
+  --color-custom-green: #70ad25;
+  --color-custom-red: #ff5454;
+  --color-custom-navy: #4a5568;
+  --color-custom-deepnavy: #1a202c;
   --color-custom-deepgray: #718096;
-  --color-custom-realwhite: #FFFFFF;
+  --color-custom-realwhite: #ffffff;
   --color-custom-realblack: #000000;
-  --color-custom-deeppurple: #535CF2;
-  --color-custom-lightpurple: #DDE4FF;
-  --color-custom-darkgray: #BFBFBF;
-  --color-custom-pinkpurple: #E5D4FE;
+  --color-custom-deeppurple: #535cf2;
+  --color-custom-lightpurple: #dde4ff;
+  --color-custom-darkgray: #bfbfbf;
+  --color-custom-pinkpurple: #e5d4fe;
 
   /* Font Family */
-  --font-sans: "Pretendard", -apple-system, BlinkMacSystemFont, system-ui, Roboto, "Helvetica Neue", "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", sans-serif;
+  --font-sans:
+    'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, 'Helvetica Neue',
+    'Segoe UI', 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', 'Apple Color Emoji',
+    'Segoe UI Emoji', 'Segoe UI Symbol', sans-serif;
 }
-
 
 :root {
   --radius: 0.625rem;
 
   /* Custom Palette Mapping */
   --background: oklch(0.98 0.005 270); /* F9F8FE approx (custom-white) */
-  --foreground: oklch(0.20 0.02 265);  /* 1A202C approx (custom-deepnavy) */
+  --foreground: oklch(0.2 0.02 265); /* 1A202C approx (custom-deepnavy) */
 
-  --card: oklch(1 0 0);                /* white */
-  --card-foreground: oklch(0.20 0.02 265); 
+  --card: oklch(1 0 0); /* white */
+  --card-foreground: oklch(0.2 0.02 265);
 
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.20 0.02 265);
+  --popover-foreground: oklch(0.2 0.02 265);
 
   /* Primary: custom-blue #879EFE */
-  --primary: oklch(0.70 0.15 260); 
+  --primary: oklch(0.7 0.15 260);
   --primary-foreground: oklch(1 0 0); /* realwhite */
 
   /* Secondary: custom-lightpurple #DDE4FF */
-  --secondary: oklch(0.90 0.05 270); 
-  --secondary-foreground: oklch(0.20 0.02 265); /* deepnavy */
+  --secondary: oklch(0.9 0.05 270);
+  --secondary-foreground: oklch(0.2 0.02 265); /* deepnavy */
 
   /* Muted: custom-custom-border-gray-ish */
-  --muted: oklch(0.95 0 0); 
-  --muted-foreground: oklch(0.55 0 0);   /* custom-deepgray approx */
+  --muted: oklch(0.95 0 0);
+  --muted-foreground: oklch(0.55 0 0); /* custom-deepgray approx */
 
   /* Accent: custom-sky-blue #88D0FC */
-  --accent: oklch(0.85 0.10 240); 
-  --accent-foreground: oklch(0.20 0.02 265);
+  --accent: oklch(0.85 0.1 240);
+  --accent-foreground: oklch(0.2 0.02 265);
 
   /* Destructive: custom-red #FF5454 */
-  --destructive: oklch(0.65 0.20 20); 
+  --destructive: oklch(0.65 0.2 20);
   --destructive-foreground: oklch(1 0 0);
 
   /* Border: custom-border-gray #E5E5E5 */
-  --border: oklch(0.92 0 0); 
+  --border: oklch(0.92 0 0);
   --input: oklch(0.92 0 0);
-  --ring: oklch(0.70 0.15 260); /* primary/custom-blue */
+  --ring: oklch(0.7 0.15 260); /* primary/custom-blue */
 
   /* Sidebar defaults to standard/light for now */
   --sidebar: oklch(0.985 0 0);
@@ -140,7 +142,7 @@
   --card-foreground: oklch(0.985 0 0);
   --popover: oklch(0.145 0 0);
   --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.70 0.15 260);     /* Keep primary blue? or lighten it? */
+  --primary: oklch(0.7 0.15 260); /* Keep primary blue? or lighten it? */
   --primary-foreground: oklch(0.205 0 0);
   --secondary: oklch(0.269 0 0);
   --secondary-foreground: oklch(0.985 0 0);
@@ -148,7 +150,7 @@
   --muted-foreground: oklch(0.708 0 0);
   --accent: oklch(0.269 0 0);
   --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.65 0.20 20);
+  --destructive: oklch(0.65 0.2 20);
   --destructive-foreground: oklch(0.985 0 0);
   --border: oklch(1 0 0 / 10%);
   --input: oklch(1 0 0 / 15%);
@@ -174,57 +176,65 @@
 
 @layer utilities {
   .large-title {
-    @apply font-bold text-[34px];
+    @apply text-[34px] font-bold;
   }
   .title1 {
-    @apply font-semibold text-[24px];
+    @apply text-[24px] font-semibold;
   }
   .title2 {
-    @apply font-semibold text-[22px];
+    @apply text-[22px] font-semibold;
   }
   .title3 {
-    @apply font-semibold text-[20px];
+    @apply text-[20px] font-semibold;
   }
   .title4 {
-    @apply font-normal text-[20px];
+    @apply text-[20px] font-normal;
   }
   .body1 {
-    @apply font-semibold text-[17px];
+    @apply text-[17px] font-semibold;
   }
   .body2 {
-    @apply font-normal text-[17px];
+    @apply text-[17px] font-normal;
   }
   .subhead1 {
-    @apply font-semibold text-[15px];
+    @apply text-[15px] font-semibold;
   }
   .subhead2 {
-    @apply font-medium text-[15px];
+    @apply text-[15px] font-medium;
   }
   .subhead3 {
-    @apply font-normal text-[15px];
+    @apply text-[15px] font-normal;
   }
   .callout {
-    @apply font-normal text-[16px];
+    @apply text-[16px] font-normal;
   }
   .footout {
-    @apply font-semibold text-[13px];
+    @apply text-[13px] font-semibold;
   }
   .footnote {
-    @apply font-normal text-[13px];
+    @apply text-[13px] font-normal;
   }
   .caption1 {
-    @apply font-semibold text-[11px];
+    @apply text-[11px] font-semibold;
   }
   .caption2 {
-    @apply font-medium text-[11px];
+    @apply text-[11px] font-medium;
   }
   .caption3 {
-    @apply font-normal text-[11px];
+    @apply text-[11px] font-normal;
   }
   .footer1 {
-    @apply font-semibold text-[9px];
+    @apply text-[9px] font-semibold;
   }
   .footer2 {
-    @apply font-normal text-[9px];
+    @apply text-[9px] font-normal;
+  }
+  .custom-scrollbar {
+    &::-webkit-scrollbar {
+      display: none;
+    }
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    -webkit-overflow-scrolling: touch;
   }
 }

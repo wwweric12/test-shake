@@ -12,12 +12,13 @@ import {
   UpdateSelfIntroRequest,
   UpdateTechSkillsRequest,
   UserCardsResponse,
+  UserInfoRequest,
   UserProfile,
 } from '@/types/user';
 
 export const userApi = {
   getUserInfo: () => api.get<UserProfile>('/user/info'),
-  registerUserProfile: (data: UserProfile) => api.post('/user/info', data),
+  registerUserProfile: (data: UserInfoRequest) => api.post('/user/info', data),
 
   checkNickname: (data: CheckNicknameRequest) =>
     api.post<CheckNicknameResponse>('/user/nickname', data),
