@@ -1,4 +1,6 @@
+import { chatBus } from '@/app/chat/events/chatEventBus';
 import { ChatMessage } from '@/app/chat/types/models';
+import { ChatMessagesResponse } from '@/types/chat';
 
 interface SendMessageParams {
   roomId: number;
@@ -6,12 +8,31 @@ interface SendMessageParams {
   senderId: string;
 }
 
+/*
+ * 메시지 서비스
+ * - fetch: REST API로 이전 메시지 조회
+ * - send: 실시간 메시지 전송 (현재 mitt, 나중에 WebSocket)
+ */
 export const messageService = {
-  send: async ({ roomId, content, senderId }: SendMessageParams): Promise<ChatMessage> => {
-    // ⏳ 네트워크 지연 시뮬레이션
-    await new Promise((resolve) => setTimeout(resolve, 200));
+  async fetch(roomId: number): Promise<ChatMessage[]> {
+    const res = await fetch(`/api/chat/rooms/${roomId}/messages`);
+    const json: ChatMessagesResponse = await res.json();
 
-    return {
+    return json.data.map((msg) => ({
+      id: crypto.randomUUID(),
+      roomId,
+      senderId: 'other-user', // ⚠️ API에 senderId 없음 → 임시
+      content: String(msg.lastMessage ?? msg.content),
+      createdAt: new Date().toISOString(),
+      isMine: false,
+    }));
+  },
+
+  async send({ roomId, content, senderId }: SendMessageParams): Promise<ChatMessage> {
+    // 네트워크 지연 시뮬레이션
+    await new Promise((r) => setTimeout(r, 300));
+
+    const confirmed: ChatMessage = {
       id: crypto.randomUUID(),
       roomId,
       senderId,
@@ -19,5 +40,31 @@ export const messageService = {
       createdAt: new Date().toISOString(),
       isMine: true,
     };
+
+    // 가짜 실시간 수신 (mitt)
+    chatBus.emit('message', confirmed);
+
+    chatBus.emit('roomUpdate', { roomId, lastMessage: content });
+
+    return confirmed;
+    /**
+     * ===============================
+     * 🔥 WebSocket 전환 시 (예시)
+     * ===============================
+     *
+     * this.socket.send(
+     *   JSON.stringify({
+     *     type: 'CHAT_MESSAGE',
+     *     payload: { roomId, content, senderId },
+     *   }),
+     * );
+     *
+     * // 서버 응답 대기
+     * return new Promise((resolve) => {
+     *   this.socket.once('message_confirmed', (data) => {
+     *     resolve(data);
+     *   });
+     * });
+     */
   },
 };

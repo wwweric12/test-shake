@@ -1,53 +1,47 @@
 'use client';
 
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
+import { chatBus } from '@/app/chat/events/chatEventBus';
 import { messageService } from '@/app/chat/services/messageService';
 import { ChatMessage } from '@/app/chat/types/models';
 
-interface UseChatRoomParams {
+interface Params {
   roomId: number;
   currentUserId: string;
-  initialMessages?: ChatMessage[];
 }
 
-export function useChatRoom({ roomId, currentUserId, initialMessages = [] }: UseChatRoomParams) {
-  const [messages, setMessages] = useState<ChatMessage[]>(initialMessages);
+export function useChatRoom({ roomId, currentUserId }: Params) {
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
 
+  // 1️⃣ 초기 메시지 (REST)
+  useEffect(() => {
+    messageService.fetch(roomId).then(setMessages);
+  }, [roomId]);
+
+  // 2️⃣ 실시간 수신 (mitt)
+  useEffect(() => {
+    const handler = (msg: ChatMessage) => {
+      if (msg.roomId === roomId) {
+        setMessages((prev) => [...prev, msg]);
+      }
+    };
+
+    chatBus.on('message', handler);
+    return () => chatBus.off('message', handler);
+  }, [roomId]);
+
+  // 3️⃣ 전송
   const sendMessage = useCallback(
     async (content: string) => {
-      // 🔥 optimistic update
-      const optimisticMessage: ChatMessage = {
-        id: `temp-${Date.now()}`,
+      await messageService.send({
         roomId,
-        senderId: currentUserId,
         content,
-        createdAt: new Date().toISOString(),
-        isMine: true,
-      };
-
-      setMessages((prev) => [...prev, optimisticMessage]);
-
-      try {
-        const confirmed = await messageService.send({
-          roomId,
-          content,
-          senderId: currentUserId,
-        });
-
-        setMessages((prev) =>
-          prev.map((msg) => (msg.id === optimisticMessage.id ? confirmed : msg)),
-        );
-      } catch {
-        // 실패 시 롤백
-        setMessages((prev) => prev.filter((msg) => msg.id !== optimisticMessage.id));
-      }
+        senderId: currentUserId,
+      });
     },
     [roomId, currentUserId],
   );
 
-  return {
-    messages,
-    sendMessage,
-  };
+  return { messages, sendMessage };
 }

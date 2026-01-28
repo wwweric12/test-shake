@@ -2,20 +2,29 @@
 
 import { useEffect, useState } from 'react';
 
-import { chatBus } from '@/app/chat/events/chatBus';
+import { chatBus } from '@/app/chat/events/chatEventBus';
 import { fetchChatRooms } from '@/app/chat/services/chatRoomService';
 import { ChatRoom } from '@/app/chat/types/models';
 
+interface RoomUpdateEvent {
+  roomId: number;
+  lastMessage: string;
+}
+
 export function useChatRooms() {
   const [rooms, setRooms] = useState<ChatRoom[]>([]);
-  const [selectedRoomId, setSelectedRoomId] = useState<number | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(false);
 
   useEffect(() => {
-    fetchChatRooms().then(setRooms);
+    fetchChatRooms()
+      .then(setRooms)
+      .catch(() => setError(true))
+      .finally(() => setIsLoading(false));
   }, []);
 
   useEffect(() => {
-    const handler = ({ roomId, lastMessage }: any) => {
+    const handler = ({ roomId, lastMessage }: RoomUpdateEvent) => {
       setRooms((prev) =>
         prev.map((room) => (room.id === roomId ? { ...room, lastMessage } : room)),
       );
@@ -25,9 +34,5 @@ export function useChatRooms() {
     return () => chatBus.off('roomUpdate', handler);
   }, []);
 
-  return {
-    rooms,
-    selectedRoomId,
-    selectRoom: setSelectedRoomId,
-  };
+  return { rooms, isLoading, error };
 }
