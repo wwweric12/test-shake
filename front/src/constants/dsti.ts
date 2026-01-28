@@ -27,3 +27,9 @@ export const DSTI_TITLES: Record<string, string> = {
   EBWR: '규칙 집착러',
   EBWU: '조화로운 매니저',
 };
+
+export const DSTI_STEP_INFO: Record<string, { index: number; title: string }> = {
+  intro: { index: 1, title: 'DSTI 분석' },
+  main: { index: 2, title: 'DSTI 분석' },
+  result: { index: 3, title: '분석 결과' },
+} as const;

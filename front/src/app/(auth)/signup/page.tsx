@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 
 import backIcon from '@/assets/icon/back.svg';
 import { Progress } from '@/components/ui/Progress';
-import { INITIAL_SIGNUP_DATA, STEP_INFO } from '@/constants/auth';
+import { INITIAL_SIGNUP_DATA, SIGNUP_MESSAGES, STEP_INFO } from '@/constants/auth';
 import { useRegisterUserProfileMutation } from '@/services/user/hooks';
 import { UserProfile } from '@/types/user';
 
@@ -14,11 +14,12 @@ import { useFunnel } from '../../../hooks/useFunnel';
 
 import Step1Profile from './components/Step1Profile';
 import Step2Networking from './components/Step2Networking';
-import Step3DSTI from './components/Step3DSTI';
+
+type SignupStep = 'step1' | 'step2';
 
 export default function SignupPage() {
   const router = useRouter();
-  const { Step, setStep, step } = useFunnel('step1');
+  const { Step, setStep, step } = useFunnel<SignupStep>('step1');
   const [formData, setFormData] = useState<UserProfile>(INITIAL_SIGNUP_DATA);
 
   const { mutate: registerUser } = useRegisterUserProfileMutation();
@@ -30,21 +31,18 @@ export default function SignupPage() {
   const handleBack = () => {
     if (step === 'step1') router.back();
     else if (step === 'step2') setStep('step1');
-    else if (step === 'step3') setStep('step2');
   };
 
-  const handleFinalSubmit = (dstiResult: string) => {
-    const finalData = { ...formData, dsti: dstiResult };
-    const { nickname, dsti, ...infoRequestData } = finalData;
+  const handleInfoSubmit = () => {
+    const { dsti, ...infoRequestData } = formData;
 
     registerUser(infoRequestData, {
       onSuccess: () => {
-        alert('가입이 완료되었습니다!');
-        router.push('/home');
+        router.push('/survey/dsti');
       },
-      onError: (error) => {
-        console.error('회원가입 실패:', error);
-        alert('회원가입 처리 중 오류가 발생했습니다.');
+      onError: (error: Error) => {
+        const errorMsg = error.message || SIGNUP_MESSAGES.DEFAULT_SUBMIT;
+        alert(errorMsg);
       },
     });
   };
@@ -66,8 +64,8 @@ export default function SignupPage() {
         </div>
 
         <div className="space-y-2">
-          <Progress value={(currentStepInfo.index / 3) * 100} className="h-1" />
-          <p className="text-custom-deepgray footnote text-right">{currentStepInfo.index} / 3</p>
+          <Progress value={(currentStepInfo.index / 2) * 100} className="h-1" />
+          <p className="text-custom-deepgray footnote text-right">{currentStepInfo.index} / 2</p>
         </div>
       </header>
 
@@ -86,15 +84,9 @@ export default function SignupPage() {
           <Step2Networking
             data={formData}
             onUpdate={updateFormData}
-            onNext={() => {
-              setStep('step3');
-            }}
+            onNext={handleInfoSubmit}
             onPrev={() => setStep('step1')}
           />
-        </Step>
-
-        <Step name="step3">
-          <Step3DSTI onNext={handleFinalSubmit} onPrev={() => setStep('step2')} />
         </Step>
       </main>
     </div>

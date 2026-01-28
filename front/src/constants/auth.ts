@@ -13,14 +13,12 @@ export const INITIAL_SIGNUP_DATA: UserProfile = {
   selfIntro: '',
 };
 
-export const STEP_INFO = {
+export const STEP_INFO: Record<string, { index: number; title: string }> = {
   step1: { index: 1, title: '기본 프로필 정보' },
   step2: { index: 2, title: '네트워킹 정보' },
-  step3: { index: 3, title: 'DSTI 성향 테스트' },
-  step4: { index: 4, title: '가입 완료' },
 } as const;
 
-export const SIGNUP_MESSAGES = {
+export const SIGNUP_MESSAGES: Record<string, string> = {
   // 가이드 및 라벨
   NICKNAME_GUIDE: '※ 한 번 생성한 닉네임은 수정할 수 없습니다. (2~10자, 공백 불가)',
   GITHUB_GUIDE: 'https://github.com/',
@@ -36,6 +34,7 @@ export const SIGNUP_MESSAGES = {
   STATUS_LOADING: '확인 중...',
 
   // 에러 메시지
+  DEFAULT_SUBMIT: '정보 저장 중 오류가 발생했습니다.',
   ERROR_NICKNAME_LENGTH: '닉네임은 2자 이상 입력해주세요.',
   ERROR_NICKNAME_DUPLICATE: '이미 사용 중인 닉네임입니다.',
   ERROR_NICKNAME_CHECK_FAILED: '중복 확인 중 오류가 발생했습니다.',
@@ -70,8 +69,3 @@ export const NETWORK_LIST: { label: string; value: Network }[] = [
   { label: '#프로젝트', value: 'side_project' },
   { label: '#스터디', value: 'study_group' },
 ];
-
-export const SIGNUP_ERROR_MESSAGES = {
-  NICKNAME_TOO_SHORT: '닉네임은 2자 이상 입력해주세요.',
-  NICKNAME_DUPLICATE: '이미 사용 중인 닉네임입니다.',
-} as const;
