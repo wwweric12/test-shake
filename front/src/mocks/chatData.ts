@@ -1,5 +1,5 @@
 // Mock 데이터 (개발용 - 백엔드 준비되면 제거)
-import { WSChatRoom, WSMessage } from '@/features/chat/types';
+import { WSChatRoom, WSMessage } from '@/app/chat/types/realtime';
 
 export const MOCK_ROOMS: WSChatRoom[] = [
   {
@@ -34,7 +34,7 @@ export const MOCK_MESSAGES: Record<string, WSMessage[]> = {
       senderName: '김철수',
       content: '안녕하세요!',
       timestamp: new Date(Date.now() - 10 * 60 * 1000).toISOString(),
-      isOwn: false,
+      // isOwn: false,
     },
     {
       id: 'msg-2',
@@ -43,7 +43,7 @@ export const MOCK_MESSAGES: Record<string, WSMessage[]> = {
       senderName: '나',
       content: '네, 안녕하세요! 반갑습니다.',
       timestamp: new Date(Date.now() - 5 * 60 * 1000).toISOString(),
-      isOwn: true,
+      // isOwn: true,
     },
   ],
   '2': [
@@ -54,7 +54,7 @@ export const MOCK_MESSAGES: Record<string, WSMessage[]> = {
       senderName: '이영희',
       content: '오늘 회의는 몇 시에 하나요?',
       timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
-      isOwn: false,
+      // isOwn: false,
     },
     {
       id: 'msg-4',
@@ -63,7 +63,7 @@ export const MOCK_MESSAGES: Record<string, WSMessage[]> = {
       senderName: '나',
       content: '오후 3시에 진행 예정입니다!',
       timestamp: new Date(Date.now() - 1 * 60 * 60 * 1000).toISOString(),
-      isOwn: true,
+      // isOwn: true,
     },
   ],
   '3': [
@@ -74,7 +74,7 @@ export const MOCK_MESSAGES: Record<string, WSMessage[]> = {
       senderName: '박민수',
       content: '프로젝트 진행 상황 공유드립니다.',
       timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
-      isOwn: false,
+      // isOwn: false,
     },
   ],
 };
