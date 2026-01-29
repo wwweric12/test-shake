@@ -1,11 +1,13 @@
-import { UserCard } from '@/types/user';
+import { RecommendationCard } from '@/types/user';
 
 export interface CandidateResponse {
   statusCode: number;
   message: string;
   data: {
     exposureId: number;
-    cards: UserCard[];
+    remainingCardCnt: number;
+    quotaDate: string;
+    cards: RecommendationCard[];
   };
 }
 

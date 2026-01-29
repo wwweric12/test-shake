@@ -11,7 +11,6 @@ import {
   UpdatePositionsRequest,
   UpdateSelfIntroRequest,
   UpdateTechSkillsRequest,
-  UserCardsResponse,
   UserInfoRequest,
   UserProfile,
 } from '@/types/user';
@@ -24,8 +23,6 @@ export const userApi = {
     api.post<CheckNicknameResponse>('/user/nickname', data),
 
   submitDsti: (data: SubmitDstiRequest) => api.post<DstiResponse>('/user/dsti', data),
-
-  getUserCards: () => api.get<UserCardsResponse>('/user/card'),
 
   updateExperience: (data: UpdateExperienceRequest) => api.put('/user/experience', data),
   updateCareer: (data: UpdateCareerRequest) => api.put('/user/career', data),

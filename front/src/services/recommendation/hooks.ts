@@ -8,6 +8,9 @@ export const useCandidates = (limit?: number) => {
   return useQuery({
     queryKey: QUERY_KEYS.RECOMMENDATION.CANDIDATES(limit),
     queryFn: () => recommendationApi.getCandidates(limit),
+    staleTime: 1000 * 60,
+    gcTime: 1000 * 60 * 5,
+    refetchOnWindowFocus: false, // 탭 전환 시 재요청 방지 (스와이프 경험 유지)
   });
 };
 
