@@ -5,10 +5,10 @@ import {
   useCandidates,
   useResetPreferencesMutation,
 } from '@/services/recommendation/hooks';
-import { RecommendationCard } from '@/types/user';
+import { UserInfo } from '@/types/user';
 
 export const useRecommendationController = () => {
-  const [cards, setCards] = useState<RecommendationCard[]>([]);
+  const [cards, setCards] = useState<UserInfo[]>([]);
   const [exposureId, setExposureId] = useState<number | null>(null);
   const [showResetDialog, setShowResetDialog] = useState(false);
 
@@ -31,7 +31,7 @@ export const useRecommendationController = () => {
     }
   }, [candidateData]);
 
-  const handleSwipe = async (direction: 'left' | 'right', card: RecommendationCard) => {
+  const handleSwipe = async (direction: 'left' | 'right', card: UserInfo) => {
     const remainingCards = cards.slice(0, -1);
     setCards(remainingCards);
 

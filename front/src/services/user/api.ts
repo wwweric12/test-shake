@@ -2,33 +2,40 @@ import { api } from '@/services/api';
 import {
   CheckNicknameRequest,
   CheckNicknameResponse,
+  DstiRequest,
   DstiResponse,
-  SubmitDstiRequest,
   UpdateCareerRequest,
   UpdateExperienceRequest,
   UpdateGithubRequest,
   UpdateNetworksRequest,
   UpdatePositionsRequest,
+  UpdateResponse,
   UpdateSelfIntroRequest,
   UpdateTechSkillsRequest,
-  UserInfoRequest,
-  UserProfile,
+  UserInfoResponse,
+  UserProfileRequest,
+  UserProfileResponse,
 } from '@/types/user';
 
 export const userApi = {
-  getUserInfo: () => api.get<UserProfile>('/user/info'),
-  registerUserProfile: (data: UserInfoRequest) => api.post('/user/info', data),
+  getUserInfo: () => api.get<UserInfoResponse>('/user/info'),
+  registerUserProfile: (data: UserProfileRequest) =>
+    api.post<UserProfileResponse>('/user/info', data),
 
   checkNickname: (data: CheckNicknameRequest) =>
     api.post<CheckNicknameResponse>('/user/nickname', data),
 
-  submitDsti: (data: SubmitDstiRequest) => api.post<DstiResponse>('/user/dsti', data),
+  submitDsti: (data: DstiRequest) => api.post<DstiResponse>('/user/dsti', data),
 
-  updateExperience: (data: UpdateExperienceRequest) => api.put('/user/experience', data),
-  updateCareer: (data: UpdateCareerRequest) => api.put('/user/career', data),
-  updateGithub: (data: UpdateGithubRequest) => api.put('/user/github', data),
-  updateSelfIntro: (data: UpdateSelfIntroRequest) => api.put('/user/self-intro', data),
-  updateTechSkills: (data: UpdateTechSkillsRequest) => api.put('/user/tech-skills', data),
-  updatePositions: (data: UpdatePositionsRequest) => api.put('/user/position', data),
-  updateNetworks: (data: UpdateNetworksRequest) => api.put('/user/networks', data),
+  updateExperience: (data: UpdateExperienceRequest) =>
+    api.put<UpdateResponse>('/user/experience', data),
+  updateCareer: (data: UpdateCareerRequest) => api.put<UpdateResponse>('/user/career', data),
+  updateGithub: (data: UpdateGithubRequest) => api.put<UpdateResponse>('/user/github', data),
+  updateSelfIntro: (data: UpdateSelfIntroRequest) =>
+    api.put<UpdateResponse>('/user/self-intro', data),
+  updateTechSkills: (data: UpdateTechSkillsRequest) =>
+    api.put<UpdateResponse>('/user/tech-skills', data),
+  updatePositions: (data: UpdatePositionsRequest) =>
+    api.put<UpdateResponse>('/user/position', data),
+  updateNetworks: (data: UpdateNetworksRequest) => api.put<UpdateResponse>('/user/networks', data),
 };
