@@ -42,3 +42,4 @@ next-env.d.ts
 
 front/mkcert.exe
 front/*.pem
+mkcert.exe
