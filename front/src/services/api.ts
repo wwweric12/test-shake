@@ -1,5 +1,5 @@
 import { BASE_URL } from '@/constants/api';
-import { getAccessToken } from '@/utils/token';
+// import { getAccessToken } from '@/utils/token';
 
 async function fetchClient<T = unknown>(endpoint: string, options: RequestInit = {}): Promise<T> {
   const url = endpoint.startsWith('http') ? endpoint : `${BASE_URL}${endpoint}`;
@@ -11,15 +11,16 @@ async function fetchClient<T = unknown>(endpoint: string, options: RequestInit =
     headers.set('Content-Type', 'application/json');
   }
 
-  const token = getAccessToken();
-  if (token) {
-    headers.set('Authorization', `Bearer ${token}`);
-  }
+  // const token = getAccessToken();
+  // if (token) {
+  //   headers.set('Authorization', `Bearer ${token}`);
+  // }
 
   try {
     const response = await fetch(url, {
       ...options,
       headers,
+      credentials: 'include',
     });
 
     if (!response.ok) {

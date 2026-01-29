@@ -8,7 +8,7 @@ const MOCK_USER_PROFILE: UserProfile = {
   profileImageUrl: 'https://picsum.photos/200',
   experience: true,
   career: 'employed',
-  dsti: 'I S J T',
+  dsti: 'PDAR',
   positions: ['frontend_developer', 'backend_developer'],
   techSkills: ['react', 'typescript', 'java', 'spring_framework'],
   networks: ['coffee_chat', 'study_group'],
@@ -39,12 +39,16 @@ export const userHandlers = [
   http.post(`${BASE_URL}/user/nickname`, async ({ request }) => {
     const { nickname } = (await request.json()) as { nickname: string };
     const isAvailable = nickname !== '중복된닉네임';
-    return HttpResponse.json({ possible: isAvailable });
+    if (isAvailable) {
+      return HttpResponse.json({ status: 200 });
+    } else {
+      return HttpResponse.error();
+    }
   }),
 
   // Submit DSTI
   http.post(`${BASE_URL}/user/dsti`, () => {
-    return HttpResponse.json({ dsti: 'I S J T' });
+    return HttpResponse.json({ dsti: 'PDAR' });
   }),
 
   // Get User Cards

@@ -1,3 +1,41 @@
+import { StaticImageData } from 'next/image';
+
+import EBAR from '@/assets/images/characters/EBAR.png';
+import EBAU from '@/assets/images/characters/EBAU.png';
+import EBWR from '@/assets/images/characters/EBWR.png';
+import EBWU from '@/assets/images/characters/EBWU.png';
+import EDAR from '@/assets/images/characters/EDAR.png';
+import EDAU from '@/assets/images/characters/EDAU.png';
+import EDWR from '@/assets/images/characters/EDWR.png';
+import EDWU from '@/assets/images/characters/EDWU.png';
+import PBAR from '@/assets/images/characters/PBAR.png';
+import PBAU from '@/assets/images/characters/PBAU.png';
+import PBWR from '@/assets/images/characters/PBWR.png';
+import PBWU from '@/assets/images/characters/PBWU.png';
+import PDAR from '@/assets/images/characters/PDAR.png';
+import PDAU from '@/assets/images/characters/PDAU.png';
+import PDWR from '@/assets/images/characters/PDWR.png';
+import PDWU from '@/assets/images/characters/PDWU.png';
+
+export const DSTI_CHARACTERS: Record<string, StaticImageData> = {
+  PDAR,
+  PDAU,
+  PDWR,
+  PDWU,
+  PBAR,
+  PBAU,
+  PBWR,
+  PBWU,
+  EDAR,
+  EDAU,
+  EDWR,
+  EDWU,
+  EBAR,
+  EBAU,
+  EBWR,
+  EBWU,
+};
+
 export const DSTI_INDICATORS = [
   { title: '서비스 지향성', label: 'Biz vs Core', types: ['P', 'E'] },
   { title: '학습 방식', label: 'Deep vs Wide', types: ['D', 'B'] },
@@ -11,50 +49,50 @@ export const DSTI_INFO: Record<
 > = {
   P: {
     label: '판교형',
-    copy: '“유저가 안 쓰면 의미 없잖아?”',
-    desc: '판교형인 당신, 기술적인 완벽함보다 비즈니스의 임팩트와 유저의 반응에서 가장 큰 보람을 느끼는군요!',
+    copy: '“유저가 안 쓰면 의미 없어.”',
+    desc: '비즈니스의 임팩트와 유저의 반응에서 큰 보람을 느끼는군요!',
     tags: ['#User_Centric', '#Trendy_Stack'],
   },
   E: {
     label: '을지로형',
-    copy: '“터지기 전에 미리 막아야지.”',
-    desc: '을지로형인 당신, 화려한 기능보다 묵묵히 트래픽을 견디는 견고한 코드와 시스템의 안정성을 신뢰하시는군요!',
+    copy: '“터지기 전에 미리 막자.”',
+    desc: '트래픽을 견디는 견고한 코드와 시스템의 안정성을 신뢰하시네요!',
     tags: ['#Legacy_Optimization', '#Scalability'],
   },
   D: {
     label: 'DFS형',
-    copy: '“이게 왜 돌아가는지 알아야 돼.”',
-    desc: 'DFS형인 당신, 단순히 사용법보다 내부 소스코드와 원리까지 파야 직성이 풀리는 집요한 분석가시네요!',
+    copy: '“이게 왜 돌아가는 걸까?”',
+    desc: '내부 소스코드와 원리까지 파야 직성이 풀리는 분석가시네요!',
     tags: ['#Deep_Dive', '#Specialist'],
   },
   B: {
     label: 'BFS형',
     copy: '“빨리 써보고 결정하자!”',
-    desc: 'BFS형인 당신, 트렌디한 기술들을 폭넓게 훑으며 우리 서비스에 필요한 도구를 빠르게 찾아 연결하는 데 능숙하시네요!',
+    desc: '트렌디한 기술과 필요한 도구를 빠르게 찾는 데 능숙하시네요!',
     tags: ['#Fast_Learning', '#Generalist'],
   },
   A: {
-    label: '애자일형',
+    label: 'Agile형',
     copy: '“일단 배포가 우선이야!!”',
-    desc: '애자일형인 당신, 완벽함보다 일단 배포하고 수정하며 유저의 반응을 확인하는 리듬을 즐기시는군요!',
+    desc: '배포하고 수정하며 유저의 반응을 확인하는 리듬을 즐기시는군요!',
     tags: ['#Fast_Delivery', '#MVP'],
   },
   W: {
-    label: '워터풀형',
+    label: 'Waterfall형',
     copy: '“내 사전에 버그는 없다.”',
-    desc: '워터풀형인 당신, 한 번을 배포하더라도 표준과 컨벤션을 철저히 지키며 예외 상황을 완벽하게 차단하고 싶어 하시네요!',
+    desc: '미리 예외 상황을 완벽 차단하고 배포하고 싶어 하시네요!',
     tags: ['#Clean_Architecture', '#Test_Driven'],
   },
   R: {
-    label: '프라이빗형',
-    copy: '“지금은 딥워크 중, 비동기로 남겨주세요.”',
-    desc: '프라이빗형인 당신, 나만의 벙커에서 고도의 집중력을 발휘할 때 최고의 아웃풋이 나오는 타입이군요!',
+    label: 'Private형',
+    copy: '“지금은 딥워크 중.”',
+    desc: '나만의 벙커에서 고도로 집중할 때 최고의 아웃풋이 나오시는군요!',
     tags: ['#Deep_Work', '#Home_Setup'],
   },
   U: {
-    label: '퍼블릭형',
-    copy: '“말씀하신 부분, 지금 바로 대화 가능할까요?”',
-    desc: '퍼블릭형인 당신, 동료와의 즉각적인 소통과 실시간 협업을 통해 문제를 빠르게 해결하며 시너지를 내는 스타일이시네요!',
+    label: 'Public형',
+    copy: '“바로 얘기해볼까요?”',
+    desc: '즉각적인 소통과 협업을 통해 문제를 해결하는 스타일이시네요!',
     tags: ['#Face_to_Face', '#실시간_Sync'],
   },
 };
@@ -81,7 +119,7 @@ export const DSTI_TITLES: Record<string, string> = {
 export const DSTI_STEP_INFO: Record<string, { index: number; title: string }> = {
   intro: { index: 1, title: '나의 개발 성향 알아보기' },
   main: { index: 2, title: 'DSTI 분석' },
-  result: { index: 3, title: '분석 결과' },
+  result: { index: 3, title: '나의 DSTI는?' },
 } as const;
 
 export const DSTI_QUESTIONS = [

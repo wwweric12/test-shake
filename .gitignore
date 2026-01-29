@@ -65,6 +65,8 @@ front/**/dist/
 front/**/build/
 front/**/.env
 front/**/.env.*
+front/mkcert.exe
+front/*.pem
 
 ################################
 # AI (Python)

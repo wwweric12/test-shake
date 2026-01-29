@@ -2,8 +2,7 @@
 
 import { useState } from 'react';
 
-import { removeAccessToken } from '@/utils/token';
-
+// import { removeAccessToken } from '@/utils/token';
 import { MutationCache, QueryCache, QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 
@@ -22,8 +21,8 @@ export function QueryProvider({ children }: { children: React.ReactNode }) {
         queryCache: new QueryCache({
           onError: (error) => {
             if (error.message.includes('401')) {
-              removeAccessToken();
-              window.location.href = '/login';
+              // removeAccessToken();
+              // window.location.href = '/login';
             }
           },
         }),
@@ -31,8 +30,8 @@ export function QueryProvider({ children }: { children: React.ReactNode }) {
         mutationCache: new MutationCache({
           onError: (error) => {
             if (error.message.includes('401')) {
-              removeAccessToken();
-              window.location.href = '/login';
+              // removeAccessToken();
+              // window.location.href = '/login';
             }
           },
         }),
