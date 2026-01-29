@@ -1,6 +1,7 @@
-import { Career, Network, UserProfile } from '@/types/user';
+import { Career, Network, UserInfo } from '@/types/user';
 
-export const INITIAL_SIGNUP_DATA: UserProfile = {
+export const INITIAL_SIGNUP_DATA: UserInfo = {
+  userId: 0,
   nickname: '',
   profileImageUrl: '',
   experience: null as unknown as boolean,
@@ -11,6 +12,7 @@ export const INITIAL_SIGNUP_DATA: UserProfile = {
   networks: [],
   githubId: '',
   selfIntro: '',
+  matchingPercent: 0,
 };
 
 export const STEP_INFO: Record<string, { index: number; title: string }> = {
@@ -43,6 +45,8 @@ export const SIGNUP_MESSAGES: Record<string, string> = {
   ERROR_CAREER_REQUIRED: '현재 상태를 선택해주세요.',
   ERROR_NETWORKS_REQUIRED: '네트워킹 목적을 최소 하나 선택해주세요.',
   ERROR_GITHUB_REQUIRED: 'Github 아이디를 입력해주세요.',
+  ERROR_POSITION_REQUIRED: '직무를 최소 하나 선택해주세요.',
+  ERROR_SKILL_REQUIRED: '스택을 최소 하나 선택해주세요.',
   ERROR_INTRO_REQUIRED: '자기소개를 입력해주세요.',
 } as const;
 
@@ -65,7 +69,7 @@ export const CAREER_LIST: { label: string; value: Career }[] = [
 ];
 
 export const NETWORK_LIST: { label: string; value: Network }[] = [
-  { label: '#커피챗', value: 'coffee_chat' },
-  { label: '#프로젝트', value: 'side_project' },
-  { label: '#스터디', value: 'study_group' },
+  { label: '#커피챗', value: 1 },
+  { label: '#프로젝트', value: 2 },
+  { label: '#스터디', value: 3 },
 ];

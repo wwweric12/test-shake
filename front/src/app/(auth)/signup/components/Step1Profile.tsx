@@ -8,14 +8,14 @@ import {
   SIGNUP_PLACEHOLDERS,
 } from '@/constants/auth';
 import { useCheckNicknameMutation } from '@/services/user/hooks';
-import { UserProfile } from '@/types/user';
+import { UserInfo } from '@/types/user';
 import { getErrorMessage } from '@/utils/error';
 
 import { SelectButton } from './Button';
 
 interface StepProps {
-  data: UserProfile;
-  onUpdate: (data: Partial<UserProfile>) => void;
+  data: UserInfo;
+  onUpdate: (data: Partial<UserInfo>) => void;
   onNext: () => void;
 }
 
@@ -78,6 +78,8 @@ export default function Step1Profile({ data, onUpdate, onNext }: StepProps) {
     if (data.experience === null || data.experience === undefined)
       return alert(SIGNUP_MESSAGES.ERROR_EXPERIENCE_REQUIRED);
     if (!data.career) return alert(SIGNUP_MESSAGES.ERROR_CAREER_REQUIRED);
+    // if (data.positions.length === 0) return alert(SIGNUP_MESSAGES.ERROR_POSITION_REQUIRED);
+    // if (data.techSkills.length === 0) return alert(SIGNUP_MESSAGES.ERROR_SKILL_REQUIRED);
 
     onUpdate({ ...data, nickname: localNickname });
     onNext();
@@ -122,7 +124,7 @@ export default function Step1Profile({ data, onUpdate, onNext }: StepProps) {
                 localNickname.length < 2 ||
                 isNicknameVerified
               }
-              className="bg-custom-lightpurple text-custom-deepgray subhead3 rounded-lg border px-4 py-2 whitespace-nowrap shadow-xs active:bg-gray-50 disabled:opacity-30"
+              className="bg-custom-lightpurple text-custom-deepgray subhead3 rounded-lg px-4 py-2 whitespace-nowrap shadow-xs active:bg-gray-50 disabled:opacity-30"
             >
               중복 확인
             </button>
