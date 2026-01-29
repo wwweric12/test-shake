@@ -79,9 +79,9 @@ export default function Step2Networking({ data, onUpdate, onNext }: StepProps) {
       <div className="space-y-5">
         {/* 1. 네트워킹 목적 */}
         <section>
-          <label className="subhead2 text-custom-realblack mb-1 block">네트워킹 목적</label>
+          <label className="body1 text-custom-realblack block">네트워킹 목적</label>
 
-          <p className="text-custom-deepgray caption3 mb-3">{SIGNUP_MESSAGES.INTRO_GUIDE}</p>
+          <p className="text-custom-deepgray footnote mb-1">{SIGNUP_MESSAGES.INTRO_GUIDE}</p>
 
           <div className="flex flex-wrap gap-2">
             {NETWORK_LIST.map((item) => (
@@ -97,7 +97,7 @@ export default function Step2Networking({ data, onUpdate, onNext }: StepProps) {
 
         {/* 2. Github ID */}
         <section>
-          <label className="subhead2 text-custom-realblack mb-1 block">Github</label>
+          <label className="body1 text-custom-realblack mb-1 block">Github</label>
 
           <div className="relative flex items-center">
             <div className="absolute left-3 z-10">
@@ -141,7 +141,7 @@ export default function Step2Networking({ data, onUpdate, onNext }: StepProps) {
 
         {/* 3. 자기소개 */}
         <section>
-          <label className="subhead2 text-custom-realblack mb-3 block">자기소개</label>
+          <label className="body1 text-custom-realblack mb-3 block">자기소개</label>
 
           <div className="relative">
             <Textarea
@@ -152,7 +152,7 @@ export default function Step2Networking({ data, onUpdate, onNext }: StepProps) {
               maxLength={200}
             />
 
-            <p className="caption3 text-custom-deepgray absolute right-3 bottom-3">
+            <p className="footnote text-custom-deepgray absolute right-3 bottom-3">
               {localSelfIntro.length}/200
             </p>
           </div>

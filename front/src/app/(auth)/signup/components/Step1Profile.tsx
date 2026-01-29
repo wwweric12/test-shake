@@ -54,6 +54,7 @@ export default function Step1Profile({ data, onUpdate, onNext }: StepProps) {
         onUpdate({ nickname: localNickname });
       },
       onError: (error: unknown) => {
+        setVerifiedNickname('');
         setStatus({
           type: 'error',
           message: getErrorMessage(error, SIGNUP_MESSAGES.ERROR_NICKNAME_CHECK_FAILED),
@@ -71,8 +72,6 @@ export default function Step1Profile({ data, onUpdate, onNext }: StepProps) {
   };
 
   const isNicknameVerified = localNickname !== '' && localNickname === verifiedNickname;
-  const showSuccessMessage = status.type === 'success' || isNicknameVerified;
-  const showErrorMessage = status.type === 'error' && !isNicknameVerified;
 
   const handleNextStep = () => {
     if (!isNicknameVerified) return alert(SIGNUP_MESSAGES.ERROR_CHECK_REQUIRED);
@@ -84,21 +83,31 @@ export default function Step1Profile({ data, onUpdate, onNext }: StepProps) {
     onNext();
   };
 
+  const getMessageContent = () => {
+    if (status.type === 'loading') return SIGNUP_MESSAGES.STATUS_LOADING;
+    if (status.type === 'error') return status.message;
+    if (status.type === 'success' || isNicknameVerified) return SIGNUP_MESSAGES.SUCCESS_NICKNAME;
+    return SIGNUP_MESSAGES.NICKNAME_GUIDE;
+  };
+
+  const getMessageColor = () => {
+    if (status.type === 'error') return 'text-custom-red';
+    if (status.type === 'success' || isNicknameVerified) return 'text-custom-blue';
+    return 'text-custom-deepgray';
+  };
+
   return (
     <div className="flex flex-col">
       <div className="space-y-5">
         {/* 1. 닉네임 섹션 */}
         <section>
-          <div>
-            <label className="subhead2 text-custom-realblack mb-1 block">닉네임</label>
-            <p className="caption3 text-custom-deepgray mb-3">{SIGNUP_MESSAGES.NICKNAME_GUIDE}</p>
-          </div>
+          <label className="body1 text-custom-realblack mb-1 block">닉네임</label>
 
-          <div className="mt-3 flex gap-2">
+          <div className="flex gap-2">
             <input
               type="text"
               placeholder={SIGNUP_PLACEHOLDERS.NICKNAME}
-              className={`bg-custom-realwhite footnote flex-1 rounded-lg border px-4 py-2 shadow-xs outline-none focus:border-blue-400 ${
+              className={`bg-custom-realwhite subhead3 flex-1 rounded-lg border px-4 py-2 shadow-xs outline-none focus:border-blue-400 ${
                 status.type === 'error' ? 'border-red-500' : 'border-gray'
               }`}
               value={localNickname}
@@ -107,27 +116,29 @@ export default function Step1Profile({ data, onUpdate, onNext }: StepProps) {
             <button
               type="button"
               onClick={handleCheckNickname}
-              disabled={isPending || status.type === 'loading' || localNickname.length < 2}
-              className="bg-custom-realwhite text-custom-deepgray caption1 rounded-lg border px-4 py-2 whitespace-nowrap shadow-xs active:bg-gray-50 disabled:opacity-50"
+              disabled={
+                isPending ||
+                status.type === 'loading' ||
+                localNickname.length < 2 ||
+                isNicknameVerified
+              }
+              className="bg-custom-lightpurple text-custom-deepgray subhead3 rounded-lg border px-4 py-2 whitespace-nowrap shadow-xs active:bg-gray-50 disabled:opacity-30"
             >
               중복 확인
             </button>
           </div>
 
-          <div className="mt-1 h-5">
-            {status.type !== 'loading' && (showSuccessMessage || showErrorMessage) && (
-              <p
-                className={`caption3 ${showSuccessMessage ? 'text-custom-blue' : 'text-custom-red'}`}
-              >
-                {showSuccessMessage ? SIGNUP_MESSAGES.SUCCESS_NICKNAME : status.message}
-              </p>
-            )}
+          {/* 통합 메시지 영역: 입력 전엔 가이드, 클릭 후엔 결과 */}
+          <div className="mt-2 min-h-5 px-1">
+            <p className={`text-[12px] leading-relaxed transition-colors ${getMessageColor()}`}>
+              {getMessageContent()}
+            </p>
           </div>
         </section>
 
         {/* 2. 실무 개발 경험 */}
         <section>
-          <label className="subhead2 text-custom-realblack mb-1 block">실무 개발 경험</label>
+          <label className="body1 text-custom-realblack mb-1 block">실무 개발 경험</label>
           <div className="flex gap-2">
             {EXPERIENCE_LIST.map((item) => (
               <SelectButton
@@ -142,7 +153,7 @@ export default function Step1Profile({ data, onUpdate, onNext }: StepProps) {
 
         {/* 3. 현재 상태 */}
         <section>
-          <label className="subhead2 text-custom-realblack mb-1 block">현재 상태</label>
+          <label className="body1 text-custom-realblack mb-1 block">현재 상태</label>
           <div className="flex flex-wrap gap-2">
             {CAREER_LIST.map((item) => (
               <SelectButton
@@ -158,22 +169,22 @@ export default function Step1Profile({ data, onUpdate, onNext }: StepProps) {
         {/* 4. 직무/스택 추가 */}
         <div className="space-y-5">
           <section>
-            <label className="subhead2 text-custom-realblack mb-1 block">직무</label>
-            <p className="text-custom-deepgray caption3 mb-3">{SIGNUP_MESSAGES.POSITION_GUIDE}</p>
+            <label className="body1 text-custom-realblack block">직무</label>
+            <p className="text-custom-deepgray footnote mb-2">{SIGNUP_MESSAGES.POSITION_GUIDE}</p>
             <button
               onClick={handleOpenPositionModal}
-              className="subhead1 text-custom-blue border-custom-blue bg-custom-realwhite flex w-full items-center justify-center gap-2 rounded-[10px] border px-2.5 py-3 active:bg-blue-50"
+              className="body2 text-custom-blue border-custom-blue bg-custom-realwhite flex w-full items-center justify-center gap-2 rounded-[10px] border px-2.5 py-3 active:bg-blue-50"
             >
               <span className="text-lg">+</span> 직무 추가
             </button>
           </section>
 
           <section>
-            <label className="subhead2 text-custom-realblack mb-1 block">스택</label>
-            <p className="text-custom-deepgray caption3 mb-3">{SIGNUP_MESSAGES.STACK_GUIDE}</p>
+            <label className="body1 text-custom-realblack block">스택</label>
+            <p className="text-custom-deepgray footnote mb-2">{SIGNUP_MESSAGES.STACK_GUIDE}</p>
             <button
               onClick={handleOpenStackModal}
-              className="subhead1 text-custom-blue border-custom-blue bg-custom-realwhite flex w-full items-center justify-center gap-2 rounded-[10px] border px-2.5 py-3 active:bg-blue-50"
+              className="body2 text-custom-blue border-custom-blue bg-custom-realwhite flex w-full items-center justify-center gap-2 rounded-[10px] border px-2.5 py-3 active:bg-blue-50"
             >
               <span className="text-lg">+</span> 스택 추가
             </button>

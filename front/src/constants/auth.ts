@@ -49,7 +49,7 @@ export const SIGNUP_MESSAGES: Record<string, string> = {
 export const SIGNUP_PLACEHOLDERS = {
   NICKNAME: '닉네임을 입력해주세요',
   GITHUB_ID: 'ID',
-  SELF_INTRO: `나누고 싶은 대화 주제 또는 간단한 자기소개를 적어주세요!\nex) 함께 Spring에 deep dive할 개발자를 찾고 있습니다. 편하게 좋아요 눌러주세요!`,
+  SELF_INTRO: `짧은 자기소개나 함께 나눌 대화 주제를 적어주세요!\nex) 함께 Spring에 deep dive할 개발자를 찾고 있습니다. 편하게 좋아요 눌러주세요!`,
 } as const;
 
 export const EXPERIENCE_LIST = [
