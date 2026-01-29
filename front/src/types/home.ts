@@ -1,10 +1,15 @@
-export interface HomeSummaryResponse {
+import { ApiResponse } from '@/types/common';
+
+export interface HomeSummaryData {
   nickname: string;
-  dsti: string;
   profileImageUrl: string;
+  dsti: string;
   totalUnreadMessages: number;
   totalLikeCount: number;
-  others: NotificationUsers;
+  others: {
+    profileImageUrl: string[];
+    dsti: string[];
+  };
   remainingSwipes: number;
 }
 
@@ -12,3 +17,7 @@ export interface NotificationUsers {
   profileImageUrl: string[];
   dsti: string[];
 }
+
+//Response
+
+export type HomeSummaryResponse = ApiResponse<HomeSummaryData>;

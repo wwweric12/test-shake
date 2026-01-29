@@ -6,12 +6,20 @@ export const authHandlers = [
   // Reissue
   http.post(`${BASE_URL}/user/reissue`, () => {
     return HttpResponse.json({
-      accessToken: 'mock-reissued-token-99999',
+      statusCode: 200,
+      message: 'OK',
+      data: {
+        accessToken: 'mock-reissued-token-99999',
+      },
     });
   }),
 
   // Logout
   http.post(`${BASE_URL}/user/logout`, () => {
-    return new HttpResponse(null, { status: 200 });
+    return HttpResponse.json({
+      statusCode: 200,
+      message: 'OK',
+      data: null,
+    });
   }),
 ];

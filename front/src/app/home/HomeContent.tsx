@@ -7,24 +7,24 @@ import NotificationCard from './components/NotificationCard';
 import ProfileCard from './components/ProfileCard';
 
 export default function HomeContent() {
-  const { data } = useHomeSummary();
+  const { data: summaryData } = useHomeSummary();
 
   return (
     <main className="bg-custom-white px-5 pt-6 pb-32">
       <div>
         <div className="title1 text-custom-realblack mb-5">
           안녕하세요,
-          <span className="text-custom-deeppurple"> {data.nickname}</span> 님!
+          <span className="text-custom-deeppurple"> {summaryData.nickname}</span> 님!
         </div>
       </div>
-      <ProfileCard dsti={data.dsti} profileImageUrl={data.profileImageUrl} />
+      <ProfileCard dsti={summaryData.dsti} profileImageUrl={summaryData.profileImageUrl} />
       <div className="space-y-4">
         <NotificationCard
-          count={data.totalLikeCount}
-          recentImages={data.others.profileImageUrl}
-          dsti={data.others.dsti}
+          count={summaryData.totalLikeCount}
+          recentImages={summaryData.others.profileImageUrl}
+          dsti={summaryData.others.dsti}
         />
-        <MatchingCard remainingSwipes={data.remainingSwipes} />
+        <MatchingCard remainingSwipes={summaryData.remainingSwipes} />
       </div>
     </main>
   );

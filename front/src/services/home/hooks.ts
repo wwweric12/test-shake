@@ -9,5 +9,6 @@ export const useHomeSummary = () => {
     queryFn: homeApi.getSummary,
     staleTime: 1000 * 60,
     gcTime: 1000 * 60 * 5,
+    select: (res) => res.data,
   });
 };

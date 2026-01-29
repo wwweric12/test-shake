@@ -2,7 +2,7 @@ import { QUERY_KEYS } from '@/constants/queryKeys';
 import { userApi } from '@/services/user/api';
 import {
   CheckNicknameResponse,
-  SubmitDstiRequest,
+  DstiRequest,
   UpdateCareerRequest,
   UpdateExperienceRequest,
   UpdateGithubRequest,
@@ -10,7 +10,7 @@ import {
   UpdatePositionsRequest,
   UpdateSelfIntroRequest,
   UpdateTechSkillsRequest,
-  UserInfoRequest,
+  UserProfileRequest,
 } from '@/types/user';
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
@@ -32,7 +32,7 @@ export const useCheckNicknameMutation = () => {
 export const useRegisterUserProfileMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (data: UserInfoRequest) => userApi.registerUserProfile(data),
+    mutationFn: (data: UserProfileRequest) => userApi.registerUserProfile(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.USER.INFO() });
     },
@@ -42,7 +42,7 @@ export const useRegisterUserProfileMutation = () => {
 export const useSubmitDstiMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (data: SubmitDstiRequest) => userApi.submitDsti(data),
+    mutationFn: (data: DstiRequest) => userApi.submitDsti(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.USER.INFO() });
     },
