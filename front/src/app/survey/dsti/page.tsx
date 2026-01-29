@@ -8,6 +8,7 @@ import backIcon from '@/assets/icon/back.svg';
 import { Progress } from '@/components/ui/Progress';
 import { DSTI_STEP_INFO } from '@/constants/dsti';
 import { useFunnel } from '@/hooks/useFunnel';
+import { cn } from '@/lib/utils';
 import { useSubmitDstiMutation } from '@/services/user/hooks';
 
 import DstiCard from './components/DstiCard';
@@ -71,7 +72,7 @@ export default function DstiPage() {
 
   return (
     <div className="flex flex-col">
-      <header className="px-5 py-6">
+      <header className={cn('px-5 pt-6', step === 'intro' ? 'pb-6' : 'pb-0')}>
         <div className="mb-4 flex items-center justify-between">
           {step === 'main' ? (
             <button
@@ -84,12 +85,12 @@ export default function DstiPage() {
             <div className="w-6" />
           )}
 
-          <h1 className="body2 text-custom-realblack">{currentStepInfo.title}</h1>
+          <h1 className="body2 text-custom-realblack font-medium">{currentStepInfo.title}</h1>
           <div className="w-6" />
         </div>
 
         {step === 'main' && (
-          <div className="space-y-2">
+          <div className="space-y-2 pb-4">
             <Progress
               value={((currentQuestionIdx + 1) / 12) * 100}
               className="h-1"
@@ -102,7 +103,7 @@ export default function DstiPage() {
         )}
       </header>
 
-      <main className="px-5">
+      <main className={cn(step === 'result' ? 'px-5 pt-0' : 'px-5')}>
         <Step name="intro">
           <DstiIntro onNext={() => setStep('main')} />
         </Step>
@@ -117,10 +118,7 @@ export default function DstiPage() {
           )}
         </Step>
 
-        <Step name="result">
-          {/* 서버에서 받아온 최종 dsti 코드 전달 */}
-          <DstiResult resultType={finalDsti} />
-        </Step>
+        <Step name="result">{finalDsti && <DstiResult resultType={finalDsti} />}</Step>
       </main>
     </div>
   );

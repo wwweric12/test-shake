@@ -4,92 +4,68 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 
 import { Button } from '@/components/ui/Button';
-import { DSTI_INFO, DSTI_TITLES } from '@/constants/dsti';
-import { cn } from '@/lib/utils';
+import { DSTI_CHARACTERS, DSTI_INFO, DSTI_TITLES } from '@/constants/dsti';
 
 interface DstiResultProps {
-  resultType: string; // 예: "PDAR"
+  resultType: string;
 }
 
 export default function DstiResult({ resultType }: DstiResultProps) {
   const router = useRouter();
-  const chars = resultType.split(''); // ['P', 'D', 'A', 'R']
+  const chars = resultType.split('');
+
+  const characterImg = DSTI_CHARACTERS[resultType];
 
   return (
-    <div className="flex flex-col items-center px-5 pt-12 pb-10">
-      {/* 1. 상단 타이틀 영역 */}
-      <div className="mb-8 text-center">
-        <h1 className="display1 text-custom-realblack mb-2 font-bold tracking-tight">
-          {resultType}
-        </h1>
-        <p className="title2 text-custom-purple font-semibold">
-          {DSTI_TITLES[resultType] || '혁신적인 개발자'}
-        </p>
-      </div>
+    <div className="flex min-h-[calc(100vh-100px)] flex-col items-center">
+      <div className="max-h-[40px] flex-grow" />
 
-      {/* 2. 메인 캐릭터 이미지 */}
-      <div className="relative mb-10 h-[260px] w-[260px]">
-        <Image
-          src={`/images/characters/${resultType}.png`}
-          alt={resultType}
-          fill
-          className="object-contain"
-          priority
-        />
-      </div>
+      <div className="flex w-full flex-col items-center pb-10">
+        <div className="mb-2 text-center">
+          <h1 className="large-title text-custom-realblack tracking-tight">{resultType}</h1>
+          <p className="title1 text-custom-purple">{DSTI_TITLES[resultType]}</p>
+        </div>
 
-      {/* 3. 2x2 결과 분석 카드 그리드 */}
-      <div className="grid w-full grid-cols-2 gap-3">
-        {chars.map((char, i) => {
-          const info = DSTI_INFO[char];
-          if (!info) return null;
+        <div className="border-custom-purple bg-custom-deepgray/5 relative mb-4 flex h-37.5 w-37.5 items-center justify-center overflow-hidden rounded-full border-2">
+          <Image src={characterImg} alt={resultType} fill className="object-contain" priority />
+        </div>
 
-          return (
-            <div
-              key={i}
-              className="border-custom-gray flex flex-col overflow-hidden rounded-2xl border bg-white shadow-sm"
-            >
-              {/* 카드 헤더 (라벨) */}
-              <div className="bg-[#5C667B] py-2 text-center">
-                <span className="caption1 font-bold text-white">{info.label}</span>
-              </div>
+        <div className="grid w-full grid-cols-2 gap-1.5">
+          {chars.map((char, i) => {
+            const info = DSTI_INFO[char];
+            if (!info) return null;
 
-              {/* 카드 바디 */}
-              <div className="flex min-h-[160px] flex-col p-4">
-                {/* 메인 카피 */}
-                <p className="caption1 text-custom-realblack mb-2 leading-tight font-bold whitespace-pre-line">
-                  {info.copy}
-                </p>
+            return (
+              <div
+                key={i}
+                className="border-custom-gray flex flex-col overflow-hidden rounded-2xl border bg-white shadow-sm"
+              >
+                <div className="bg-custom-navy py-2 text-center">
+                  <span className="body1 text-custom-realwhite">{info.label}</span>
+                </div>
 
-                {/* 상세 설명 (작은 글씨) */}
-                <p className="text-custom-deepnavy mb-3 text-[10px] leading-normal break-keep opacity-80">
-                  {info.desc}
-                </p>
-
-                {/* 태그 영역 (map 활용) */}
-                <div className="mt-auto flex flex-wrap gap-1">
-                  {info.tags.map((tag) => (
-                    <span
-                      key={tag}
-                      className="text-custom-purple bg-custom-purple/5 border-custom-purple/10 rounded-md border px-1.5 py-0.5 text-[9px]"
-                    >
-                      {tag}
-                    </span>
-                  ))}
+                <div className="flex flex-col p-1.5 text-center">
+                  <p className="text-custom-realblack mb-1 text-[14px] leading-tight font-bold whitespace-pre-line">
+                    {info.copy}
+                  </p>
+                  <p className="text-custom-deepnavy footout leading-normal break-keep opacity-80">
+                    {info.desc}
+                  </p>
                 </div>
               </div>
-            </div>
-          );
-        })}
+            );
+          })}
+        </div>
+
+        <Button
+          onClick={() => router.push('/home')}
+          className="bg-custom-realblack hover:bg-custom-realblack subhead1 text-custom-realwhite mt-10 h-auto w-full rounded-xl py-4 shadow-md active:scale-[0.98]"
+        >
+          동료 찾으러 가기
+        </Button>
       </div>
 
-      {/* 4. 하단 액션 버튼 */}
-      <Button
-        onClick={() => router.push('/home')}
-        className="bg-custom-realblack hover:bg-custom-realblack subhead1 text-custom-realwhite mt-10 h-auto w-full rounded-xl py-4 shadow-md active:scale-[0.98]"
-      >
-        동료 찾으러 가기
-      </Button>
+      <div className="flex-grow" />
     </div>
   );
 }

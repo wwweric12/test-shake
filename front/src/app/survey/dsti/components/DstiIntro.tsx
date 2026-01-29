@@ -10,7 +10,7 @@ interface DstiIntroProps {
 
 export default function DstiIntro({ onNext }: DstiIntroProps) {
   return (
-    <div className="flex min-h-[calc(100vh-180px)] flex-col px-5">
+    <div className="flex min-h-[calc(100vh-180px)] flex-col">
       <div className="flex-grow" />
 
       <div className="flex flex-col">
@@ -39,8 +39,8 @@ export default function DstiIntro({ onNext }: DstiIntroProps) {
 
         {/* 3. 설명 문구 */}
         <div className="mt-9 space-y-1 text-center">
-          <p className="body2 text-custom-deepnavy">비즈니스 지향성과 협업 스타일 등을 분석해,</p>
-          <p className="body2 text-custom-deepnavy">당신과 딱 맞는 개발 동료를 연결해 드립니다.</p>
+          <p className="body1 text-custom-deepnavy">서비스 지향성과 협업 스타일 등을 분석해,</p>
+          <p className="body1 text-custom-deepnavy">당신과 딱 맞는 개발 동료를 연결해 드립니다.</p>
         </div>
 
         {/* 4. 버튼 */}
