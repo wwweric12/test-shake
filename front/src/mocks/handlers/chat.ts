@@ -80,16 +80,37 @@ export const chatHandlers = [
 
   // Send Message
   http.post(`${BASE_URL}/chat/rooms/:id/messages`, async () => {
-    return new HttpResponse(null, { status: 200 });
+    return HttpResponse.json({
+      statusCode: 200,
+      message: 'OK',
+      data: {
+        messageId: 999,
+        chatRoomId: 1,
+        senderId: 'mock-user-id',
+        senderNickname: '싸피테스트',
+        senderProfileUrl: 'https://picsum.photos/200',
+        content: 'Mock Message',
+        sendTime: new Date().toISOString(),
+        isMine: true,
+      },
+    });
   }),
 
   // Exit
   http.post(`${BASE_URL}/chat/rooms/:id/exit`, () => {
-    return new HttpResponse(null, { status: 200 });
+    return HttpResponse.json({
+      statusCode: 200,
+      message: 'OK',
+      data: null,
+    });
   }),
 
   // Report
   http.post(`${BASE_URL}/chat/rooms/:id/report`, () => {
-    return new HttpResponse(null, { status: 200 });
+    return HttpResponse.json({
+      statusCode: 200,
+      message: 'OK',
+      data: null,
+    });
   }),
 ];

@@ -7,7 +7,7 @@ export const notificationHandlers = [
   // List Notifications
   http.get(`${BASE_URL}/notifications`, () => {
     const mockNotifications: NotificationResponse = {
-      statusCode: '200',
+      statusCode: 200,
       message: 'OK',
       data: [
         {
@@ -28,7 +28,7 @@ export const notificationHandlers = [
   // Accept Notification (Create Chat)
   http.post(`${BASE_URL}/notifications/:id`, () => {
     const response: AcceptNotificationResponse = {
-      statusCode: '200',
+      statusCode: 200,
       message: 'OK',
       data: {
         chatRoomId: 101,
@@ -39,6 +39,10 @@ export const notificationHandlers = [
 
   // Target Profile (Placeholder)
   http.get(`${BASE_URL}/notifications/target-user-profile`, () => {
-    return HttpResponse.json({ data: 'mock-profile-data' });
+    return HttpResponse.json({
+      statusCode: 200,
+      message: 'OK',
+      data: 'mock-profile-data',
+    });
   }),
 ];

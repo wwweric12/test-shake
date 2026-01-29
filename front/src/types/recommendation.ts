@@ -1,30 +1,26 @@
-import { RecommendationCard } from '@/types/user';
+import { ApiEmptyResponse, ApiResponse } from '@/types/common';
 
-export interface CandidateResponse {
-  statusCode: number;
-  message: string;
-  data: {
-    exposureId: number;
-    remainingCardCnt: number;
-    quotaDate: string;
-    cards: RecommendationCard[];
-  };
-}
+import { UserInfo } from './user';
 
 export type ActionType = 'LIKE' | 'PASS';
 
+export interface CandidateData {
+  exposureId: number;
+  remainingCardCnt: number;
+  quotaDate: string;
+  cards: UserInfo[];
+}
+
+//Request
 export interface ActionRequest {
   exposureId: number;
   userId: number;
   actionType: ActionType;
 }
 
-export interface ActionResponse {
-  statusCode: number;
-  message: string;
-}
+//Response
+export type CandidateResponse = ApiResponse<CandidateData>;
 
-export interface ResetPreferencesResponse {
-  statusCode: number;
-  message: string;
-}
+export type ActionResponse = ApiEmptyResponse;
+
+export type ResetPreferencesResponse = ApiEmptyResponse;

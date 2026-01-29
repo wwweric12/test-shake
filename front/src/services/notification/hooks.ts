@@ -1,6 +1,6 @@
 import { QUERY_KEYS } from '@/constants/queryKeys';
 import { notificationApi } from '@/services/notification/api';
-import { AcceptNotificationRequest } from '@/types/notification';
+import { AcceptNotificationRequest, RejectNotificationRequest } from '@/types/notification';
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
@@ -27,7 +27,7 @@ export const useAcceptNotificationMutation = () => {
       data,
     }: {
       notificationId: number;
-      data: AcceptNotificationRequest;
+      data: AcceptNotificationRequest | RejectNotificationRequest;
     }) => notificationApi.acceptNotification(notificationId, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.NOTIFICATION.LIST() });

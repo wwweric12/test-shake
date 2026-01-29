@@ -1,3 +1,5 @@
+import { ApiEmptyResponse, ApiResponse } from '@/types/common';
+
 export interface ChatRoom {
   chatRoomId: number;
   otherUserNickname: string;
@@ -7,11 +9,7 @@ export interface ChatRoom {
   unreadCount: number;
 }
 
-export interface ChatRoomsResponse {
-  statusCode: number;
-  message: string;
-  data: ChatRoom[];
-}
+export type ChatRoomsResponse = ApiResponse<ChatRoom[]>;
 
 export interface ChatRoomMessage {
   content: number; // Following api.md "content": 1
@@ -35,16 +33,17 @@ export interface ChatMessage {
   isMine: boolean; // 내가 보낸 메시지 여부
 }
 
-export interface ChatMessagesResponse {
-  statusCode: number;
-  message: string;
-  data: ChatMessage[];
-}
+export type ChatMessagesResponse = ApiResponse<ChatMessage[]>;
 
 export interface ReportChatRequest {
   chatRoomId: number;
   reason: string;
 }
+
+export type ExitResponse = ApiEmptyResponse;
+export type ReportResponse = ApiEmptyResponse;
+
+// ✅ 메시지 전송 요청 타입 추가
 
 // ✅ 메시지 전송 요청 타입 추가
 export interface SendMessageRequest {
@@ -52,8 +51,4 @@ export interface SendMessageRequest {
   content: string;
 }
 
-export interface SendMessageResponse {
-  statusCode: number;
-  message: string;
-  data: ChatMessage;
-}
+export type SendMessageResponse = ApiResponse<ChatMessage>;
