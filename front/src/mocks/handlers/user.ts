@@ -9,9 +9,9 @@ const MOCK_USER_PROFILE: UserProfile = {
   experience: true,
   career: 'employed',
   dsti: 'PDAR',
-  positions: ['frontend_developer', 'backend_developer'],
-  techSkills: ['react', 'typescript', 'java', 'spring_framework'],
-  networks: ['coffee_chat', 'study_group'],
+  positions: [1, 2],
+  techSkills: [1, 2],
+  networks: [1, 2],
   githubId: 'mock-github-id',
   selfIntro: '안녕하세요! 프론트엔드 개발자입니다.',
 };
