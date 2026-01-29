@@ -2,7 +2,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 
 import right_vector from '@/assets/icon/right_vector.svg';
-import { DSTI_INFO, DSTI_TITLES } from '@/constants/dsti';
+import { DSTI_CHARACTERS, DSTI_INFO, DSTI_TITLES } from '@/constants/dsti';
 
 interface ProfileCardProps {
   dsti: string;
@@ -10,19 +10,15 @@ interface ProfileCardProps {
 }
 
 export default function ProfileCard({ dsti, profileImageUrl }: ProfileCardProps) {
+  const characterImg = profileImageUrl || DSTI_CHARACTERS[dsti];
   const dstiTitle = DSTI_TITLES[dsti] || '알 수 없는 유형';
 
   return (
     <div className="mb-8 flex gap-2">
       <div className="flex min-w-[128px] flex-col items-center justify-center rounded-[10px] bg-white py-[18px]">
-        <Image
-          src={profileImageUrl}
-          alt="profile"
-          width={70}
-          height={70}
-          className="bg-custom-deeppurple mb-3 rounded-full"
-          priority
-        />
+        <div className="bg-custom-deepgray/10 relative mb-3 h-[70px] w-[70px] overflow-hidden rounded-full">
+          <Image src={characterImg} alt="profile-img" fill className="object-contain" priority />
+        </div>
         <p className="title1 text-custom-realblack">{dsti}</p>
         <p className="body1 text-custom-realblack">[ {dstiTitle} ]</p>
       </div>
@@ -33,10 +29,10 @@ export default function ProfileCard({ dsti, profileImageUrl }: ProfileCardProps)
               const info = DSTI_INFO[char] || { label: char, desc: '' };
               return (
                 <div key={`${char}-${index}`} className="flex flex-col items-start">
-                  <span className="footer1 text-custom-realwhite bg-custom-blue mb-0.5 rounded-[30px] px-2 py-[1px]">
+                  <span className="text-custom-realwhite bg-custom-blue footout mb-0.5 rounded-[30px] px-2 py-[1px]">
                     {info.label}
                   </span>
-                  <span className="caption1 text-custom-blue">{info.desc}</span>
+                  <span className="footout text-custom-blue">{info.copy}</span>
                 </div>
               );
             })}

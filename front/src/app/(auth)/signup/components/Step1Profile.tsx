@@ -48,15 +48,10 @@ export default function Step1Profile({ data, onUpdate, onNext }: StepProps) {
     setStatus({ type: 'loading', message: SIGNUP_MESSAGES.STATUS_LOADING });
 
     checkNickname(localNickname, {
-      onSuccess: (response: { possible: boolean }) => {
-        if (response.possible) {
-          setStatus({ type: 'success', message: SIGNUP_MESSAGES.SUCCESS_NICKNAME });
-          setVerifiedNickname(localNickname);
-          onUpdate({ nickname: localNickname });
-        } else {
-          setStatus({ type: 'error', message: SIGNUP_MESSAGES.ERROR_NICKNAME_DUPLICATE });
-          setVerifiedNickname('');
-        }
+      onSuccess: () => {
+        setStatus({ type: 'success', message: SIGNUP_MESSAGES.SUCCESS_NICKNAME });
+        setVerifiedNickname(localNickname);
+        onUpdate({ nickname: localNickname });
       },
       onError: (error: unknown) => {
         setStatus({

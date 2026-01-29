@@ -19,7 +19,11 @@ export default function HomeContent() {
       </div>
       <ProfileCard dsti={data.dsti} profileImageUrl={data.profileImageUrl} />
       <div className="space-y-4">
-        <NotificationCard count={data.totalLikeCount} recentImages={data.recentLikeImages} />
+        <NotificationCard
+          count={data.totalLikeCount}
+          recentImages={data.others.profileImageUrl}
+          dsti={data.others.dsti}
+        />
         <MatchingCard remainingSwipes={data.remainingSwipes} />
       </div>
     </main>

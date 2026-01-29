@@ -8,10 +8,10 @@ const MOCK_USER_PROFILE: UserProfile = {
   profileImageUrl: 'https://picsum.photos/200',
   experience: true,
   career: 'employed',
-  dsti: 'I S J T',
-  positions: ['frontend_developer', 'backend_developer'],
-  techSkills: ['react', 'typescript', 'java', 'spring_framework'],
-  networks: ['coffee_chat', 'study_group'],
+  dsti: 'PDAR',
+  positions: [1, 2],
+  techSkills: [1, 2],
+  networks: [1, 2],
   githubId: 'mock-github-id',
   selfIntro: '안녕하세요! 프론트엔드 개발자입니다.',
 };
@@ -39,13 +39,39 @@ export const userHandlers = [
   http.post(`${BASE_URL}/user/nickname`, async ({ request }) => {
     const { nickname } = (await request.json()) as { nickname: string };
     const isAvailable = nickname !== '중복된닉네임';
-    return HttpResponse.json({ possible: isAvailable });
+    if (isAvailable) {
+      return HttpResponse.json({ status: 200 });
+    } else {
+      return HttpResponse.error();
+    }
   }),
 
   // Submit DSTI
   http.post(`${BASE_URL}/user/dsti`, () => {
-    return HttpResponse.json({ dsti: 'I S J T' });
+    return HttpResponse.json({ dsti: 'PDAR' });
   }),
+
+  // // Submit DSTI (API 수정 후 이걸로 교체해서 테스트)
+  // http.post(`${BASE_URL}/user/dsti`, async ({ request }) => {
+  //   const { result } = (await request.json()) as { result: number[] };
+
+  //   // result: [P점수, D점수, A점수, R점수]
+  //   // 각 점수가 2점 이상이면 왼쪽 타입(P, D, A, R), 미만이면 오른쪽 타입(E, B, W, U)
+  //   const dstiCode = [
+  //     result[0] >= 2 ? 'P' : 'E',
+  //     result[1] >= 2 ? 'D' : 'B',
+  //     result[2] >= 2 ? 'A' : 'W',
+  //     result[3] >= 2 ? 'R' : 'U',
+  //   ].join('');
+
+  //   return HttpResponse.json({
+  //     statusCode: 200,
+  //     message: 'OK',
+  //     data: {
+  //       dsti: dstiCode,
+  //     },
+  //   });
+  // }),
 
   // Get User Cards
   http.get(`${BASE_URL}/user/card`, () => {

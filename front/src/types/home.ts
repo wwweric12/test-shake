@@ -4,6 +4,11 @@ export interface HomeSummaryResponse {
   profileImageUrl: string;
   totalUnreadMessages: number;
   totalLikeCount: number;
-  recentLikeImages: string[];
+  others: NotificationUsers;
   remainingSwipes: number;
+}
+
+export interface NotificationUsers {
+  profileImageUrl: string[];
+  dsti: string[];
 }
