@@ -40,12 +40,12 @@ export const recommendationHandlers = [
 
     const fetchCount = Math.min(limit, TOTAL_LIMIT - totalFetched);
     const newCards = Array.from({ length: fetchCount }, (_, i) => ({
-      user: {
-        ...MOCK_CANDIDATE,
-        nickname: `추천후보${totalFetched + i + 1}`,
-        githubId: `candidate-github-${totalFetched + i + 1}`,
-        profileImageUrl: `https://picsum.photos/400?random=${totalFetched + i + 1}`,
-      },
+      ...MOCK_CANDIDATE,
+      userId: totalFetched + i + 1,
+      nickname: `추천후보${totalFetched + i + 1}`,
+      githubId: `candidate-github-${totalFetched + i + 1}`,
+      profileImageUrl: `https://picsum.photos/400?random=${totalFetched + i + 1}`,
+      matchingPercent: Math.floor(Math.random() * 100),
     }));
 
     totalFetched += fetchCount;
@@ -55,6 +55,8 @@ export const recommendationHandlers = [
       message: 'OK',
       data: {
         exposureId: Date.now(),
+        remainingCardCnt: 12,
+        quotaDate: new Date().toISOString().split('T')[0],
         cards: newCards,
       },
     };

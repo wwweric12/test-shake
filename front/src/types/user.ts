@@ -21,6 +21,11 @@ export interface UserProfile extends UserInfoRequest {
   dsti: string;
 }
 
+export interface RecommendationCard extends UserProfile {
+  userId: number;
+  matchingPercent: number;
+}
+
 export interface UserCard {
   user: UserProfile;
 }
