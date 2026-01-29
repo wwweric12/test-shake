@@ -10,9 +10,9 @@ const MOCK_CANDIDATE: UserProfile = {
   experience: true,
   career: 'student',
   dsti: 'PDAR',
-  positions: ['mobile_app_developer', 'backend_developer', 'data_ai_engineer'],
-  techSkills: ['swift_language', 'kotlin', 'flutter', 'react_native', 'python'],
-  networks: ['study_group', 'coffee_chat', 'side_project'],
+  positions: [6, 2, 3],
+  techSkills: [34, 35, 36, 37, 9],
+  networks: [2, 1, 3],
   githubId: 'candidate-github',
   selfIntro:
     '열심히 하겠습니다. 열심히 하겠습니다.열심히 하겠습니다. 열심히 하겠습니다.열심히 하겠습니다. 열심히 하겠습니다.열심히 하겠습니다. 열심히 하겠습니다.열심히 하겠습니다. 열심히 하겠습니다.열심히 하겠습니다. 열심히 하겠습니다.열심히 하겠습니다. 열심히 하겠습니다.열심히 하겠습니다. 열심히 하겠습니다.열심히 하겠습니다. 열심히 하겠습니다.열심히 하겠습니다. 열심히 하겠습니다.열심히 하겠습니다. 열심히 하겠습니다.열심히 하겠습니다. 열심히 하겠습니다.열심히 하겠습니다. 열심히 하겠습니다.',
