@@ -22,13 +22,6 @@ export const useUserProfile = () => {
   });
 };
 
-export const useUserCards = () => {
-  return useQuery({
-    queryKey: QUERY_KEYS.USER.CARD(),
-    queryFn: userApi.getUserCards,
-  });
-};
-
 export const useCheckNicknameMutation = () => {
   return useMutation({
     mutationFn: (nickname: string): Promise<CheckNicknameResponse> =>
