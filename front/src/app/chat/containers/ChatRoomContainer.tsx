@@ -10,12 +10,15 @@ interface ChatRoomContainerProps {
 }
 
 export function ChatRoomContainer({ roomId, roomName, onBack }: ChatRoomContainerProps) {
-  const currentUserId = 'mock-user-1';
+  const { messages, sendMessage, isLoading } = useChatRoom({ roomId });
 
-  const { messages, sendMessage } = useChatRoom({
-    roomId,
-    currentUserId,
-  });
+  if (isLoading) {
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <p className="text-gray-500">메시지 불러오는 중...</p>
+      </div>
+    );
+  }
 
   return (
     <ChatRoomView roomName={roomName} messages={messages} onSend={sendMessage} onBack={onBack} />

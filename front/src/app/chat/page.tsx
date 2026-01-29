@@ -4,21 +4,22 @@ import { useState } from 'react';
 
 import { RoomList } from '@/app/chat/components/RoomList';
 import { ChatRoomContainer } from '@/app/chat/containers/ChatRoomContainer';
-import { useChatRooms } from '@/app/chat/hooks/useChatRooms';
-import type { ChatRoom } from '@/app/chat/types/models';
 import BottomNavigation from '@/components/common/BottomNavigation';
+import { useChatRooms } from '@/services/chat/hooks';
+import { ChatRoom } from '@/types/chat';
 
 export default function ChatPage() {
   const [selectedRoom, setSelectedRoom] = useState<ChatRoom | null>(null);
-  const { rooms, isLoading, error } = useChatRooms();
+
+  const { data, isLoading, isError } = useChatRooms();
 
   if (!selectedRoom) {
     return (
       <div>
         <RoomList
-          rooms={rooms}
+          rooms={data?.data ?? []}
           isLoading={isLoading}
-          error={error}
+          error={isError}
           onSelectRoom={setSelectedRoom}
         />
         <BottomNavigation />
@@ -28,8 +29,8 @@ export default function ChatPage() {
 
   return (
     <ChatRoomContainer
-      roomId={selectedRoom.id}
-      roomName={selectedRoom.name}
+      roomId={selectedRoom.chatRoomId}
+      roomName={selectedRoom.otherUserNickname}
       onBack={() => setSelectedRoom(null)}
     />
   );

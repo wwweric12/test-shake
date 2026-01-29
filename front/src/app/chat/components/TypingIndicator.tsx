@@ -4,6 +4,7 @@ interface TypingIndicatorProps {
   username: string;
 }
 
+//소켓 연결 후, 사용가능시 사용할 입력중 ... 말풍선
 export function TypingIndicator({ username }: TypingIndicatorProps) {
   return (
     <motion.div

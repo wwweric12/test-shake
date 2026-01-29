@@ -1,47 +1,33 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback } from 'react';
 
-import { chatBus } from '@/app/chat/events/chatEventBus';
-import { messageService } from '@/app/chat/services/messageService';
-import { ChatMessage } from '@/app/chat/types/models';
+import { useChatMessages } from '@/services/chat/hooks';
 
-interface Params {
+interface UseChatRoomParams {
   roomId: number;
-  currentUserId: string;
+  enabled?: boolean;
 }
 
-export function useChatRoom({ roomId, currentUserId }: Params) {
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
+/**
+ * 채팅방 메시지 조회 및 전송을 담당하는 Hook
+ * 소켓연결 확장 이전버젼
+ */
+export function useChatRoom({ roomId, enabled = true }: UseChatRoomParams) {
+  // 메시지 목록 조회
+  const { data, isLoading, error } = useChatMessages(roomId, enabled);
 
-  // 1️⃣ 초기 메시지 (REST)
-  useEffect(() => {
-    messageService.fetch(roomId).then(setMessages);
-  }, [roomId]);
+  // 메시지 전송
+  const sendMessage = useCallback(async (content: string) => {
+    if (!content.trim()) return;
 
-  // 2️⃣ 실시간 수신 (mitt)
-  useEffect(() => {
-    const handler = (msg: ChatMessage) => {
-      if (msg.roomId === roomId) {
-        setMessages((prev) => [...prev, msg]);
-      }
-    };
+    //TODO: 소켓 연결
+  }, []);
 
-    chatBus.on('message', handler);
-    return () => chatBus.off('message', handler);
-  }, [roomId]);
-
-  // 3️⃣ 전송
-  const sendMessage = useCallback(
-    async (content: string) => {
-      await messageService.send({
-        roomId,
-        content,
-        senderId: currentUserId,
-      });
-    },
-    [roomId, currentUserId],
-  );
-
-  return { messages, sendMessage };
+  return {
+    messages: data?.data ?? [],
+    isLoading,
+    error,
+    sendMessage,
+  };
 }

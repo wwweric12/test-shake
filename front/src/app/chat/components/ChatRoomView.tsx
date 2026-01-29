@@ -3,14 +3,13 @@
 import { FormEvent, useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 
-import { ChatMessage } from '@/app/chat/types/models';
 import BackIcon from '@/assets/icon/back.svg';
 import FileIcon from '@/assets/icon/file-code.svg';
 import SendIcon from '@/assets/icon/paper-plane-right.svg';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
-
-import { MESSAGE_MAX_LENGTH } from '../types/constants';
+import { ChatMessage } from '@/types/chat';
+import { MESSAGE_MAX_LENGTH } from '@/types/message';
 
 import { LeaveRoomButton } from './LeaveRoomButton';
 import { ReportButton } from './ReportButton';
@@ -20,9 +19,16 @@ interface ChatRoomViewProps {
   onSend: (message: string) => void;
   onBack?: () => void;
   roomName?: string;
+  isSending?: boolean;
 }
 
-export function ChatRoomView({ messages, onSend, onBack, roomName = '채팅방' }: ChatRoomViewProps) {
+export function ChatRoomView({
+  messages,
+  onSend,
+  onBack,
+  roomName = '채팅방',
+  isSending = false,
+}: ChatRoomViewProps) {
   const [input, setInput] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -32,19 +38,21 @@ export function ChatRoomView({ messages, onSend, onBack, roomName = '채팅방' 
   }, [messages]);
 
   const formatTime = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleTimeString('ko-KR', {
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: true, // 오후/오전 표시
-    });
+    try {
+      const date = new Date(dateString);
+      return date.toLocaleTimeString('ko-KR', {
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true,
+      });
+    } catch {
+      return '';
+    }
   };
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!input.trim()) return;
-    onSend(input);
-    setInput('');
+    // TODO: 웹소켓 연결
   };
 
   return (
@@ -53,7 +61,7 @@ export function ChatRoomView({ messages, onSend, onBack, roomName = '채팅방' 
         {/* 왼쪽 영역 */}
         <div className="flex items-center gap-2">
           {onBack && (
-            <button onClick={onBack} className="p-1">
+            <button onClick={onBack} className="p-1" aria-label="뒤로가기">
               <Image src={BackIcon} alt="뒤로가기" width={10} height={10} />
             </button>
           )}
@@ -68,23 +76,46 @@ export function ChatRoomView({ messages, onSend, onBack, roomName = '채팅방' 
       </header>
 
       <div className="flex-1 overflow-y-auto px-5 py-3">
-        {messages.map((msg) => (
-          <div key={msg.id} className={`mb-2 flex ${msg.isMine ? 'justify-end' : 'justify-start'}`}>
+        {messages.length === 0 ? (
+          <div className="flex h-full items-center justify-center">
+            <p className="text-gray-400">메시지가 없습니다</p>
+          </div>
+        ) : (
+          messages.map((msg) => (
             <div
-              className={`max-w-[70%] rounded-lg px-3 py-2 shadow-md ${
-                msg.isMine ? 'bg-custom-blue text-white' : 'bg-white text-gray-800'
-              }`}
+              key={msg.messageId}
+              className={`mb-2 flex ${msg.isMine ? 'justify-end' : 'justify-start'}`}
             >
-              <div className="body2">{msg.content}</div>
-              {/* <div>{msg.createdAt}</div> */}
+              {/* 상대방 프로필 이미지 */}
+              {!msg.isMine && msg.senderProfileUrl && (
+                <div className="relative mr-2 h-10 w-10 flex-shrink-0 overflow-hidden rounded-full">
+                  <Image
+                    src={msg.senderProfileUrl}
+                    alt="상대방 프로필"
+                    fill
+                    className="object-cover"
+                  />
+                </div>
+              )}
+
+              {/* 메시지 버블 */}
               <div
-                className={`footnote text-right opacity-70 ${msg.isMine ? 'text-white' : 'text-custom-deepgray'}`}
+                className={`max-w-[70%] rounded-lg px-3 py-2 shadow-md ${
+                  msg.isMine ? 'bg-custom-blue text-white' : 'bg-white text-gray-800'
+                }`}
               >
-                {formatTime(msg.createdAt)}
+                <div className="body2 break-words">{msg.content}</div>
+                <div
+                  className={`footnote text-right opacity-70 ${
+                    msg.isMine ? 'text-white' : 'text-custom-deepgray'
+                  }`}
+                >
+                  {formatTime(msg.sendTime)}
+                </div>
               </div>
             </div>
-          </div>
-        ))}
+          ))
+        )}
         <div ref={messagesEndRef} />
       </div>
 
@@ -92,17 +123,24 @@ export function ChatRoomView({ messages, onSend, onBack, roomName = '채팅방' 
         onSubmit={handleSubmit}
         className="bg-custom-blue sticky bottom-0 flex items-center gap-2 p-2"
       >
-        <Button type="button" size="icon" className="bg-custom-blue">
+        <Button type="button" size="icon" className="bg-custom-blue" disabled={isSending}>
           <Image src={FileIcon} alt="파일 업로드" width={20} height={20} />
         </Button>
+
         <Input
           value={input}
           onChange={(e) => setInput(e.target.value)}
           placeholder="메시지를 입력하세요"
           maxLength={MESSAGE_MAX_LENGTH}
+          disabled={isSending}
         />
 
-        <Button type="submit" size="icon" className="bg-custom-blue">
+        <Button
+          type="submit"
+          size="icon"
+          className="bg-custom-blue"
+          disabled={!input.trim() || isSending}
+        >
           <Image src={SendIcon} alt="전송" width={20} height={20} />
         </Button>
       </form>
