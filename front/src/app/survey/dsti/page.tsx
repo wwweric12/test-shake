@@ -51,7 +51,7 @@ export default function DstiPage() {
         { result: resultScores },
         {
           onSuccess: (response) => {
-            // 추후 API 명세에 맞춰서 수정하기
+            // API 수정 후 response.data.dsti로 변경
             setFinalDsti(response.dsti);
             setStep('result');
           },
@@ -111,7 +111,7 @@ export default function DstiPage() {
         <Step name="main">
           {isPending ? (
             <div className="flex h-[60vh] flex-col items-center justify-center">
-              <p className="body1 text-custom-purple animate-pulse font-medium">분석 중...</p>
+              <p className="body1 text-custom-purple animate-pulse">분석 중...</p>
             </div>
           ) : (
             <DstiCard index={currentQuestionIdx} onSelect={handleSelect} />

@@ -48,8 +48,30 @@ export const userHandlers = [
 
   // Submit DSTI
   http.post(`${BASE_URL}/user/dsti`, () => {
-    return HttpResponse.json({ dsti: 'EBWU' });
+    return HttpResponse.json({ dsti: 'PDAR' });
   }),
+
+  // // Submit DSTI (API 수정 후 이걸로 교체해서 테스트)
+  // http.post(`${BASE_URL}/user/dsti`, async ({ request }) => {
+  //   const { result } = (await request.json()) as { result: number[] };
+
+  //   // result: [P점수, D점수, A점수, R점수]
+  //   // 각 점수가 2점 이상이면 왼쪽 타입(P, D, A, R), 미만이면 오른쪽 타입(E, B, W, U)
+  //   const dstiCode = [
+  //     result[0] >= 2 ? 'P' : 'E',
+  //     result[1] >= 2 ? 'D' : 'B',
+  //     result[2] >= 2 ? 'A' : 'W',
+  //     result[3] >= 2 ? 'R' : 'U',
+  //   ].join('');
+
+  //   return HttpResponse.json({
+  //     statusCode: 200,
+  //     message: 'OK',
+  //     data: {
+  //       dsti: dstiCode,
+  //     },
+  //   });
+  // }),
 
   // Get User Cards
   http.get(`${BASE_URL}/user/card`, () => {
