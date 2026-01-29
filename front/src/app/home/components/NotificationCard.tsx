@@ -2,13 +2,15 @@ import Image from 'next/image';
 import Link from 'next/link';
 
 import chat_dashed from '@/assets/icon/chat-dashed.svg';
+import { DSTI_CHARACTERS } from '@/constants/dsti';
 
 interface NotificationCardProps {
   count: number;
   recentImages: string[];
+  dsti: string[];
 }
 
-export default function NotificationCard({ count, recentImages }: NotificationCardProps) {
+export default function NotificationCard({ count, recentImages, dsti }: NotificationCardProps) {
   const hasNotifications = count > 0;
 
   return (
@@ -20,19 +22,21 @@ export default function NotificationCard({ count, recentImages }: NotificationCa
               {recentImages.slice(0, 3).map((img, i) => (
                 <Image
                   key={i}
-                  src={img}
+                  src={img || DSTI_CHARACTERS[dsti[i]]}
                   width={48}
                   height={48}
                   alt="profile"
                   className="rounded-full border-2 border-white object-cover"
                 />
               ))}
+
               {count > 3 && (
                 <div className="flex h-12 w-12 items-center justify-center rounded-full border-2 border-white bg-gray-100 text-xs text-gray-500">
                   +{count - 3}
                 </div>
               )}
             </div>
+
             <p className="body2 text-custom-realblack">새로운 대화 요청 확인 </p>
           </div>
         ) : (
@@ -40,6 +44,7 @@ export default function NotificationCard({ count, recentImages }: NotificationCa
             <div className="mb-2 flex items-center">
               <Image src={chat_dashed} width={48} height={48} alt="profile" />
             </div>
+
             <p className="body2 text-custom-darkgray">새로운 대화 요청 없음</p>
           </div>
         )}

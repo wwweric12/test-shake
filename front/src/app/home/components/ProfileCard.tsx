@@ -16,7 +16,7 @@ export default function ProfileCard({ dsti, profileImageUrl }: ProfileCardProps)
   return (
     <div className="mb-8 flex gap-2">
       <div className="flex min-w-[128px] flex-col items-center justify-center rounded-[10px] bg-white py-[18px]">
-        <div className="bg-custom-deepgray/10 border-custom-purple relative mb-3 h-[70px] w-[70px] overflow-hidden rounded-full border-2">
+        <div className="bg-custom-deepgray/10 relative mb-3 h-[70px] w-[70px] overflow-hidden rounded-full">
           <Image src={characterImg} alt="profile-img" fill className="object-contain" priority />
         </div>
         <p className="title1 text-custom-realblack">{dsti}</p>

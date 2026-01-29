@@ -11,7 +11,10 @@ export const homeHandlers = [
       profileImageUrl: '',
       totalUnreadMessages: 5,
       totalLikeCount: 12,
-      recentLikeImages: ['https://picsum.photos/100', 'PDAR'],
+      others: {
+        profileImageUrl: ['https://picsum.photos/100', ''],
+        dsti: ['EDAU', 'PDAR'],
+      },
       remainingSwipes: 10,
     };
     return HttpResponse.json(mockSummary);
