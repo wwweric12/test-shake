@@ -48,7 +48,7 @@ export const userHandlers = [
 
   // Submit DSTI
   http.post(`${BASE_URL}/user/dsti`, () => {
-    return HttpResponse.json({ dsti: 'PDAR' });
+    return HttpResponse.json({ dsti: 'EBWU' });
   }),
 
   // Get User Cards
