@@ -9,14 +9,14 @@ import { Checkbox } from '@/components/ui/Checkbox';
 import { Input } from '@/components/ui/Input';
 import { Textarea } from '@/components/ui/Textarea';
 import { NETWORK_LIST, SIGNUP_MESSAGES, SIGNUP_PLACEHOLDERS } from '@/constants/auth';
-import { Network, UserProfile } from '@/types/user';
+import { Network, UserInfo, UserProfile } from '@/types/user';
 
 import { SelectButton } from './Button';
 
 interface StepProps {
-  data: UserProfile;
-  onUpdate: (data: Partial<UserProfile>) => void;
-  onNext: () => void;
+  data: UserInfo;
+  onUpdate: (data: Partial<UserInfo>) => void;
+  onNext: (finalData: UserInfo) => void;
   onPrev: () => void;
 }
 
@@ -53,25 +53,27 @@ export default function Step2Networking({ data, onUpdate, onNext }: StepProps) {
     setLocalSelfIntro(e.target.value.slice(0, 200));
   };
 
+  // Step 2 유효성 검사 로직
+  const isFormValid =
+    data.networks &&
+    data.networks.length > 0 &&
+    (noGithub || localGithubId.trim().length > 0) &&
+    localSelfIntro.trim().length > 0;
+
   const handleNextStep = () => {
-    if (!data.networks || data.networks.length === 0) {
-      return alert(SIGNUP_MESSAGES.ERROR_NETWORKS_REQUIRED);
-    }
-    if (!noGithub && !localGithubId.trim()) {
-      return alert(SIGNUP_MESSAGES.ERROR_GITHUB_REQUIRED);
-    }
-    if (!localSelfIntro.trim()) {
-      return alert(SIGNUP_MESSAGES.ERROR_INTRO_REQUIRED);
-    }
+    if (!isFormValid) return;
 
     const finalGithubId = noGithub ? '' : localGithubId;
 
-    onUpdate({
+    const finalData = {
       ...data,
       githubId: finalGithubId,
       selfIntro: localSelfIntro,
-    });
-    onNext();
+    };
+
+    onUpdate(finalData);
+
+    onNext(finalData);
   };
 
   return (
@@ -88,7 +90,7 @@ export default function Step2Networking({ data, onUpdate, onNext }: StepProps) {
               <SelectButton
                 key={item.value}
                 label={item.label}
-                isSelected={data.networks?.includes(item.value)}
+                isSelected={(data.networks || []).includes(item.value)}
                 onClick={() => handleNetworkClick(item.value)}
               />
             ))}
@@ -101,7 +103,13 @@ export default function Step2Networking({ data, onUpdate, onNext }: StepProps) {
 
           <div className="relative flex items-center">
             <div className="absolute left-3 z-10">
-              <Image src={LinkIcon} alt="link" width={18} height={18} style={{ height: 'auto' }} />
+              <Image
+                src={LinkIcon}
+                alt="link"
+                width={18}
+                height={18}
+                style={{ width: 'auto', height: 'auto' }}
+              />
             </div>
 
             <div
@@ -159,9 +167,10 @@ export default function Step2Networking({ data, onUpdate, onNext }: StepProps) {
         </section>
       </div>
 
-      <div className="mt-20 mb-10">
+      <div className="mt-[20px] pb-10">
         <Button
           onClick={handleNextStep}
+          disabled={!isFormValid}
           className="bg-custom-realblack hover:bg-custom-realblack subhead1 text-custom-realwhite h-auto w-full rounded-[6px] px-3 py-4 shadow-[0_4px_10px_rgba(0,0,0,0.15)] active:scale-[0.98]"
         >
           다음으로

@@ -2,14 +2,14 @@
 
 import { useEffect, useRef, useState } from 'react';
 
-import { RecommendationCard } from '@/types/user';
+import { UserInfo } from '@/types/user';
 import { clamp } from '@/utils/math';
 
 import SwipingCard from './SwipingCard';
 
 interface SwipeDeckProps {
-  cards: RecommendationCard[];
-  onSwipe: (direction: 'left' | 'right', card: RecommendationCard) => void;
+  cards: UserInfo[];
+  onSwipe: (direction: 'left' | 'right', card: UserInfo) => void;
 }
 
 interface OverlayElements {

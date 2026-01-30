@@ -15,6 +15,7 @@ export const POSITIONS: Record<Position, { label: string; key: string }> = {
   5: { label: '임베디드', key: 'embedded_systems_engineer' },
   6: { label: '모바일', key: 'mobile_app_developer' },
   7: { label: 'Infra/DevOps', key: 'devops_infra_engineer' },
+  8: { label: '기획/디자인', key: 'design' },
 };
 
 // Networks (Index 1-3)
@@ -69,6 +70,9 @@ export const TECH_SKILLS: Record<TechSkill, { label: string; key: string }> = {
   41: { label: 'Firebase', key: 'firebase' },
   42: { label: 'Jenkins', key: 'jenkins' },
   43: { label: 'GitHub Actions', key: 'github_actions' },
+  44: { label: 'Figma', key: 'figma' },
+  45: { label: 'Photoshop', key: 'photoshop' },
+  46: { label: 'Illustrator', key: 'illustrator' },
 };
 
 // 헬퍼 함수: 인덱스로 라벨 가져오기

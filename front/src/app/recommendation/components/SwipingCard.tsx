@@ -9,10 +9,10 @@ import {
   getPositionLabel,
   getTechSkillLabel,
 } from '@/constants/user';
-import { RecommendationCard } from '@/types/user';
+import { UserInfo } from '@/types/user';
 
 interface SwipingCardProps {
-  card: RecommendationCard;
+  card: UserInfo;
 }
 
 export default function SwipingCard({ card }: SwipingCardProps) {

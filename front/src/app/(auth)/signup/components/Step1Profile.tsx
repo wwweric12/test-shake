@@ -1,11 +1,15 @@
 import { useState } from 'react';
 
+import { RemovableBadge } from '@/components/common/modal/RemovableBadge';
+import SelectionModal from '@/components/common/modal/SelectionModal';
 import { Button } from '@/components/ui/Button';
 import {
   CAREER_LIST,
   EXPERIENCE_LIST,
+  POSITIONS,
   SIGNUP_MESSAGES,
   SIGNUP_PLACEHOLDERS,
+  TECH_SKILLS,
 } from '@/constants/auth';
 import { useCheckNicknameMutation } from '@/services/user/hooks';
 import { UserInfo } from '@/types/user';
@@ -30,6 +34,22 @@ export default function Step1Profile({ data, onUpdate, onNext }: StepProps) {
   const [localNickname, setLocalNickname] = useState(data.nickname || '');
   const [verifiedNickname, setVerifiedNickname] = useState(data.nickname || '');
   const [status, setStatus] = useState<FormStatus>({ type: 'idle', message: '' });
+
+  const [isPositionModalOpen, setIsPositionModalOpen] = useState(false);
+  const [isStackModalOpen, setIsStackModalOpen] = useState(false);
+
+  const positionList = Object.entries(POSITIONS).map(([id, val]) => ({
+    id: Number(id),
+    label: val.label,
+  }));
+  const stackList = Object.entries(TECH_SKILLS).map(([id, val]) => ({
+    id: Number(id),
+    label: val.label,
+  }));
+
+  const removeItem = (type: 'positions' | 'techSkills', id: number) => {
+    onUpdate({ [type]: data[type].filter((i) => i !== id) });
+  };
 
   const handleNicknameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.replace(/\s/g, '');
@@ -63,25 +83,25 @@ export default function Step1Profile({ data, onUpdate, onNext }: StepProps) {
     });
   };
 
-  const handleOpenPositionModal = () => {
-    console.log('직무 선택 모달 오픈 - Position 타입 활용 예정');
-  };
-
-  const handleOpenStackModal = () => {
-    console.log('스택 선택 모달 오픈 - TechSkill 타입 활용 예정');
-  };
-
   const isNicknameVerified = localNickname !== '' && localNickname === verifiedNickname;
 
-  const handleNextStep = () => {
-    if (!isNicknameVerified) return alert(SIGNUP_MESSAGES.ERROR_CHECK_REQUIRED);
-    if (data.experience === null || data.experience === undefined)
-      return alert(SIGNUP_MESSAGES.ERROR_EXPERIENCE_REQUIRED);
-    if (!data.career) return alert(SIGNUP_MESSAGES.ERROR_CAREER_REQUIRED);
-    // if (data.positions.length === 0) return alert(SIGNUP_MESSAGES.ERROR_POSITION_REQUIRED);
-    // if (data.techSkills.length === 0) return alert(SIGNUP_MESSAGES.ERROR_SKILL_REQUIRED);
+  // 모든 필수 항목이 채워졌는지 확인하는 로직
+  const isFormValid =
+    isNicknameVerified &&
+    data.experience !== null &&
+    data.experience !== undefined &&
+    !!data.career &&
+    data.positions.length > 0 &&
+    data.techSkills.length > 0;
 
+  const handleNextStep = () => {
     onUpdate({ ...data, nickname: localNickname });
+
+    const scrollContainer = document.querySelector('main');
+    if (scrollContainer) {
+      scrollContainer.scrollTo({ top: 0, behavior: 'auto' });
+    }
+
     onNext();
   };
 
@@ -173,8 +193,20 @@ export default function Step1Profile({ data, onUpdate, onNext }: StepProps) {
           <section>
             <label className="body1 text-custom-realblack block">직무</label>
             <p className="text-custom-deepgray footnote mb-2">{SIGNUP_MESSAGES.POSITION_GUIDE}</p>
+
+            {/* 선택된 직무 뱃지 */}
+            <div className={`flex flex-wrap gap-2 ${data.positions.length > 0 ? 'mb-3' : ''}`}>
+              {data.positions.map((id) => (
+                <RemovableBadge
+                  key={id}
+                  label={POSITIONS[id as keyof typeof POSITIONS]?.label || ''}
+                  onRemove={() => removeItem('positions', id)}
+                />
+              ))}
+            </div>
+
             <button
-              onClick={handleOpenPositionModal}
+              onClick={() => setIsPositionModalOpen(true)}
               className="body2 text-custom-blue border-custom-blue bg-custom-realwhite flex w-full items-center justify-center gap-2 rounded-[10px] border px-2.5 py-3 active:bg-blue-50"
             >
               <span className="text-lg">+</span> 직무 추가
@@ -182,21 +214,54 @@ export default function Step1Profile({ data, onUpdate, onNext }: StepProps) {
           </section>
 
           <section>
-            <label className="body1 text-custom-realblack block">스택</label>
+            <label className="body1 text-custom-realblack block">보유 스킬</label>
             <p className="text-custom-deepgray footnote mb-2">{SIGNUP_MESSAGES.STACK_GUIDE}</p>
+
+            {/* 선택된 스택 뱃지 */}
+            <div className={`flex flex-wrap gap-2 ${data.techSkills.length > 0 ? 'mb-3' : ''}`}>
+              {data.techSkills.map((id) => (
+                <RemovableBadge
+                  key={id}
+                  label={TECH_SKILLS[id as keyof typeof TECH_SKILLS]?.label || ''}
+                  onRemove={() => removeItem('techSkills', id)}
+                />
+              ))}
+            </div>
+
             <button
-              onClick={handleOpenStackModal}
+              onClick={() => setIsStackModalOpen(true)}
               className="body2 text-custom-blue border-custom-blue bg-custom-realwhite flex w-full items-center justify-center gap-2 rounded-[10px] border px-2.5 py-3 active:bg-blue-50"
             >
-              <span className="text-lg">+</span> 스택 추가
+              <span className="text-lg">+</span> 스킬 추가
             </button>
           </section>
         </div>
+
+        <SelectionModal
+          isOpen={isPositionModalOpen}
+          onClose={() => setIsPositionModalOpen(false)}
+          title="직무 추가"
+          items={positionList}
+          selectedIds={data.positions}
+          onSave={(ids) => onUpdate({ positions: ids })}
+          maxCount={3}
+          className="h-auto"
+        />
+        <SelectionModal
+          isOpen={isStackModalOpen}
+          onClose={() => setIsStackModalOpen(false)}
+          title="스킬 추가"
+          items={stackList}
+          selectedIds={data.techSkills}
+          onSave={(ids) => onUpdate({ techSkills: ids })}
+          showSearch={true}
+        />
       </div>
 
-      <div className="mt-20 mb-10">
+      <div className="mt-[20px] pb-10">
         <Button
           onClick={handleNextStep}
+          disabled={!isFormValid}
           className="bg-custom-realblack hover:bg-custom-realblack subhead1 text-custom-realwhite h-auto w-full rounded-[6px] px-3 py-4 shadow-[0_4px_10px_rgba(0,0,0,0.15)] active:scale-[0.98]"
         >
           다음으로

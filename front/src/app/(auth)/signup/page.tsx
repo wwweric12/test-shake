@@ -33,8 +33,9 @@ export default function SignupPage() {
     else if (step === 'step2') setStep('step1');
   };
 
-  const handleInfoSubmit = () => {
-    const { dsti, userId, matchingPercent, ...infoRequestData } = formData;
+  const handleInfoSubmit = (finalData?: UserInfo) => {
+    const targetData = finalData || formData;
+    const { dsti, userId, matchingPercent, ...infoRequestData } = targetData;
 
     registerUser(infoRequestData, {
       onSuccess: () => {
@@ -84,7 +85,7 @@ export default function SignupPage() {
           <Step2Networking
             data={formData}
             onUpdate={updateFormData}
-            onNext={handleInfoSubmit}
+            onNext={(finalData) => handleInfoSubmit(finalData)}
             onPrev={() => setStep('step1')}
           />
         </Step>
