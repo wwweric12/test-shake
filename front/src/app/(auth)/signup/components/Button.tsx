@@ -16,7 +16,7 @@ export function SelectButton({ label, isSelected, onClick, className }: SelectBu
         'subhead2 rounded-full border px-2.5 py-1 transition-colors',
         isSelected
           ? 'border-custom-blue bg-custom-blue text-custom-realwhite'
-          : 'border-gray bg-custom-realwhite text-custom-border-gray',
+          : 'border-darkgray bg-custom-realwhite text-custom-darkgray',
         className,
       )}
     >

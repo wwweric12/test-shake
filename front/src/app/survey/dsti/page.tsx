@@ -51,8 +51,7 @@ export default function DstiPage() {
         { result: resultScores },
         {
           onSuccess: (response) => {
-            // API 수정 후 response.data.dsti로 변경
-            setFinalDsti(response.dsti);
+            setFinalDsti(response.data.dsti);
             setStep('result');
           },
           onError: () => {
