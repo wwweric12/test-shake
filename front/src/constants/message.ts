@@ -11,3 +11,6 @@ export const AUTO_SCROLL_DELAY = 100;
 
 // 메시지 애니메이션 지연 (ms)
 export const MESSAGE_ANIMATION_DELAY = 50;
+
+// 메세지 사이즈(무한 스크롤링 페이징 용)
+export const MESSAGE_PAGE_SIZE = 50;

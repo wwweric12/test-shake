@@ -85,7 +85,7 @@ export function WebSocketProvider({ children, enabled = true }: WebSocketProvide
     if (!webSocketService.isConnected()) {
       webSocketService.connect({
         url: WS_URL,
-        reconnectDelay: 3000,
+        reconnectDelay: 10000,
         heartbeatIncoming: 10000,
         heartbeatOutgoing: 10000,
         debug: process.env.NODE_ENV === 'development',

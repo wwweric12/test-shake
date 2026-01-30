@@ -187,6 +187,9 @@ export function RoomList({ rooms, onSelectRoom, isLoading, error }: RoomListProp
     }
   };
 
+  // 전체 읽지 않은 메시지 수 계산
+  const totalUnreadCount = rooms.reduce((sum, room) => sum + room.unreadCount, 0);
+
   // 로딩 중
   if (isLoading) {
     return (
@@ -219,9 +222,11 @@ export function RoomList({ rooms, onSelectRoom, isLoading, error }: RoomListProp
       <div className="bg-custom-white flex border-b px-4 py-3 shadow-sm">
         <h1 className="title2">채팅</h1>
         <div className="flex items-center px-2">
-          <Badge className="bg-custom-red flex h-5 min-w-5 items-center justify-center px-0 text-white">
-            {rooms.length}
-          </Badge>
+          {totalUnreadCount > 0 && (
+            <Badge className="bg-custom-red flex h-5 min-w-5 items-center justify-center px-1 text-white">
+              {totalUnreadCount > 99 ? '99+' : totalUnreadCount}
+            </Badge>
+          )}
         </div>
       </div>
 
@@ -246,38 +251,39 @@ export function RoomList({ rooms, onSelectRoom, isLoading, error }: RoomListProp
                 className="bg-custom-white w-full p-4 text-left transition-colors hover:bg-gray-50"
               >
                 <div className="flex items-center gap-3">
-                  {/* 프로필 이미지 */}
-                  {room.partnerProfileImage && (
+                  {/* 프로필 이미지 - null 처리 */}
+                  {room.partnerProfileImage ? (
                     <div className="relative h-12 w-12 flex-shrink-0 overflow-hidden rounded-full">
                       <Image
                         src={room.partnerProfileImage}
-                        alt={`${room.partnerName} 프로필`}
+                        alt={`${room.partnerName || '상대방'} 프로필`}
                         fill
                         className="object-cover"
                       />
                     </div>
+                  ) : (
+                    <div className="relative flex h-12 w-12 flex-shrink-0 items-center justify-center overflow-hidden rounded-full bg-gray-300">
+                      <span className="text-lg text-white">{room.partnerName?.[0] || '?'}</span>
+                    </div>
                   )}
 
-                  {/* 채팅 정보 */}
+                  {/* 채팅 정보 - null 처리 */}
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center justify-between">
-                      <h3 className="body1 truncate">{room.partnerName}</h3>
+                      <h3 className="body1 truncate">{room.partnerName || '이름 없음'}</h3>
                     </div>
                     <p className="subhead3 mt-1 line-clamp-1 text-gray-600">
                       {room.lastMessage || '메시지 없음'}
                     </p>
                   </div>
 
-                  {/* 오른쪽 영역 (날짜 + 배지) */}
+                  {/* 나머지 코드 동일 */}
                   <div className="flex h-full flex-col items-end justify-between gap-1">
-                    {/* 날짜 */}
                     <span className="footnote text-gray-500">
                       {formatTime(room.lastMessageTime)}
                     </span>
-
-                    {/* 읽지 않은 메시지 배지 */}
                     {room.unreadCount > 0 && (
-                      <Badge className="bg-custom-red flex h-5 min-w-5 items-center justify-center px-0 text-white">
+                      <Badge className="bg-custom-red flex h-5 min-w-5 items-center justify-center px-1 text-white">
                         {room.unreadCount > 99 ? '99+' : room.unreadCount}
                       </Badge>
                     )}

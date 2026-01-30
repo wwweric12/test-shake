@@ -101,6 +101,7 @@ export interface SendMessagePayload {
 /**
  * 백엔드 /sub/chat/{chatRoomId} 구독 시 수신하는 메시지
  * ChatMessageResponse 타입
+ * 필드명이 겹치더라도, WebSocket 메시지는 UI에 즉시 반영되는 실시간 이벤트라는 특수성을 반영해야 하므로 별도 타입으로 관리
  */
 export interface ReceivedChatMessage {
   messageId: string; // 메시지 ID
