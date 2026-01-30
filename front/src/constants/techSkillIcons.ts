@@ -8,8 +8,10 @@ import pandas from '@/assets/icon/devicon_pandas.svg';
 import redis from '@/assets/icon/devicon_redis-wordmark.svg';
 import scikitLearn from '@/assets/icon/devicon_scikitlearn.svg';
 import fastApi from '@/assets/icon/fastapi.svg';
+import figma from '@/assets/icon/Figma.svg';
 import flutter from '@/assets/icon/flutter.svg';
 import githubActions from '@/assets/icon/githubactions 1.svg';
+import illustrator from '@/assets/icon/Illustrator.svg';
 import java from '@/assets/icon/java.svg';
 import javascript from '@/assets/icon/javascript.svg';
 import jenkins from '@/assets/icon/jenkins 1.svg';
@@ -22,6 +24,7 @@ import postgresql from '@/assets/icon/logos_postgresql.svg';
 import mysql from '@/assets/icon/mysql.svg';
 import nestjs from '@/assets/icon/nest.js.svg';
 import nextjs from '@/assets/icon/next.js.svg';
+import photoshop from '@/assets/icon/Photoshop.svg';
 import python from '@/assets/icon/python.svg';
 import pytorch from '@/assets/icon/pytorch.svg';
 import raspberryPi from '@/assets/icon/raspberry_pi.svg';
@@ -79,4 +82,9 @@ export const TECH_SKILL_ICONS: Record<number, string> = {
   33: arduino,
   32: raspberryPi,
   28: unity,
+
+  // design
+  44: figma,
+  45: photoshop,
+  46: illustrator,
 };

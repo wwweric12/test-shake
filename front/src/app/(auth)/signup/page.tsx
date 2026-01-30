@@ -8,7 +8,7 @@ import backIcon from '@/assets/icon/back.svg';
 import { Progress } from '@/components/ui/Progress';
 import { INITIAL_SIGNUP_DATA, SIGNUP_MESSAGES, STEP_INFO } from '@/constants/auth';
 import { useRegisterUserProfileMutation } from '@/services/user/hooks';
-import { UserProfile } from '@/types/user';
+import { UserInfo } from '@/types/user';
 
 import { useFunnel } from '../../../hooks/useFunnel';
 
@@ -20,11 +20,11 @@ type SignupStep = 'step1' | 'step2';
 export default function SignupPage() {
   const router = useRouter();
   const { Step, setStep, step } = useFunnel<SignupStep>('step1');
-  const [formData, setFormData] = useState<UserProfile>(INITIAL_SIGNUP_DATA);
+  const [formData, setFormData] = useState<UserInfo>(INITIAL_SIGNUP_DATA as UserInfo);
 
   const { mutate: registerUser } = useRegisterUserProfileMutation();
 
-  const updateFormData = (newData: Partial<UserProfile>) => {
+  const updateFormData = (newData: Partial<UserInfo>) => {
     setFormData((prev) => ({ ...prev, ...newData }));
   };
 
@@ -33,8 +33,9 @@ export default function SignupPage() {
     else if (step === 'step2') setStep('step1');
   };
 
-  const handleInfoSubmit = () => {
-    const { dsti, ...infoRequestData } = formData;
+  const handleInfoSubmit = (finalData?: UserInfo) => {
+    const targetData = finalData || formData;
+    const { dsti, userId, matchingPercent, ...infoRequestData } = targetData;
 
     registerUser(infoRequestData, {
       onSuccess: () => {
@@ -84,7 +85,7 @@ export default function SignupPage() {
           <Step2Networking
             data={formData}
             onUpdate={updateFormData}
-            onNext={handleInfoSubmit}
+            onNext={(finalData) => handleInfoSubmit(finalData)}
             onPrev={() => setStep('step1')}
           />
         </Step>

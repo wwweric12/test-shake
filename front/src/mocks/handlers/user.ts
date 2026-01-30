@@ -1,104 +1,109 @@
 import { http, HttpResponse } from 'msw';
 
 import { BASE_URL } from '@/constants/api';
-import { UserCardsResponse, UserProfile } from '@/types/user';
+import {
+  CheckNicknameRequest,
+  DstiResponse, // ApiResponse 대신 구체적인 Response 타입을 활용
+  UserInfo,
+  UserProfileRequest,
+} from '@/types/user';
 
-const MOCK_USER_PROFILE: UserProfile = {
+// 1. Mock 데이터 정의 (UserInfo 기반)
+const MOCK_USER_INFO: UserInfo = {
+  userId: 1,
   nickname: '싸피테스트',
   profileImageUrl: 'https://picsum.photos/200',
   experience: true,
   career: 'employed',
-  dsti: 'PDAR',
+  dsti: 'NONE',
   positions: [1, 2],
-  techSkills: [1, 2],
-  networks: [1, 2],
+  techSkills: [1, 2, 3],
+  networks: [1],
   githubId: 'mock-github-id',
-  selfIntro: '안녕하세요! 프론트엔드 개발자입니다.',
-};
-
-const MOCK_USER_CARDS: UserCardsResponse = {
-  statusCode: 200,
-  message: 'OK',
-  data: {
-    cards: [
-      { user: { ...MOCK_USER_PROFILE, nickname: '카드유저1' } },
-      { user: { ...MOCK_USER_PROFILE, nickname: '카드유저2', career: 'job_seeking' } },
-    ],
-  },
+  selfIntro: '안녕하세요!',
+  matchingPercent: 100,
 };
 
 export const userHandlers = [
-  // Get User Info
+  // 유저 정보 조회
   http.get(`${BASE_URL}/user/info`, () => {
     return HttpResponse.json({
       statusCode: 200,
       message: 'OK',
-      data: MOCK_USER_PROFILE,
+      data: MOCK_USER_INFO,
     });
   }),
 
-  // Register User Profile
+  // 회원가입 프로필 등록 (image_26ab57.png 에러 해결)
   http.post(`${BASE_URL}/user/info`, async ({ request }) => {
-    const body = await request.json();
+    // ✅ 타입을 명시적으로 단언하여 스프레드 연산자 에러 해결
+    const body = (await request.json()) as UserProfileRequest;
+
     return HttpResponse.json(
       {
         statusCode: 201,
         message: 'Created',
-        data: body,
+        data: {
+          ...MOCK_USER_INFO,
+          ...body, // 이제 에러가 발생하지 않습니다.
+          nickname: '새로운회원',
+        },
       },
       { status: 201 },
     );
   }),
 
-  // Check Nickname
+  // 닉네임 중복 확인 (hooks 명세 반영)
   http.post(`${BASE_URL}/user/nickname`, async ({ request }) => {
-    const { nickname } = (await request.json()) as { nickname: string };
-    const isAvailable = nickname !== '중복된닉네임';
-    if (isAvailable) {
-      return HttpResponse.json({
-        statusCode: 200,
-        message: 'OK',
-        data: { possible: isAvailable },
-      });
-    } else {
-      return HttpResponse.error();
-    }
-  }),
+    const { nickname } = (await request.json()) as CheckNicknameRequest;
 
-  // Submit DSTI
-  http.post(`${BASE_URL}/user/dsti`, () => {
+    if (nickname === '중복') {
+      return HttpResponse.json(
+        { statusCode: 409, message: '이미 사용 중인 닉네임입니다.', data: null },
+        { status: 409 },
+      );
+    }
+
     return HttpResponse.json({
       statusCode: 200,
       message: 'OK',
-      data: { dsti: 'PDAR' },
+      data: null, // CheckNicknameResponse(ApiEmptyResponse) 기준
     });
   }),
 
-  // Get User Cards
-  http.get(`${BASE_URL}/user/card`, () => {
-    return HttpResponse.json(MOCK_USER_CARDS);
+  // DSTI 제출
+  http.post(`${BASE_URL}/user/dsti`, () => {
+    const response: DstiResponse = {
+      statusCode: 200,
+      message: 'OK',
+      data: { dsti: 'PDAR' },
+    };
+    return HttpResponse.json(response);
   }),
 
-  // Update Individual Fields using PUT
-  http.put(`${BASE_URL}/user/experience`, () =>
-    HttpResponse.json({ statusCode: 200, message: 'OK', data: null }),
-  ),
-  http.put(`${BASE_URL}/user/career`, () =>
-    HttpResponse.json({ statusCode: 200, message: 'OK', data: null }),
-  ),
-  http.put(`${BASE_URL}/user/github`, () =>
-    HttpResponse.json({ statusCode: 200, message: 'OK', data: null }),
-  ),
-  http.put(`${BASE_URL}/user/self-intro`, () =>
-    HttpResponse.json({ statusCode: 200, message: 'OK', data: null }),
-  ),
-  http.put(`${BASE_URL}/user/tech-skills`, () =>
-    HttpResponse.json({ statusCode: 200, message: 'OK', data: null }),
-  ),
-  http.put(`${BASE_URL}/user/position`, () =>
-    HttpResponse.json({ statusCode: 200, message: 'OK', data: null }),
-  ),
-  http.put(`${BASE_URL}/user/networks`, () =>
-    HttpResponse.json({ statusCode: 200, message: 'OK', data: null }),
+  // 유저 카드 리스트
+  http.get(`${BASE_URL}/user/card`, () => {
+    return HttpResponse.json({
+      statusCode: 200,
+      message: 'OK',
+      data: {
+        cards: [
+          { user: MOCK_USER_INFO },
+          { user: { ...MOCK_USER_INFO, userId: 2, nickname: '다른유저' } },
+        ],
+      },
+    });
+  }),
+
+  // 개별 필드 업데이트 핸들러
+  ...['experience', 'career', 'github', 'self-intro', 'tech-skills', 'position', 'networks'].map(
+    (path) =>
+      http.put(`${BASE_URL}/user/${path}`, () =>
+        HttpResponse.json({
+          statusCode: 200,
+          message: 'OK',
+          data: null,
+        }),
+      ),
   ),
 ];
