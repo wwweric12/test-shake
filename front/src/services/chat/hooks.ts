@@ -1,43 +1,7 @@
-// import { QUERY_KEYS } from '@/constants/queryKeys';
-// import { chatApi } from '@/services/chat/api';
-// import { ReportChatRequest } from '@/types/chat';
-
-// import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-
-// export const useChatRooms = () => {
-//   return useQuery({
-//     queryKey: QUERY_KEYS.CHAT.ROOMS(),
-//     queryFn: chatApi.getChatRooms,
-//   });
-// };
-
-// export const useChatMessages = (roomId: number, enabled: boolean = true) => {
-//   return useQuery({
-//     queryKey: QUERY_KEYS.CHAT.MESSAGES(roomId),
-//     queryFn: () => chatApi.getChatMessages(roomId),
-//     enabled: !!roomId && enabled,
-//   });
-// };
-
-// export const useExitChatRoomMutation = () => {
-//   const queryClient = useQueryClient();
-//   return useMutation({
-//     mutationFn: (roomId: number) => chatApi.exitChatRoom(roomId),
-//     onSuccess: () => {
-//       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.CHAT.ROOMS() });
-//     },
-//   });
-// };
-
-// export const useReportChatRoomMutation = () => {
-//   return useMutation({
-//     mutationFn: ({ roomId, data }: { roomId: number; data: ReportChatRequest }) =>
-//       chatApi.reportChatRoom(roomId, data),
-//   });
-// };
 import { QUERY_KEYS } from '@/constants/queryKeys';
 import { chatApi } from '@/services/chat/api';
 import { CreateChatRoomRequest, ReportChatRequest } from '@/types/chat';
+import { getErrorMessage } from '@/utils/error';
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
@@ -49,11 +13,20 @@ export const useChatRooms = () => {
     queryKey: QUERY_KEYS.CHAT.ROOMS(),
     queryFn: chatApi.getChatRooms,
     staleTime: 30 * 1000, // 30초
+    retry: (failureCount, error) => {
+      // 403/401 에러는 재시도하지 않음 (인증 실패)
+      const errorMessage = getErrorMessage(error, '');
+      if (errorMessage.includes('[403]') || errorMessage.includes('[401]')) {
+        return false;
+      }
+      return failureCount < 2; // 다른 에러는 최대 2번 재시도
+    },
   });
 };
 
 /**
  * 채팅방 입장 Hook (초기 메시지 로드)
+ * 백엔드: GET /chat/messages/{chatRoomId}/enter
  */
 export const useEnterChatRoom = (chatRoomId: number, enabled: boolean = true) => {
   return useQuery({
@@ -61,11 +34,20 @@ export const useEnterChatRoom = (chatRoomId: number, enabled: boolean = true) =>
     queryFn: () => chatApi.enterChatRoom(chatRoomId),
     enabled: !!chatRoomId && enabled,
     staleTime: 0, // 항상 최신 데이터 조회
+    retry: (failureCount, error) => {
+      // 403/401 에러는 재시도하지 않음
+      const errorMessage = getErrorMessage(error, '');
+      if (errorMessage.includes('[403]') || errorMessage.includes('[401]')) {
+        return false;
+      }
+      return failureCount < 2;
+    },
   });
 };
 
 /**
  * 채팅 메시지 페이징 조회 Hook
+ * 백엔드: GET /chat/messages/{chatRoomId}?cursor=...&size=50
  */
 export const useChatMessages = (
   chatRoomId: number,
@@ -78,6 +60,7 @@ export const useChatMessages = (
     queryFn: () => chatApi.getChatMessages(chatRoomId, cursor, size),
     enabled: !!chatRoomId && enabled,
     staleTime: 0,
+    retry: false, // 메시지 조회는 재시도하지 않음
   });
 };
 

@@ -42,10 +42,6 @@ export default function ChatPage() {
 
   // 채팅방 선택됨 -> 채팅방 화면 표시
   return (
-    <ChatRoomContainer
-      roomId={selectedRoom.chatRoomId}
-      roomName={selectedRoom.partnerName}
-      onBack={() => setSelectedRoom(null)}
-    />
+    <ChatRoomContainer roomId={selectedRoom.chatRoomId} onBack={() => setSelectedRoom(null)} />
   );
 }

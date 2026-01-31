@@ -1,4 +1,3 @@
-// hooks/chat/useChatRoomViewModel.ts
 import { useCallback, useState } from 'react';
 
 import { ChatMessageWithProfile } from '@/types/chat';
@@ -12,7 +11,7 @@ interface UseChatRoomViewModelProps {
 }
 
 export function useChatRoomViewModel({
-  roomId,
+  // roomId,
   onSendMessage,
   onLoadPreviousMessages,
 }: UseChatRoomViewModelProps) {
