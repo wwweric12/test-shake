@@ -3,7 +3,7 @@ import { cn } from '@/lib/utils';
 interface SelectButtonProps {
   label: string;
   isSelected: boolean;
-  onClick: () => void;
+  onClick?: () => void;
   className?: string;
 }
 
