@@ -4,7 +4,6 @@ import { useState } from 'react';
 
 import { RoomList } from '@/app/chat/components/RoomList';
 import { ChatRoomContainer } from '@/app/chat/containers/ChatRoomContainer';
-import BottomNavigation from '@/components/common/BottomNavigation';
 import { useChatRooms } from '@/services/chat/hooks';
 import { ChatRoom } from '@/types/chat';
 
@@ -22,7 +21,6 @@ export default function ChatPage() {
           error={isError}
           onSelectRoom={setSelectedRoom}
         />
-        <BottomNavigation />
       </div>
     );
   }
