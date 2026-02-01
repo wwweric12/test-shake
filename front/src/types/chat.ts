@@ -1,96 +1,89 @@
-import { ApiEmptyResponse, ApiResponse } from '@/types/common';
+import { ApiEmptyResponse, ApiResponse, PageResponse } from '@/types/common';
 
-/**
- * 페이징 응답 공통 타입
- */
-export interface PaginatedResponse<T> {
-  content: T[];
-  size: number;
-  hasNext: boolean;
-}
-
-/**
- * 채팅방 정보
- * 백엔드 /chat/rooms GET 응답
- */
+// GET /chat/rooms - 내 채팅방 목록 조회
 export interface ChatRoom {
-  chatRoomId: number; // 채팅방 ID
-  partnerId: number; // 상대방 ID
-  partnerName: string; // 상대방 닉네임
-  partnerProfileImage: string; // 상대방 프로필 이미지 URL
-  lastMessage: string; // 마지막 메시지 내용
-  lastMessageTime: string; // 마지막 메시지 시각 (ISO 8601)
-  unreadCount: number; // 읽지 않은 메시지 수
-  canSendMessage: boolean; // 메시지 전송 가능 여부
+  chatRoomId: number;
+  partnerId: number;
+  partnerName: string;
+  partnerProfileImage: string;
+  lastMessage: string;
+  lastMessageTime: string;
+  unreadCount: number;
+  canSendMessage: boolean;
 }
 
-/**
- * 채팅방 목록 조회 응답
- * ApiResponse 재사용
- */
-export type ChatRoomsResponse = ApiResponse<PaginatedResponse<ChatRoom>>;
+export type ChatRoomListResponse = ApiResponse<PageResponse<ChatRoom>>;
 
-/**
- * 채팅 메시지
- * 백엔드 /chat/messages/{chatRoomId}/enter GET 및
- * /chat/messages/{chatRoomId} GET 응답
- */
-export interface ChatMessage {
-  id: string; // 메시지 ID (MongoDB ObjectId)
-  chatRoomId: number; // 채팅방 ID
-  senderId: number; // 발신자 ID
-  content: string; // 메시지 내용
-  sentAt: string; // 전송 시각 (ISO 8601)
-  isRead: boolean; // 읽음 여부
-}
-
-/**
- * 채팅 메시지 목록 조회 응답
- * ApiResponse 재사용
- */
-export type ChatMessagesResponse = ApiResponse<PaginatedResponse<ChatMessage>>;
-
-/**
- * 채팅방 입장 응답
- * ApiResponse 재사용
- */
-export type ChatRoomEnterResponse = ApiResponse<{
-  message: PaginatedResponse<ChatMessage>;
-}>;
-
-/**
- * 채팅방 생성 요청
- */
+// POST /chat/rooms - 채팅방 생성
 export interface CreateChatRoomRequest {
-  partnerId: number; // 상대방 ID
+  partnerId: number;
 }
 
-/**
- * 채팅방 생성 응답
- * ApiResponse 재사용
- */
-export type CreateChatRoomResponse = ApiResponse<number>; // 생성된 채팅방 ID
+export type CreateChatRoomResponse = ApiResponse<number>;
 
-/**
- * 채팅 신고 요청
- */
+// DELETE /chat/rooms/{chatRoomId}/exit - 채팅방 나가기
+export type ExitChatRoomResponse = ApiEmptyResponse;
+
+// GET /chat/messages/{chatRoomId}/enter - 채팅방 입장
+export interface ChatMessage {
+  id: string;
+  chatRoomId: number;
+  senderId: number;
+  content: string;
+  sentAt: string;
+  isRead: boolean;
+}
+
+export interface EnterChatRoomData {
+  userId: number;
+  content: PageResponse<ChatMessage>;
+}
+
+export type EnterChatRoomResponse = ApiResponse<EnterChatRoomData>;
+
+// GET /chat/messages/{chatRoomId} - 채팅 메시지 페이징 조회
+export interface GetMessagesData {
+  userId: number;
+  content: PageResponse<ChatMessage>;
+}
+
+export type GetMessagesResponse = ApiResponse<GetMessagesData>;
+
+// SEND /pub/chat/{chatRoomId}/send - 채팅 송수신 (WebSocket)
+export interface SendMessageRequest {
+  content: string;
+}
+
+// SUBSCRIBE /user/queue/chat/{chatRoomId} - 채팅 수신 (WebSocket)
+export interface ReceivedMessage {
+  messageId: string;
+  chatRoomId: number;
+  senderId: number;
+  senderName: string;
+  senderProfileImageUrl: string;
+  content: string;
+  sentAt: string;
+  isRead: boolean;
+}
+
+export interface ReceivedMessageData {
+  message: ReceivedMessage;
+  isMine: boolean;
+}
+
+export type ReceivedMessageResponse = ApiResponse<ReceivedMessageData>;
+
+// POST /chat/rooms/{chatRoomId}/report - 채팅방 신고
 export interface ReportChatRequest {
   chatRoomId: number;
   reason: string;
 }
 
-/**
- * 채팅방 나가기/신고 응답
- */
-export type ExitResponse = ApiEmptyResponse;
-export type ReportResponse = ApiEmptyResponse;
+export type ReportChatResponse = ApiEmptyResponse;
 
-/**
- * UI에서 사용하는 확장된 메시지 타입
- * (내 메시지 여부, 프로필 정보 포함)
- */
+// UI에서 사용하는 확장 메시지 타입
 export interface ChatMessageWithProfile extends ChatMessage {
-  isMine: boolean; // 내가 보낸 메시지 여부
-  senderName?: string; // 발신자 닉네임 (WebSocket으로 받은 경우)
-  senderProfileImageUrl?: string; // 발신자 프로필 이미지 (WebSocket으로 받은 경우)
+  isMine: boolean;
+  senderName?: string;
+  senderProfileImageUrl?: string;
 }
