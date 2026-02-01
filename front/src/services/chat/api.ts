@@ -1,68 +1,43 @@
 import { api } from '@/services/api';
 import {
-  ChatMessagesResponse,
-  ChatRoomEnterResponse,
-  ChatRoomsResponse,
+  ChatRoomListResponse,
   CreateChatRoomRequest,
   CreateChatRoomResponse,
-  ExitResponse,
+  EnterChatRoomResponse,
+  ExitChatRoomResponse,
+  GetMessagesResponse,
   ReportChatRequest,
-  ReportResponse,
+  ReportChatResponse,
 } from '@/types/chat';
 
-/**
- * 채팅 관련 REST API
- * WebSocket은 services/chat/websocket.ts에서 별도 관리
- */
 export const chatApi = {
-  /**
-   * 내 채팅방 목록 조회
-   * GET /chat/rooms
-   */
-  getChatRooms: () => api.get<ChatRoomsResponse>('/chat/rooms'),
+  // GET /chat/rooms - 내 채팅방 목록 조회
+  getChatRooms: () => api.get<ChatRoomListResponse>('/chat/rooms'),
 
-  /**
-   * 채팅방 생성
-   * POST /chat/rooms
-   */
+  // POST /chat/rooms - 채팅방 생성
   createChatRoom: (data: CreateChatRoomRequest) =>
     api.post<CreateChatRoomResponse>('/chat/rooms', data),
 
-  /**
-   * 채팅방 입장 (초기 메시지 로드)
-   * GET /chat/messages/{chatRoomId}/enter
-   */
+  // GET /chat/messages/{chatRoomId}/enter - 채팅방 입장
   enterChatRoom: (chatRoomId: number) =>
-    api.get<ChatRoomEnterResponse>(`/chat/messages/${chatRoomId}/enter`),
+    api.get<EnterChatRoomResponse>(`/chat/messages/${chatRoomId}/enter`),
 
-  /**
-   * 채팅 메시지 페이징 조회
-   * GET /chat/messages/{chatRoomId}
-   * @param chatRoomId 채팅방 ID
-   * @param cursor 커서 (ISO 8601 형식, 예: 2026-01-29T21:10:30)
-   * @param size 조회 개수 (기본값: 50)
-   */
+  // GET /chat/messages/{chatRoomId} - 채팅 메시지 페이징 조회
   getChatMessages: (chatRoomId: number, cursor?: string, size: number = 50) => {
     const params = new URLSearchParams();
     if (cursor) params.append('cursor', cursor);
     params.append('size', size.toString());
-
     const queryString = params.toString();
-    return api.get<ChatMessagesResponse>(
+    return api.get<GetMessagesResponse>(
       `/chat/messages/${chatRoomId}${queryString ? `?${queryString}` : ''}`,
     );
   },
 
-  /**
-   * 채팅방 나가기
-   * DELETE /chat/rooms/{chatRoomId}/exit
-   */
-  exitChatRoom: (chatRoomId: number) => api.delete<ExitResponse>(`/chat/rooms/${chatRoomId}/exit`),
+  // DELETE /chat/rooms/{chatRoomId}/exit - 채팅방 나가기
+  exitChatRoom: (chatRoomId: number) =>
+    api.delete<ExitChatRoomResponse>(`/chat/rooms/${chatRoomId}/exit`),
 
-  /**
-   * 채팅방 신고
-   * POST /chat/rooms/{chatRoomId}/report
-   */
+  // POST /chat/rooms/{chatRoomId}/report - 채팅방 신고
   reportChatRoom: (chatRoomId: number, data: ReportChatRequest) =>
-    api.post<ReportResponse>(`/chat/rooms/${chatRoomId}/report`, data),
+    api.post<ReportChatResponse>(`/chat/rooms/${chatRoomId}/report`, data),
 };
