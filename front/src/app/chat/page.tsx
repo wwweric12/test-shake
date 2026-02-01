@@ -1,31 +1,36 @@
-/**
- * 채팅 페이지
- *
- * 채팅방 목록과 채팅방 화면을 전환하는 메인 페이지
- */
-
 'use client';
 
-import { useState } from 'react';
+import { useMemo } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 
-import { RoomList } from '@/app/chat/components/RoomList';
-import { ChatRoomContainer } from '@/app/chat/containers/ChatRoomContainer';
 import BottomNavigation from '@/components/common/BottomNavigation';
 import { useChatRooms } from '@/services/chat/hooks';
 import { ChatRoom } from '@/types/chat';
 
-/**
- * 채팅 페이지
- *
- * 상태에 따라 채팅방 목록 또는 채팅방 화면을 표시
- */
-export default function ChatPage() {
-  const [selectedRoom, setSelectedRoom] = useState<ChatRoom | null>(null);
+import { RoomList } from './components/RoomList';
+import { ChatRoomContainer } from './containers/ChatRoomContainer';
 
-  // 채팅방 목록 조회
+export default function ChatPage() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const roomIdParam = searchParams.get('room');
+
   const { data, isLoading, isError } = useChatRooms();
 
-  // 채팅방 선택되지 않음 -> 채팅방 목록 표시
+  // ✅ useMemo로 계산하여 불필요한 상태 제거
+  const selectedRoom = useMemo(() => {
+    if (!roomIdParam || !data?.data?.content) return null;
+    return data.data.content.find((r) => r.chatRoomId === Number(roomIdParam)) || null;
+  }, [roomIdParam, data]);
+
+  const handleSelectRoom = (room: ChatRoom) => {
+    router.push(`/chat?room=${room.chatRoomId}`, { scroll: false });
+  };
+
+  const handleBack = () => {
+    router.push('/chat', { scroll: false });
+  };
+
   if (!selectedRoom) {
     return (
       <div>
@@ -33,15 +38,12 @@ export default function ChatPage() {
           rooms={data?.data?.content ?? []}
           isLoading={isLoading}
           error={isError}
-          onSelectRoom={setSelectedRoom}
+          onSelectRoom={handleSelectRoom}
         />
         <BottomNavigation />
       </div>
     );
   }
 
-  // 채팅방 선택됨 -> 채팅방 화면 표시
-  return (
-    <ChatRoomContainer roomId={selectedRoom.chatRoomId} onBack={() => setSelectedRoom(null)} />
-  );
+  return <ChatRoomContainer roomId={selectedRoom.chatRoomId} onBack={handleBack} />;
 }
