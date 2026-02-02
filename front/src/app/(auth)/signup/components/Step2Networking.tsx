@@ -156,7 +156,7 @@ export default function Step2Networking({ data, onUpdate, onNext }: StepProps) {
               placeholder={SIGNUP_PLACEHOLDERS.SELF_INTRO}
               className={`subhead3 bg-custom-realwhite text-custom-realblack border-gray max-h-[300px] min-h-[150px] w-full resize-none overflow-y-auto px-4 py-4 leading-relaxed transition-all outline-none [-ms-overflow-style:'none'] [scrollbar-width:'none'] focus:border-blue-400 focus-visible:ring-0 [&::-webkit-scrollbar]:hidden`}
               value={localSelfIntro}
-              onChange={(e) => setLocalSelfIntro(e.target.value.slice(0, 200))}
+              onChange={handleSelfIntroChange}
               maxLength={200}
             />
           </div>
