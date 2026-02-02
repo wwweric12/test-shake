@@ -40,7 +40,6 @@ export default function ChatPage() {
           error={isError}
           onSelectRoom={handleSelectRoom}
         />
-        <BottomNavigation />
       </div>
     );
   }

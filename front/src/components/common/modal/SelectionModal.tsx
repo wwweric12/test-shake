@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Search } from 'lucide-react';
 
 import { SelectButton } from '@/app/(auth)/signup/components/Button';
@@ -44,22 +44,12 @@ export default function SelectionModal({
   const [tempSelected, setTempSelected] = useState<number[]>(selectedIds);
   const [searchQuery, setSearchQuery] = useState('');
 
-  // 모달이 열리는 시점을 감지하기 위한 이전 상태 추적
-  const [prevIsOpen, setPrevIsOpen] = useState(isOpen);
-
-  if (isOpen !== prevIsOpen) {
-    setPrevIsOpen(isOpen);
-    if (isOpen) {
-      // 모달이 열릴 때만 부모 데이터로 초기화
-      setTempSelected(selectedIds);
-      setSearchQuery('');
-    }
-  }
-
-  // 검색 필터링
-  const filteredItems = items.filter((item) =>
-    item.label.toLowerCase().includes(searchQuery.toLowerCase()),
-  );
+  const filteredItems = useMemo(() => {
+    if (!searchQuery) return items;
+    return items.filter((item) =>
+      item.label.toLowerCase().includes(searchQuery.toLowerCase().trim()),
+    );
+  }, [items, searchQuery]);
 
   const handleToggle = (id: number) => {
     if (tempSelected.includes(id)) {
