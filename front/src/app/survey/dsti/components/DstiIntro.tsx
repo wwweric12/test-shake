@@ -48,7 +48,7 @@ export default function DstiIntro({ onNext }: DstiIntroProps) {
           onClick={onNext}
           className="bg-custom-realblack hover:bg-custom-realblack subhead1 text-custom-realwhite mt-9 h-auto w-full rounded-[6px] py-4 shadow-md active:scale-[0.98]"
         >
-          2분 만에 성향 확인하기
+          1분 만에 성향 확인하기
         </Button>
       </div>
 

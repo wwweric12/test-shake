@@ -154,15 +154,14 @@ export default function Step2Networking({ data, onUpdate, onNext }: StepProps) {
           <div className="relative">
             <Textarea
               placeholder={SIGNUP_PLACEHOLDERS.SELF_INTRO}
-              className="subhead3 bg-custom-realwhite text-custom-realblack border-gray min-h-[200px] w-full resize-none p-4 leading-relaxed transition-all outline-none focus:border-blue-400 focus-visible:ring-0"
+              className={`subhead3 bg-custom-realwhite text-custom-realblack border-gray max-h-[300px] min-h-[150px] w-full resize-none overflow-y-auto px-4 py-4 leading-relaxed transition-all outline-none [-ms-overflow-style:'none'] [scrollbar-width:'none'] focus:border-blue-400 focus-visible:ring-0 [&::-webkit-scrollbar]:hidden`}
               value={localSelfIntro}
               onChange={handleSelfIntroChange}
               maxLength={200}
             />
-
-            <p className="footnote text-custom-deepgray absolute right-3 bottom-3">
-              {localSelfIntro.length}/200
-            </p>
+          </div>
+          <div className="flex justify-end pt-2">
+            <p className="caption3 text-custom-deepgray">{localSelfIntro.length}/200</p>
           </div>
         </section>
       </div>

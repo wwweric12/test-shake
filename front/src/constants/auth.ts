@@ -83,7 +83,7 @@ export const POSITIONS: Record<Position, { label: string; key: string }> = {
   5: { label: '임베디드', key: 'embedded_systems_engineer' },
   6: { label: '모바일', key: 'mobile_app_developer' },
   7: { label: 'Infra/DevOps', key: 'devops_infra_engineer' },
-  8: { label: '기획/디자인', key: 'design' },
+  8: { label: '기획/디자인', key: 'product_planning_design' },
 };
 
 export const TECH_SKILLS: Record<TechSkill, { label: string; key: string }> = {
@@ -130,9 +130,9 @@ export const TECH_SKILLS: Record<TechSkill, { label: string; key: string }> = {
   41: { label: 'Firebase', key: 'firebase' },
   42: { label: 'Jenkins', key: 'jenkins' },
   43: { label: 'GitHub Actions', key: 'github_actions' },
-  44: { label: 'Figma', key: 'figma' },
-  45: { label: 'Photoshop', key: 'photoshop' },
-  46: { label: 'Illustrator', key: 'illustrator' },
+  44: { label: 'Figma', key: 'figma_design_tool' },
+  45: { label: 'Photoshop', key: 'photoshop_design_tool' },
+  46: { label: 'Illustrator', key: 'illustrator_design_tool' },
 };
 
 export const getPositionLabel = (idx: number) => POSITIONS[idx]?.label ?? '';
