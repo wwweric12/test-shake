@@ -3,6 +3,7 @@
 import { useState } from 'react';
 
 import { Textarea } from '@/components/ui/Textarea';
+import { SIGNUP_PLACEHOLDERS } from '@/constants/auth';
 import { useUpdateSelfIntroMutation } from '@/services/user/hooks';
 
 import { EditIcon } from './EditIcon';
@@ -30,7 +31,7 @@ export function MyPageSelfIntro({ selfIntro }: MyPageSelfIntroProps) {
       </div>
       <div className="relative">
         <Textarea
-          placeholder={`나누고 싶은 대화 주제 또는 간단한 자기소개를 적어주세요!\nex) 함께 Spring에 deep dive할 개발자를 찾고 있습니다. 편하게 좋아요 눌러주세요!`}
+          placeholder={SIGNUP_PLACEHOLDERS.SELF_INTRO}
           className={`subhead3 bg-custom-realwhite text-custom-realblack border-gray max-h-[300px] min-h-[150px] w-full resize-none overflow-y-auto px-4 py-4 leading-relaxed transition-all outline-none [-ms-overflow-style:'none'] [scrollbar-width:'none'] focus:border-blue-400 focus-visible:ring-0 [&::-webkit-scrollbar]:hidden ${!isEditing ? 'bg-gray-50 opacity-80' : ''}`}
           value={localSelfIntro}
           onChange={(e) => setLocalSelfIntro(e.target.value.slice(0, 200))}
