@@ -9,6 +9,7 @@ export type Network = number;
 
 export interface UserProfile {
   profileImageUrl: string;
+  nickname: string;
   experience: boolean;
   career: Career;
   positions: Position[];
@@ -20,7 +21,6 @@ export interface UserProfile {
 
 export interface UserInfo extends UserProfile {
   userId: number;
-  nickname: string;
   dsti: string;
   matchingPercent: number;
 }

@@ -2,16 +2,16 @@ import { http, HttpResponse } from 'msw';
 
 import { BASE_URL } from '@/constants/api';
 import { CandidateResponse } from '@/types/recommendation';
-import { UserProfile } from '@/types/user';
+import { UserInfo } from '@/types/user';
 
-const MOCK_CANDIDATE: UserProfile = {
+const MOCK_CANDIDATE: UserInfo = {
   nickname: '추천후보1',
   profileImageUrl: 'https://picsum.photos/401',
   experience: true,
   career: 'student',
   dsti: 'PDAR',
   positions: [6, 2, 3],
-  techSkills: [34, 35, 36, 37, 9],
+  techSkills: [44, 45, 46],
   networks: [2, 1, 3],
   githubId: 'candidate-github',
   selfIntro:
