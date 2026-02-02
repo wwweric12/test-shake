@@ -17,9 +17,12 @@ export function MyPageSelfIntro({ selfIntro }: MyPageSelfIntroProps) {
   const { mutate: updateSelfIntro } = useUpdateSelfIntroMutation();
   const [localSelfIntro, setLocalSelfIntro] = useState(selfIntro);
 
-  const handleSelfIntroBlur = () => {
-    if (localSelfIntro !== selfIntro) {
+  const handleSave = () => {
+    if (isEditing) {
       updateSelfIntro({ selfIntro: localSelfIntro });
+      setIsEditing(false);
+    } else {
+      setIsEditing(true);
     }
   };
 
@@ -27,7 +30,7 @@ export function MyPageSelfIntro({ selfIntro }: MyPageSelfIntroProps) {
     <section className="w-full">
       <div className="mb-2 flex items-center gap-1">
         <label className="subhead2 text-custom-realblack">자기소개</label>
-        <EditIcon isEditing={isEditing} onClick={() => setIsEditing(!isEditing)} />
+        <EditIcon isEditing={isEditing} onClick={handleSave} />
       </div>
       <div className="relative">
         <Textarea
@@ -35,7 +38,6 @@ export function MyPageSelfIntro({ selfIntro }: MyPageSelfIntroProps) {
           className={`subhead3 bg-custom-realwhite text-custom-realblack border-gray max-h-[300px] min-h-[150px] w-full resize-none overflow-y-auto px-4 py-4 leading-relaxed transition-all outline-none [-ms-overflow-style:'none'] [scrollbar-width:'none'] focus:border-blue-400 focus-visible:ring-0 [&::-webkit-scrollbar]:hidden ${!isEditing ? 'bg-gray-50 opacity-80' : ''}`}
           value={localSelfIntro}
           onChange={(e) => setLocalSelfIntro(e.target.value.slice(0, 200))}
-          onBlur={handleSelfIntroBlur}
           maxLength={200}
           disabled={!isEditing}
         />

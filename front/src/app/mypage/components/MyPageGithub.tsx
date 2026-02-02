@@ -21,19 +21,20 @@ export function MyPageGithub({ githubId }: MyPageGithubProps) {
   const [localGithubId, setLocalGithubId] = useState(githubId || '');
   const [noGithub, setNoGithub] = useState(!githubId);
 
-  const handleGithubBlur = () => {
-    const finalGithubId = noGithub ? '' : localGithubId;
-    if (finalGithubId !== githubId) {
-      updateGithub({ githubId: finalGithubId });
-    }
-  };
-
   const handleNoGithubChange = (checked: boolean | string) => {
     const isChecked = !!checked;
     setNoGithub(isChecked);
     if (isChecked) {
       setLocalGithubId('');
-      updateGithub({ githubId: '' });
+    }
+  };
+
+  const handleSave = () => {
+    if (isEditing) {
+      updateGithub({ githubId: localGithubId });
+      setIsEditing(false);
+    } else {
+      setIsEditing(true);
     }
   };
 
@@ -41,7 +42,7 @@ export function MyPageGithub({ githubId }: MyPageGithubProps) {
     <section>
       <div className="mb-2 flex items-center gap-1">
         <label className="body1 text-custom-realblack">Github</label>
-        <EditIcon isEditing={isEditing} onClick={() => setIsEditing(!isEditing)} />
+        <EditIcon isEditing={isEditing} onClick={handleSave} />
       </div>
 
       <div className="relative flex items-center">
@@ -65,7 +66,6 @@ export function MyPageGithub({ githubId }: MyPageGithubProps) {
             disabled={!isEditing || noGithub}
             value={localGithubId}
             onChange={(e) => setLocalGithubId(e.target.value.replace(/[^a-zA-Z0-9-]/g, ''))}
-            onBlur={handleGithubBlur}
             className="text-custom-realblack subhead3 flex-1 border-none bg-transparent pl-0 shadow-none focus-visible:ring-0 disabled:cursor-not-allowed"
           />
         </div>
