@@ -22,7 +22,6 @@ export const userApi = {
   registerUserProfile: (data: UserProfileRequest) =>
     api.post<UserProfileResponse>('/user/info', data),
 
-  // 상대방 상세 프로필 조회
   getOtherUserInfo: (userId: number) => api.get<UserInfoResponse>(`/user/info/${userId}`),
 
   checkNickname: (data: CheckNicknameRequest) =>

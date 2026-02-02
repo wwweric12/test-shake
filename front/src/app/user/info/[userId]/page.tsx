@@ -1,39 +1,29 @@
-'use client';
+import { QUERY_KEYS } from '@/constants/queryKeys';
+import { userApi } from '@/services/user/api';
+import getQueryClient from '@/utils/getQueryClient';
 
-import { useParams, useRouter } from 'next/navigation';
+import OtherUserProfileContent from './OtherUserProfileContent';
 
-import SwipingCard from '@/app/recommendation/components/SwipingCard';
-import { ProfileErrorState } from '@/app/user/info/components/ProfileErrorState';
-import { ProfileHeader } from '@/app/user/info/components/ProfileHeader';
-import { ProfileLoadingState } from '@/app/user/info/components/ProfileLoadingState';
-import { useOtherUserProfile } from '@/services/user/hooks';
+import { dehydrate, HydrationBoundary } from '@tanstack/react-query';
 
-export default function OtherUserProfilePage() {
-  const router = useRouter();
-  const params = useParams();
-  const userId = Number(params.userId);
+export default async function OtherUserProfilePage({
+  params,
+}: {
+  params: Promise<{ userId: string }>;
+}) {
+  const queryClient = getQueryClient();
 
-  const handleBack = () => router.back();
+  const resolvedParams = await params;
+  const userId = Number(resolvedParams.userId);
 
-  const { data, isLoading, isError } = useOtherUserProfile(userId);
-
-  if (isLoading) return <ProfileLoadingState />;
-
-  if (isError || !data) {
-    return <ProfileErrorState message="유저 정보를 찾을 수 없습니다." onBack={handleBack} />;
-  }
-
-  const userInfo = data.data;
+  await queryClient.prefetchQuery({
+    queryKey: [...QUERY_KEYS.USER.INFO(), userId],
+    queryFn: () => userApi.getOtherUserInfo(userId),
+  });
 
   return (
-    <div className="bg-custom-white flex h-dvh flex-col overflow-hidden">
-      <ProfileHeader nickname={userInfo.nickname} onBack={handleBack} />
-
-      <main className="flex-1 overflow-hidden px-5 pb-8">
-        <div className="relative mx-auto h-full w-full max-w-[400px]">
-          <SwipingCard card={userInfo} />
-        </div>
-      </main>
-    </div>
+    <HydrationBoundary state={dehydrate(queryClient)}>
+      <OtherUserProfileContent userId={userId} />
+    </HydrationBoundary>
   );
 }

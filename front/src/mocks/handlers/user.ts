@@ -18,7 +18,7 @@ const MOCK_USER_INFO: UserInfo = {
   dsti: 'PDAR',
   positions: [1, 2],
   techSkills: [1, 2, 3],
-  networks: [1],
+  networks: [1, 2, 3],
   githubId: 'mock-github-id',
   selfIntro: '안녕하세요!',
   matchingPercent: 100,

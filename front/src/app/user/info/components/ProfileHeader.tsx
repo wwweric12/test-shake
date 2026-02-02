@@ -17,7 +17,7 @@ export function ProfileHeader({ nickname, onBack }: ProfileHeaderProps) {
         >
           <Image src={backIcon} alt="뒤로가기" />
         </button>
-        <h1 className="body2 text-custom-realblack font-medium">{nickname}님의 프로필</h1>
+        <h1 className="body2 text-custom-realblack font-medium">{nickname} 님의 프로필</h1>
         <div className="w-6" />
       </div>
     </header>

@@ -86,7 +86,7 @@ export default function SwipingCard({ card }: SwipingCardProps) {
             </div>
 
             {/* DSTI 배지 */}
-            <div className="absolute top-2 -left-4 z-20">
+            <div className="absolute top-2 -left-6 z-20">
               {' '}
               <div className="subhead1 text-custom-deeppurple border-custom-lightpurple flex size-16 items-center justify-center rounded-full border-2 bg-white shadow-md">
                 {card.dsti}
@@ -95,10 +95,10 @@ export default function SwipingCard({ card }: SwipingCardProps) {
 
             {/* 매칭 퍼센트 배지 */}
             {card.matchingPercent && (
-              <div className="absolute bottom-2 -left-4 z-20">
+              <div className="absolute bottom-2 -left-6 z-20">
                 <div className="border-custom-lightpurple flex size-16 flex-col items-center justify-center rounded-full border-2 bg-white shadow-md">
                   <span className="subhead1 text-custom-deeppurple">{card.matchingPercent}%</span>
-                  <span className="text-custom-deepnavy footout">성향 매치</span>
+                  <span className="text-custom-deepnavy caption1">성향 매치</span>
                 </div>
               </div>
             )}
