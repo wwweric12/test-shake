@@ -1,0 +1,21 @@
+{
+  "name": "HandShake",
+  "short_name": "HandShake",
+  "description": "개발 성향 분석을 통한 실시간 개발자 매칭 서비스",
+  "start_url": "/home",
+  "display": "standalone",
+  "background_color": "#f9f8fe",
+  "theme_color": "#f9f8fe",
+  "icons": [
+    {
+      "src": "/icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
