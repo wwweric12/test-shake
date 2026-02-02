@@ -24,17 +24,25 @@ import postgresql from '@/assets/icon/logos_postgresql.svg';
 import mysql from '@/assets/icon/mysql.svg';
 import nestjs from '@/assets/icon/nest.js.svg';
 import nextjs from '@/assets/icon/next.js.svg';
+import openGL from '@/assets/icon/OpenGL.svg';
+import oracle from '@/assets/icon/Oracle.svg';
 import photoshop from '@/assets/icon/Photoshop.svg';
 import python from '@/assets/icon/python.svg';
 import pytorch from '@/assets/icon/pytorch.svg';
 import raspberryPi from '@/assets/icon/raspberry_pi.svg';
 import react from '@/assets/icon/react.svg';
 import reactNative from '@/assets/icon/reactnative.svg';
+import django from '@/assets/icon/skill-icons_django.svg';
+import docker from '@/assets/icon/skill-icons_docker.svg';
+import mongodb from '@/assets/icon/skill-icons_mongodb.svg';
 import springboot from '@/assets/icon/spring.svg';
+import spark from '@/assets/icon/streamline-logos_spark-logo-block.svg';
+import svelte from '@/assets/icon/svelte.svg';
 import swift from '@/assets/icon/swift.svg';
 import tensorflow from '@/assets/icon/tensorflow.svg';
 import typescript from '@/assets/icon/typescript.svg';
 import unity from '@/assets/icon/unity.svg';
+import unrealengine from '@/assets/icon/unreal-engine.svg';
 import vue from '@/assets/icon/vue.svg';
 
 export const TECH_SKILL_ICONS: Record<number, string> = {
@@ -60,6 +68,8 @@ export const TECH_SKILL_ICONS: Record<number, string> = {
   36: flutter,
   11: fastApi,
   12: node,
+  6: svelte,
+  10: django,
 
   // Data / AI
   20: pytorch,
@@ -77,11 +87,17 @@ export const TECH_SKILL_ICONS: Record<number, string> = {
   40: kubernetes,
   42: jenkins,
   43: githubActions,
+  17: mongodb,
+  19: oracle,
+  24: spark,
+  39: docker,
 
   // Embedded / Others
   33: arduino,
   32: raspberryPi,
   28: unity,
+  29: unrealengine,
+  30: openGL,
 
   // design
   44: figma,

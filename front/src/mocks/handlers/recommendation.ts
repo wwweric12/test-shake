@@ -5,20 +5,22 @@ import { CandidateResponse } from '@/types/recommendation';
 import { UserInfo } from '@/types/user';
 
 const MOCK_CANDIDATE: UserInfo = {
+  userId: 1,
   nickname: '추천후보1',
   profileImageUrl: 'https://picsum.photos/401',
   experience: true,
-  career: 'student',
+  career: 'freelancer',
   dsti: 'PDAR',
+  matchingPercent: 89.6,
   positions: [6, 2, 3],
-  techSkills: [44, 45, 46],
-  networks: [2, 1, 3],
+  techSkills: [19, 30, 44, 45, 46],
+  networks: [2],
   githubId: 'candidate-github',
   selfIntro:
     '열심히 하겠습니다. 열심히 하겠습니다.열심히 하겠습니다. 열심히 하겠습니다.열심히 하겠습니다. 열심히 하겠습니다.열심히 하겠습니다. 열심히 하겠습니다.열심히 하겠습니다. 열심히 하겠습니다.열심히 하겠습니다. 열심히 하겠습니다.열심히 하겠습니다. 열심히 하겠습니다.열심히 하겠습니다. 열심히 하겠습니다.열심히 하겠습니다. 열심히 하겠습니다.열심히 하겠습니다. 열심히 하겠습니다.열심히 하겠습니다. 열심히 하겠습니다.열심히 하겠습니다. 열심히 하겠습니다.열심히 하겠습니다. 열심히 하겠습니다.',
 };
 
-const TOTAL_LIMIT = 20;
+const TOTAL_LIMIT = 30;
 let totalFetched = 0;
 
 export const recommendationHandlers = [
@@ -55,8 +57,9 @@ export const recommendationHandlers = [
       message: 'OK',
       data: {
         exposureId: Date.now(),
-        remainingCardCnt: 12,
-        quotaDate: new Date().toISOString().split('T')[0],
+        dailyLimit: 30,
+        remainingSwipes: 20,
+        // quotaDate: new Date().toISOString().split('T')[0],
         cards: newCards,
       },
     };
