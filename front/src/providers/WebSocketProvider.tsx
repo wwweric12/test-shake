@@ -20,13 +20,18 @@ interface WebSocketProviderProps {
 }
 
 export function WebSocketProvider({ children, enabled = true }: WebSocketProviderProps) {
+  // WebSocket 연결 상태 관리
   const [connectionStatus, setConnectionStatus] = useState<ConnectionStatus>(
     enabled ? 'CONNECTING' : 'DISCONNECTED',
   );
+  // 연결 여부 플래그
   const [isConnected, setIsConnected] = useState(false);
+  // 에러 상태 저장
   const [error, setError] = useState<Error | null>(null);
+  // 중복 초기화 방지 플래그
   const hasInitialized = useRef(false);
 
+  // WebSocket 이벤트 리스너 등록
   useEffect(() => {
     if (!enabled || hasInitialized.current) return;
 
@@ -49,6 +54,7 @@ export function WebSocketProvider({ children, enabled = true }: WebSocketProvide
       },
     });
 
+    // WebSocket 연결 시작
     if (!webSocketService.isConnected()) {
       webSocketService.connect({
         url: WS_URL,
@@ -60,6 +66,7 @@ export function WebSocketProvider({ children, enabled = true }: WebSocketProvide
     }
 
     return () => {
+      // 클린업 시 연결 해제
       hasInitialized.current = false;
       webSocketService.disconnect();
     };

@@ -101,7 +101,7 @@ export function ChatRoomView({
       isLoadingPreviousRef.current = true;
 
       const oldestMessage = messages[0];
-      const cursor = oldestMessage?.sentAt;
+      const cursor = oldestMessage?.id;
 
       const container = messagesContainerRef.current;
       if (!container) {
@@ -132,7 +132,6 @@ export function ChatRoomView({
       setLoadingPrevious(false);
     }
   };
-
   const getConnectionStatusColor = () => {
     switch (connectionStatus) {
       case 'CONNECTED':

@@ -87,3 +87,10 @@ export interface ChatMessageWithProfile extends ChatMessage {
   senderName?: string;
   senderProfileImageUrl?: string;
 }
+
+// 파트너 정보
+export interface PartnerInfo {
+  partnerId: number;
+  partnerName: string;
+  partnerProfileImage: string | null;
+}

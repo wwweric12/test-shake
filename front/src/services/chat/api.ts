@@ -22,15 +22,18 @@ export const chatApi = {
   enterChatRoom: (chatRoomId: number) =>
     api.get<EnterChatRoomResponse>(`/chat/messages/${chatRoomId}/enter`),
 
-  // GET /chat/messages/{chatRoomId} - 채팅 메시지 페이징 조회
+  // // GET /chat/messages/{chatRoomId} - 채팅 메시지 페이징 조회
   getChatMessages: (chatRoomId: number, cursor?: string, size: number = 50) => {
     const params = new URLSearchParams();
-    if (cursor) params.append('cursor', cursor);
+
+    if (cursor) {
+      params.append('cursor', cursor);
+    }
+
     params.append('size', size.toString());
+
     const queryString = params.toString();
-    return api.get<GetMessagesResponse>(
-      `/chat/messages/${chatRoomId}${queryString ? `?${queryString}` : ''}`,
-    );
+    return api.get<GetMessagesResponse>(`/chat/messages/${chatRoomId}?${queryString}`);
   },
 
   // DELETE /chat/rooms/{chatRoomId}/exit - 채팅방 나가기
