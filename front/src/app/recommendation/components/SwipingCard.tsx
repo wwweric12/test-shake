@@ -17,7 +17,6 @@ interface SwipingCardProps {
 }
 
 export default function SwipingCard({ card }: SwipingCardProps) {
-  const { matchingPercent } = card;
   const networkRotateStyles = ['rotate-[-2deg]', 'rotate-[1deg]', 'rotate-[-1deg]'];
 
   const radius = 87;
@@ -49,20 +48,22 @@ export default function SwipingCard({ card }: SwipingCardProps) {
 
             {/* 프로필 링 */}
             <div className="text-custom-purple relative size-[180px]">
-              <svg className="size-full -rotate-90">
-                <circle
-                  cx="90"
-                  cy="90"
-                  r={radius}
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="3"
-                  strokeLinecap="round"
-                  strokeDasharray={circumference}
-                  strokeDashoffset={circumference - (matchingPercent / 100) * circumference}
-                  className="transition-all duration-1000 ease-out"
-                />
-              </svg>
+              {card.matchingPercent && (
+                <svg className="size-full -rotate-90">
+                  <circle
+                    cx="90"
+                    cy="90"
+                    r={radius}
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="3"
+                    strokeLinecap="round"
+                    strokeDasharray={circumference}
+                    strokeDashoffset={circumference - (card.matchingPercent / 100) * circumference}
+                    className="transition-all duration-1000 ease-out"
+                  />
+                </svg>
+              )}
 
               {/* 내부 이미지 */}
               <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
@@ -85,7 +86,7 @@ export default function SwipingCard({ card }: SwipingCardProps) {
             </div>
 
             {/* DSTI 배지 */}
-            <div className="absolute top-2 -left-4 z-20">
+            <div className="absolute top-2 -left-6 z-20">
               {' '}
               <div className="subhead1 text-custom-deeppurple border-custom-lightpurple flex size-16 items-center justify-center rounded-full border-2 bg-white shadow-md">
                 {card.dsti}
@@ -93,13 +94,14 @@ export default function SwipingCard({ card }: SwipingCardProps) {
             </div>
 
             {/* 매칭 퍼센트 배지 */}
-            <div className="absolute bottom-2 -left-4 z-20">
-              {' '}
-              <div className="border-custom-lightpurple flex size-16 flex-col items-center justify-center rounded-full border-2 bg-white shadow-md">
-                <span className="subhead1 text-custom-deeppurple">{matchingPercent}%</span>
-                <span className="text-custom-deepnavy footout">성향 매치</span>
+            {card.matchingPercent && (
+              <div className="absolute bottom-2 -left-6 z-20">
+                <div className="border-custom-lightpurple flex size-16 flex-col items-center justify-center rounded-full border-2 bg-white shadow-md">
+                  <span className="subhead1 text-custom-deeppurple">{card.matchingPercent}%</span>
+                  <span className="text-custom-deepnavy caption1">성향 매치</span>
+                </div>
               </div>
-            </div>
+            )}
           </div>
 
           {/* Name & Github */}

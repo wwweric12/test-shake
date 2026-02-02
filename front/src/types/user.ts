@@ -22,7 +22,7 @@ export interface UserProfile {
 export interface UserInfo extends UserProfile {
   userId: number;
   dsti: string;
-  matchingPercent: number;
+  matchingPercent?: number;
 }
 
 // Request
