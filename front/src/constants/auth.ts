@@ -137,3 +137,11 @@ export const TECH_SKILLS: Record<TechSkill, { label: string; key: string }> = {
 
 export const getPositionLabel = (idx: number) => POSITIONS[idx]?.label ?? '';
 export const getTechSkillLabel = (idx: number) => TECH_SKILLS[idx]?.label ?? '';
+
+export const USER_ROLE = {
+  GUEST: 'ROLE_GUEST',
+  PRE_USER: 'ROLE_PRE_USER',
+  USER: 'ROLE_USER',
+} as const;
+
+export type UserRole = (typeof USER_ROLE)[keyof typeof USER_ROLE];
