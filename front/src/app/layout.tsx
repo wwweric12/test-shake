@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 
+import LayoutWrapper from '@/components/common/LayoutWrapper';
 import { MSWProvider } from '@/providers/MSWProvider';
 import { QueryProvider } from '@/providers/QueryProvider';
 
@@ -18,7 +19,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <MSWProvider>
             <div className="bg-custom-white relative flex h-dvh w-full max-w-[440px] min-w-[375px] flex-col overflow-hidden shadow-xl">
               <main className="custom-scrollbar flex flex-1 flex-col overflow-y-auto">
-                {children}
+                <LayoutWrapper>{children}</LayoutWrapper>
               </main>
             </div>
           </MSWProvider>

@@ -238,6 +238,7 @@ export default function Step1Profile({ data, onUpdate, onNext }: StepProps) {
         </div>
 
         <SelectionModal
+          key={isPositionModalOpen ? 'openPositionModal' : 'closedPositionModal'}
           isOpen={isPositionModalOpen}
           onClose={() => setIsPositionModalOpen(false)}
           title="직무 추가"
@@ -248,6 +249,7 @@ export default function Step1Profile({ data, onUpdate, onNext }: StepProps) {
           className="h-auto"
         />
         <SelectionModal
+          key={isStackModalOpen ? 'openStackModal' : 'closedStackModal'}
           isOpen={isStackModalOpen}
           onClose={() => setIsStackModalOpen(false)}
           title="스킬 추가"
