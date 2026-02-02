@@ -22,6 +22,15 @@ export const useUserProfile = () => {
   });
 };
 
+export const useOtherUserProfile = (userId: number) => {
+  return useQuery({
+    queryKey: [...QUERY_KEYS.USER.INFO(), userId],
+    queryFn: () => userApi.getOtherUserInfo(userId),
+    enabled: !!userId,
+    staleTime: 1000 * 60 * 5,
+  });
+};
+
 export const useCheckNicknameMutation = () => {
   return useMutation({
     mutationFn: (nickname: string): Promise<CheckNicknameResponse> =>
