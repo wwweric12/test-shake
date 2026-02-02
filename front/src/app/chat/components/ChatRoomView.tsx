@@ -11,6 +11,7 @@ import { Input } from '@/components/ui/Input';
 import { MESSAGE_MAX_LENGTH } from '@/constants/message';
 import { ChatMessageWithProfile } from '@/types/chat';
 import { ConnectionStatus } from '@/types/webSocket';
+import { formatMessageTime } from '@/utils/dateFormat';
 
 import { LeaveRoomButton } from './LeaveRoomButton';
 import { ReportButton } from './ReportButton';
@@ -73,15 +74,6 @@ export function ChatRoomView({
     previousMessagesLengthRef.current = messages.length;
   }, [messages]);
 
-  const formatTime = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleTimeString('ko-KR', {
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: true,
-    });
-  };
-
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const trimmed = input.trim();
@@ -100,6 +92,7 @@ export function ChatRoomView({
       setLoadingPrevious(true);
       isLoadingPreviousRef.current = true;
 
+      // 메세지 id 기반 무한 스크롤링 구현
       const oldestMessage = messages[0];
       const cursor = oldestMessage?.id;
 
@@ -221,7 +214,7 @@ export function ChatRoomView({
                       msg.isMine ? 'text-white' : 'text-custom-deepgray'
                     }`}
                   >
-                    {formatTime(msg.sentAt)}
+                    {formatMessageTime(msg.sentAt)}
                   </div>
                 </div>
               </div>

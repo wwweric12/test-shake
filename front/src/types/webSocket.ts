@@ -7,9 +7,7 @@ import { ReceivedMessage } from '@/types/chat';
 // WebSocket 연결 상태
 export type ConnectionStatus = 'CONNECTING' | 'CONNECTED' | 'DISCONNECTED' | 'ERROR';
 
-/**
- * WebSocket 연결 설정
- */
+//WebSocket 연결 설정
 export interface WebSocketConfig {
   url: string; // WebSocket 엔드포인트 URL (예: https://api.hand-shake.site/ws)
   reconnectDelay?: number; // 재연결 대기 시간 (ms)
@@ -17,31 +15,6 @@ export interface WebSocketConfig {
   heartbeatOutgoing?: number; // 서버로 heartbeat 전송 간격 (ms)
   debug?: boolean; // 디버그 모드
 }
-
-/**
- * 백엔드 /pub/chat/{chatRoomId}/send 요청 Payload
- * @MessageMapping("/chat/{chatRoomId}/send")
- */
-export interface SendMessagePayload {
-  content: string; // 메시지 내용
-}
-
-/**
- * 백엔드 /sub/chat/{chatRoomId} 구독 시 수신하는 메시지
- * ChatMessageResponse 타입
- * 필드명이 겹치더라도, WebSocket 메시지는 UI에 즉시 반영되는 실시간 이벤트라는 특수성을 반영해야 하므로 별도 타입으로 관리
- */
-export interface ReceivedChatMessage {
-  messageId: string; // 메시지 ID
-  chatRoomId: number; // 채팅방 ID
-  senderId: number; // 발신자 ID
-  senderName: string; // 발신자 닉네임
-  senderProfileImageUrl: string; // 발신자 프로필 이미지
-  content: string; // 메시지 내용
-  sentAt: string; // 전송 시각 (ISO 8601 형식: 2026-01-29T21:11:01)
-  isRead: boolean; // 읽음 여부
-}
-
 // WebSocket 연결 상태 정보
 export interface WebSocketConnectionState {
   status: ConnectionStatus; // 연결 상태

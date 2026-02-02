@@ -1,19 +1,19 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 import { MESSAGE_PAGE_SIZE } from '@/constants/message';
+import { QUERY_KEYS } from '@/constants/queryKeys';
 import { chatApi } from '@/services/chat/api';
-import { ChatMessageWithProfile } from '@/types/chat';
+import { ChatMessageWithProfile, PartnerInfo } from '@/types/chat';
+import { convertApiMessageToProfile } from '@/utils/chatMessageConverter';
 
 import { useWebSocketChat } from './useWebSocketChat';
+
+import { useQueryClient } from '@tanstack/react-query';
 
 interface UseChatRoomParams {
   roomId: number;
   currentUserId: number;
-  partnerInfo?: {
-    partnerId: number;
-    partnerName: string;
-    partnerProfileImage: string | null;
-  };
+  partnerInfo?: PartnerInfo;
   enabled?: boolean;
 }
 
@@ -23,6 +23,7 @@ export function useChatRoom({
   partnerInfo,
   enabled = true,
 }: UseChatRoomParams) {
+  const queryClient = useQueryClient();
   // 무한 스크롤로 추가 로드된 이전 메시지 저장
   const [additionalMessages, setAdditionalMessages] = useState<ChatMessageWithProfile[]>([]);
 
@@ -41,6 +42,22 @@ export function useChatRoom({
     enabled,
   });
 
+  // 채팅방 입장 시 읽음 처리 (채팅방 목록 캐시 갱신)
+  useEffect(() => {
+    if (enabled && roomId) {
+      // 채팅방 목록 캐시 무효화 → 읽지 않은 메시지 수 업데이트
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.CHAT.ROOMS() });
+    }
+  }, [roomId, enabled, queryClient]);
+
+  // 채팅방 나갈 때도 캐시 갱신
+  useEffect(() => {
+    return () => {
+      // 언마운트 시 채팅방 목록 갱신
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.CHAT.ROOMS() });
+    };
+  }, [queryClient]);
+
   // 이전 메시지 페이징 로드 (무한 스크롤)
   const loadPreviousMessages = useCallback(
     async (cursor?: string) => {
@@ -52,16 +69,9 @@ export function useChatRoom({
       }
 
       // API 응답을 UI용 메시지로 변환
-      const loadedMessages: ChatMessageWithProfile[] = response.data.content.content.map((msg) => {
-        const isMine = msg.senderId === currentUserId;
-
-        return {
-          ...msg,
-          isMine,
-          senderName: isMine ? undefined : partnerInfo?.partnerName,
-          senderProfileImageUrl: isMine ? undefined : partnerInfo?.partnerProfileImage || undefined,
-        };
-      });
+      const loadedMessages: ChatMessageWithProfile[] = response.data.content.content.map((msg) =>
+        convertApiMessageToProfile(msg, currentUserId, partnerInfo),
+      );
 
       setAdditionalMessages((prev) => {
         const existingIds = new Set([...prev.map((m) => m.id), ...wsMessages.map((m) => m.id)]);

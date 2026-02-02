@@ -3,7 +3,6 @@
 import { useMemo } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 
-import BottomNavigation from '@/components/common/BottomNavigation';
 import { useChatRooms } from '@/services/chat/hooks';
 import { ChatRoom } from '@/types/chat';
 

@@ -12,10 +12,9 @@
 //  */
 import SockJS, { Options as SockJSOptions } from 'sockjs-client';
 
-import { ReceivedMessage } from '@/types/chat';
+import { ReceivedMessage, ReceivedMessageData, SendMessageRequest } from '@/types/chat';
 import {
   ConnectionStatus,
-  SendMessagePayload,
   StompSubscription,
   WebSocketConfig,
   WebSocketEventListeners,
@@ -34,7 +33,7 @@ class WebSocketService {
   private reconnectAttempts = 0;
   private maxReconnectAttempts = 5;
   private eventListeners: WebSocketEventListeners = {};
-  public messageHandlers: Map<number, (message: ReceivedMessage) => void> = new Map();
+  public messageHandlers: Map<number, (message: ReceivedMessageData) => void> = new Map();
 
   connect(config: WebSocketConfig): void {
     if (this.client?.connected || this.connectionStatus === 'CONNECTING') return;
@@ -103,7 +102,7 @@ class WebSocketService {
 
   subscribe(
     chatRoomId: number,
-    onMessage: (message: ReceivedMessage) => void,
+    onMessage: (messageData: ReceivedMessageData) => void,
   ): StompSubscription | null {
     this.messageHandlers.set(chatRoomId, onMessage);
 
@@ -116,10 +115,16 @@ class WebSocketService {
     const destination = `/user/queue/chat/${chatRoomId}`;
     const subscription = this.client.subscribe(destination, (message: IMessage) => {
       const parsed = JSON.parse(message.body);
-      const actualMessage: ReceivedMessage = parsed.data?.message || parsed;
+      // 수정: data.message와 data.isMine을 함께 전달
+      const messageData: ReceivedMessageData = {
+        message: parsed.data.message,
+        isMine: parsed.data.isMine, // 백엔드가 계산한 값
+      };
 
-      onMessage(actualMessage);
-      this.eventListeners.onMessage?.(actualMessage);
+      onMessage(messageData);
+
+      // eventListener는 호환성을 위해 message만 전달
+      this.eventListeners.onMessage?.(messageData.message);
     });
 
     this.subscriptions.set(chatRoomId, subscription);
@@ -141,7 +146,7 @@ class WebSocketService {
     }
 
     const destination = `/pub/chat/${chatRoomId}/send`;
-    const payload: SendMessagePayload = { content };
+    const payload: SendMessageRequest = { content };
 
     this.client.publish({
       destination,
@@ -165,6 +170,7 @@ class WebSocketService {
     this.eventListeners = { ...this.eventListeners, ...listeners };
   }
 }
+
 /**
  * 쿠키에서 ACCESS_TOKEN 추출
  * 백엔드의 JwtHandshakeInterceptor가 쿠키를 읽어 인증 처리

@@ -20,7 +20,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <MSWProvider>
             <div className="bg-custom-white relative flex h-dvh w-full max-w-[440px] min-w-[375px] flex-col overflow-hidden shadow-xl">
               <main className="custom-scrollbar flex flex-1 flex-col overflow-y-auto">
-                {/* 개발 환경에서만 디버그 패널 표시 */}
                 <LayoutWrapper>
                   {children}
                   {/* 개발 환경에서만 디버그 패널 표시 */}

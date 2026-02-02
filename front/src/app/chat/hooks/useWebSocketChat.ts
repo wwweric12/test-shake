@@ -4,19 +4,20 @@ import { WS_URL } from '@/constants/api';
 import { QUERY_KEYS } from '@/constants/queryKeys';
 import { useEnterChatRoom } from '@/services/chat/hooks';
 import { webSocketService } from '@/services/chat/websocket';
-import { ChatMessageWithProfile, ReceivedMessage } from '@/types/chat';
+import { ChatMessageWithProfile, ReceivedMessageData } from '@/types/chat';
+import { PartnerInfo } from '@/types/chat';
 import { ConnectionStatus } from '@/types/webSocket';
+import {
+  convertApiMessageToProfile,
+  convertWsMessageToProfile,
+} from '@/utils/chatMessageConverter';
 
 import { useQueryClient } from '@tanstack/react-query';
 
 interface UseWebSocketChatParams {
   chatRoomId: number;
   currentUserId: number;
-  partnerInfo?: {
-    partnerId: number;
-    partnerName: string;
-    partnerProfileImage: string | null;
-  };
+  partnerInfo?: PartnerInfo;
   enabled?: boolean;
 }
 
@@ -51,60 +52,10 @@ export function useWebSocketChat({
   const { data: enterData, isLoading, error: enterError } = useEnterChatRoom(chatRoomId, enabled);
 
   // WebSocket 수신 메시지를 UI용 메시지로 변환
-  const convertToMessageWithProfile = useCallback(
-    (received: ReceivedMessage): ChatMessageWithProfile => {
-      const isMine = received.senderId === currentUserId;
-
-      return {
-        id: received.messageId,
-        chatRoomId: received.chatRoomId,
-        senderId: received.senderId,
-        content: received.content,
-        sentAt: received.sentAt,
-        isRead: received.isRead,
-        isMine,
-        senderName: isMine ? undefined : received.senderName,
-        senderProfileImageUrl: isMine ? undefined : received.senderProfileImageUrl,
-      };
-    },
-    [currentUserId],
-  );
-
-  // REST API로 받은 초기 메시지를 UI용 형태로 변환
-  const initialMessages = useMemo(() => {
-    const contentData = enterData?.data?.content?.content;
-    if (!contentData) return [];
-
-    return contentData.map((msg) => {
-      const isMine = msg.senderId === currentUserId;
-
-      return {
-        ...msg,
-        isMine,
-        senderName: isMine ? undefined : partnerInfo?.partnerName,
-        senderProfileImageUrl: isMine ? undefined : partnerInfo?.partnerProfileImage || undefined,
-      } as ChatMessageWithProfile;
-    });
-  }, [
-    enterData?.data?.content?.content,
-    currentUserId,
-    partnerInfo?.partnerName,
-    partnerInfo?.partnerProfileImage,
-  ]);
-
-  // 초기 메시지와 실시간 메시지 병합 후 시간순 정렬
-  const messages = useMemo(() => {
-    const initialIds = new Set(initialMessages.map((m) => m.id));
-    const newRealtimeMessages = realtimeMessages.filter((m) => !initialIds.has(m.id));
-
-    const combined = [...initialMessages, ...newRealtimeMessages];
-    return combined.sort((a, b) => new Date(a.sentAt).getTime() - new Date(b.sentAt).getTime());
-  }, [initialMessages, realtimeMessages]);
-
-  // WebSocket으로 새 메시지 수신 시 처리
   const handleMessageReceived = useCallback(
-    (received: ReceivedMessage) => {
-      const newMsg = convertToMessageWithProfile(received);
+    (receivedData: ReceivedMessageData) => {
+      const newMsg = convertWsMessageToProfile(receivedData);
+
       if (!newMsg.id) return;
 
       // 중복 메시지 필터링 후 상태 업데이트
@@ -116,8 +67,25 @@ export function useWebSocketChat({
       // 채팅방 목록 캐시 갱신
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.CHAT.ROOMS() });
     },
-    [convertToMessageWithProfile, queryClient],
+    [queryClient],
   );
+
+  // REST API로 받은 초기 메시지를 UI용 형태로 변환 (currentUserId로 계산)
+  const initialMessages = useMemo(() => {
+    const contentData = enterData?.data?.content?.content;
+    if (!contentData) return [];
+
+    return contentData.map((msg) => convertApiMessageToProfile(msg, currentUserId, partnerInfo));
+  }, [enterData?.data?.content?.content, currentUserId, partnerInfo]);
+
+  // 초기 메시지와 실시간 메시지 병합 후 시간순 정렬
+  const messages = useMemo(() => {
+    const initialIds = new Set(initialMessages.map((m) => m.id));
+    const newRealtimeMessages = realtimeMessages.filter((m) => !initialIds.has(m.id));
+
+    const combined = [...initialMessages, ...newRealtimeMessages];
+    return combined.sort((a, b) => new Date(a.sentAt).getTime() - new Date(b.sentAt).getTime());
+  }, [initialMessages, realtimeMessages]);
 
   // WebSocket 연결 설정
   useEffect(() => {

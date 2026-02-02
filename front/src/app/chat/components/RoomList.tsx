@@ -12,6 +12,7 @@ import { motion } from 'framer-motion';
 import EmptyChatIcon from '@/assets/icon/chat-dashed.svg';
 import { Badge } from '@/components/ui/Badge';
 import { ChatRoom } from '@/types/chat';
+import { formatChatTime } from '@/utils/dateFormat';
 
 interface RoomListProps {
   rooms: ChatRoom[]; // 채팅방 목록
@@ -25,38 +26,6 @@ interface RoomListProps {
  * 각 채팅방의 마지막 메시지, 시간, 읽지 않은 메시지 수 표시
  */
 export function RoomList({ rooms, onSelectRoom, isLoading, error }: RoomListProps) {
-  /**
-   * 시간 포맷팅
-   * 24시간 이내: 오전/오후 hh:mm
-   * 24시간 이후: M월 D일
-   */
-  const formatTime = (timestamp?: string) => {
-    if (!timestamp) return '';
-
-    try {
-      const date = new Date(timestamp);
-      const now = new Date();
-      const diffInHours = (now.getTime() - date.getTime()) / (1000 * 60 * 60);
-
-      // 24시간 이내면 시간만 표시
-      if (diffInHours < 24) {
-        return date.toLocaleTimeString('ko-KR', {
-          hour: '2-digit',
-          minute: '2-digit',
-          hour12: true,
-        });
-      }
-
-      // 24시간 이후면 날짜 표시
-      return date.toLocaleDateString('ko-KR', {
-        month: 'long',
-        day: 'numeric',
-      });
-    } catch {
-      return '';
-    }
-  };
-
   // 전체 읽지 않은 메시지 수 계산
   const totalUnreadCount = rooms.reduce((sum, room) => sum + room.unreadCount, 0);
 
@@ -150,7 +119,7 @@ export function RoomList({ rooms, onSelectRoom, isLoading, error }: RoomListProp
                   {/* 나머지 코드 동일 */}
                   <div className="flex h-full flex-col items-end justify-between gap-1">
                     <span className="footnote text-gray-500">
-                      {formatTime(room.lastMessageTime)}
+                      {formatChatTime(room.lastMessageTime)}
                     </span>
                     {room.unreadCount > 0 && (
                       <Badge className="bg-custom-red flex h-5 min-w-5 items-center justify-center px-1 text-white">
