@@ -151,19 +151,6 @@ export default function Step2Networking({ data, onUpdate, onNext }: StepProps) {
         <section>
           <label className="body1 text-custom-realblack mb-3 block">자기소개</label>
 
-          {/* <div className="relative">
-            <Textarea
-              placeholder={SIGNUP_PLACEHOLDERS.SELF_INTRO}
-              className="subhead3 bg-custom-realwhite text-custom-realblack border-gray min-h-[200px] w-full resize-none p-4 leading-relaxed transition-all outline-none focus:border-blue-400 focus-visible:ring-0"
-              value={localSelfIntro}
-              onChange={handleSelfIntroChange}
-              maxLength={200}
-            />
-
-            <p className="footnote text-custom-deepgray absolute right-3 bottom-3">
-              {localSelfIntro.length}/200
-            </p>
-          </div> */}
           <div className="relative">
             <Textarea
               placeholder={SIGNUP_PLACEHOLDERS.SELF_INTRO}
