@@ -19,14 +19,16 @@ interface OverlayElements {
   skipOverlay: HTMLElement | null;
 }
 
+type InteractionState = 'IDLE' | 'PENDING' | 'SWIPING' | 'SCROLLING';
+
 export default function SwipeDeck({ cards, onSwipe }: SwipeDeckProps) {
   const [isInteracting, setIsInteracting] = useState(false);
   const activeIndex = cards.length - 1;
 
-  // 제스처 상태 관리 Ref (렌더링 방지)
+  // 제스처 상태 관리 Ref
   const startPosRef = useRef({ x: 0, y: 0 });
-  const interactionStateRef = useRef<'IDLE' | 'SWIPING' | 'SCROLLING'>('IDLE');
-  const isDraggingRef = useRef(false); // 실제로 드래그(클릭) 중인가? (hover 방지)
+  const interactionStateRef = useRef<InteractionState>('IDLE');
+  const isDraggingRef = useRef(false);
   const currentProgressRef = useRef(0);
 
   const overlaysRef = useRef<OverlayElements>({
@@ -45,14 +47,16 @@ export default function SwipeDeck({ cards, onSwipe }: SwipeDeckProps) {
   }, []);
 
   const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
-    // 1. 초기화
     startPosRef.current = { x: e.clientX, y: e.clientY };
-    isDraggingRef.current = true; // 드래그 시작
-    interactionStateRef.current = 'IDLE';
+    isDraggingRef.current = true;
+    interactionStateRef.current = 'PENDING';
     currentProgressRef.current = 0;
 
     const element = e.currentTarget;
     element.style.transition = 'none';
+
+    // 🔥 iOS 안정화 핵심
+    element.setPointerCapture(e.pointerId);
 
     overlaysRef.current = {
       likeBadge: element.querySelector('[data-badge="like"]') as HTMLElement,
@@ -62,70 +66,71 @@ export default function SwipeDeck({ cards, onSwipe }: SwipeDeckProps) {
     };
   };
 
+  const DIRECTION_THRESHOLD = 12;
+
   const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
     if (!isDraggingRef.current) return;
 
     const element = e.currentTarget;
     const dx = e.clientX - startPosRef.current.x;
     const dy = e.clientY - startPosRef.current.y;
+
     const absX = Math.abs(dx);
     const absY = Math.abs(dy);
 
-    if (interactionStateRef.current === 'SCROLLING') return;
+    // 🔥 아직 방향 미정
+    if (interactionStateRef.current === 'PENDING') {
+      e.preventDefault(); // iOS 제스처 판단 차단
+
+      if (absX < DIRECTION_THRESHOLD && absY < DIRECTION_THRESHOLD) return;
+
+      if (absY > absX) {
+        // 세로 스크롤로 확정
+        interactionStateRef.current = 'SCROLLING';
+
+        // 브라우저에게 제어권 반환
+        if (element.hasPointerCapture(e.pointerId)) {
+          element.releasePointerCapture(e.pointerId);
+        }
+        return;
+      }
+
+      // 가로 스와이프로 확정
+      interactionStateRef.current = 'SWIPING';
+      setIsInteracting(true);
+    }
 
     if (interactionStateRef.current === 'SWIPING') {
-      if (e.cancelable) e.preventDefault(); // 브라우저 스크롤 차단
+      e.preventDefault();
 
       const rotateDeg = (dx / 600) * -30;
-
-      element.style.transform = `translate(${dx}px, ${dy * 0.1}px) rotate(${rotateDeg}deg)`;
+      element.style.transform = `translate(${dx}px, ${dy * 0.2}px) rotate(${rotateDeg}deg)`;
 
       const progressVal = clamp(dx / 150, -1, 1);
       currentProgressRef.current = progressVal;
+
       updateOverlays(progressVal);
-      return;
-    }
-
-    if (interactionStateRef.current === 'IDLE') {
-      if (absX < 5 && absY < 5) return;
-
-      if (absY > absX) {
-        interactionStateRef.current = 'SCROLLING';
-        return;
-      }
-      if (e.cancelable) e.preventDefault();
-
-      interactionStateRef.current = 'SWIPING';
-      setIsInteracting(true);
-      element.setPointerCapture(e.pointerId);
-
-      const rotateDeg = (dx / 600) * -30;
-      element.style.transform = `translate(${dx}px, ${dy * 0.1}px) rotate(${rotateDeg}deg)`;
     }
   };
 
   const handlePointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
-    isDraggingRef.current = false; // 1. 드래그 종료 (모든 경로에서 공통)
     const element = e.currentTarget;
+    isDraggingRef.current = false;
 
-    // 캡처 해제
     if (element.hasPointerCapture(e.pointerId)) {
       element.releasePointerCapture(e.pointerId);
     }
 
-    // 스크롤 중이었다면 그냥 리셋하고 종료
     if (interactionStateRef.current === 'SCROLLING') {
       interactionStateRef.current = 'IDLE';
       return;
     }
 
     if (interactionStateRef.current !== 'SWIPING') {
-      // 클릭만 하고 끝난 경우 등
       resetCard(element);
       return;
     }
 
-    // 스와이프 결과 처리
     const progress = currentProgressRef.current;
     const isActionTriggered = Math.abs(progress) >= 0.5;
     const isGood = progress > 0;
@@ -138,29 +143,22 @@ export default function SwipeDeck({ cards, onSwipe }: SwipeDeckProps) {
 
       timerRef.current = setTimeout(() => {
         onSwipe(isGood ? 'right' : 'left', cards[activeIndex]);
-
-        // 상태 초기화
         setIsInteracting(false);
         interactionStateRef.current = 'IDLE';
-        startPosRef.current = { x: 0, y: 0 };
-        // overlaysRef는 다음 터치 때 덮어씌워지므로 초기화 안 해도 됨
       }, 300);
     } else {
       resetCard(element);
     }
   };
 
-  // 카드 위치 및 오버레이 초기화 헬퍼 함수
   const resetCard = (element: HTMLElement) => {
     element.style.transform = 'translate(0px, 0px) rotate(0deg)';
     updateOverlays(0);
     setIsInteracting(false);
     interactionStateRef.current = 'IDLE';
-    isDraggingRef.current = false; // 드래그 종료
     startPosRef.current = { x: 0, y: 0 };
   };
 
-  // 오버레이 업데이트 헬퍼 함수
   const updateOverlays = (progress: number) => {
     const { likeBadge, skipBadge, likeOverlay, skipOverlay } = overlaysRef.current;
 
@@ -197,30 +195,28 @@ export default function SwipeDeck({ cards, onSwipe }: SwipeDeckProps) {
               transition: isInteracting && isTop ? 'none' : 'transform 0.3s ease-out',
               touchAction: 'pan-y',
               userSelect: 'none',
-              WebkitTouchCallout: 'none',
               WebkitUserSelect: 'none',
-              overscrollBehavior: 'none',
+              WebkitTouchCallout: 'none',
             }}
-            onDragStart={(e) => e.preventDefault()}
             onPointerDown={isTop ? handlePointerDown : undefined}
             onPointerMove={isTop ? handlePointerMove : undefined}
             onPointerUp={isTop ? handlePointerUp : undefined}
             onPointerCancel={isTop ? handlePointerUp : undefined}
             onPointerLeave={isTop ? handlePointerUp : undefined}
           >
-            {/* 오버레이 렌더링 (기존과 동일) */}
+            {/* BADGE */}
             {isTop && (
               <>
                 <div
                   data-badge="like"
-                  className="pointer-events-none absolute top-10 left-10 z-50 rounded-lg border-4 border-green-500 bg-white/20 p-2 px-4 shadow-lg backdrop-blur-sm transition-opacity duration-200"
+                  className="pointer-events-none absolute top-10 left-10 z-50 rounded-lg border-4 border-green-500 bg-white/20 p-2 px-4 shadow-lg backdrop-blur-sm"
                   style={{ opacity: 0, transform: 'rotate(-12deg)' }}
                 >
                   <span className="text-4xl font-bold text-green-500">LIKE</span>
                 </div>
                 <div
                   data-badge="skip"
-                  className="pointer-events-none absolute top-10 right-10 z-50 rounded-lg border-4 border-red-500 bg-white/20 p-2 px-4 shadow-lg backdrop-blur-sm transition-opacity duration-200"
+                  className="pointer-events-none absolute top-10 right-10 z-50 rounded-lg border-4 border-red-500 bg-white/20 p-2 px-4 shadow-lg backdrop-blur-sm"
                   style={{ opacity: 0, transform: 'rotate(12deg)' }}
                 >
                   <span className="text-4xl font-bold text-red-500">SKIP</span>
@@ -232,16 +228,17 @@ export default function SwipeDeck({ cards, onSwipe }: SwipeDeckProps) {
               <SwipingCard card={card} />
             </div>
 
+            {/* OVERLAY */}
             {isTop && (
               <>
                 <div
                   data-overlay="like"
-                  className="pointer-events-none absolute inset-0 z-40 rounded-[30px] bg-green-500 transition-opacity duration-200"
+                  className="pointer-events-none absolute inset-0 z-40 rounded-[30px] bg-green-500"
                   style={{ opacity: 0 }}
                 />
                 <div
                   data-overlay="skip"
-                  className="pointer-events-none absolute inset-0 z-40 rounded-[30px] bg-red-500 transition-opacity duration-200"
+                  className="pointer-events-none absolute inset-0 z-40 rounded-[30px] bg-red-500"
                   style={{ opacity: 0 }}
                 />
               </>
