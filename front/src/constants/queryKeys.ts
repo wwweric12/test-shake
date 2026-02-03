@@ -16,8 +16,6 @@ export const QUERY_KEYS = {
   NOTIFICATION: {
     ALL: ['notification'] as const,
     LIST: () => [...QUERY_KEYS.NOTIFICATION.ALL, 'list'] as const,
-    //TODO: 수정 중
-    // TARGET_PROFILE: () => [...QUERY_KEYS.NOTIFICATION.ALL, 'target-profile'] as const,
   },
   CHAT: {
     ALL: ['chat'] as const,

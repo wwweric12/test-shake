@@ -17,7 +17,4 @@ export const notificationApi = {
       `/notifications/${notificationId}`,
       data,
     ),
-
-  //TODO: 아직 수정 중
-  //   getTargetProfile: () => api.get<TargetProfileResponse>('/notifications/target-user-profile'),
 };
