@@ -189,9 +189,12 @@ export default function SwipeDeck({ cards, onSwipe }: SwipeDeckProps) {
                 : 'none',
               opacity: !isTop && cards.length - 1 - index > 2 ? 0 : 1,
               transition: isInteracting && isTop ? 'none' : 'transform 0.3s ease-out',
-              touchAction: 'pan-y',
+              touchAction: 'none',
               userSelect: 'none',
+              WebkitTouchCallout: 'none',
+              WebkitUserSelect: 'none',
             }}
+            onDragStart={(e) => e.preventDefault()}
             onPointerDown={isTop ? handlePointerDown : undefined}
             onPointerMove={isTop ? handlePointerMove : undefined}
             onPointerUp={isTop ? handlePointerUp : undefined}
