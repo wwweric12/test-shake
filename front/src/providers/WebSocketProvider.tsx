@@ -3,8 +3,12 @@
 import { createContext, useContext, useEffect, useRef, useState } from 'react';
 
 import { WS_URL } from '@/constants/api';
+import { QUERY_KEYS } from '@/constants/queryKeys';
 import { webSocketService } from '@/services/chat/websocket';
+import { ChatListUpdateData, ChatRoom, ChatRoomListResponse } from '@/types/chat';
 import { ConnectionStatus } from '@/types/webSocket';
+
+import { useQueryClient } from '@tanstack/react-query';
 
 interface WebSocketContextValue {
   connectionStatus: ConnectionStatus;
@@ -20,18 +24,15 @@ interface WebSocketProviderProps {
 }
 
 export function WebSocketProvider({ children, enabled = true }: WebSocketProviderProps) {
-  // WebSocket 연결 상태 관리
+  const queryClient = useQueryClient();
   const [connectionStatus, setConnectionStatus] = useState<ConnectionStatus>(
     enabled ? 'CONNECTING' : 'DISCONNECTED',
   );
-  // 연결 여부 플래그
   const [isConnected, setIsConnected] = useState(false);
-  // 에러 상태 저장
   const [error, setError] = useState<Error | null>(null);
-  // 중복 초기화 방지 플래그
   const hasInitialized = useRef(false);
 
-  // WebSocket 이벤트 리스너 등록
+  // WebSocket 연결
   useEffect(() => {
     if (!enabled || hasInitialized.current) return;
 
@@ -54,7 +55,6 @@ export function WebSocketProvider({ children, enabled = true }: WebSocketProvide
       },
     });
 
-    // WebSocket 연결 시작
     if (!webSocketService.isConnected()) {
       webSocketService.connect({
         url: WS_URL,
@@ -66,11 +66,51 @@ export function WebSocketProvider({ children, enabled = true }: WebSocketProvide
     }
 
     return () => {
-      // 클린업 시 연결 해제
       hasInitialized.current = false;
       webSocketService.disconnect();
     };
   }, [enabled]);
+
+  // 채팅 목록 실시간 업데이트 구독
+  useEffect(() => {
+    if (!isConnected) return;
+
+    webSocketService.subscribeChatListUpdate((updateData: ChatListUpdateData) => {
+      queryClient.setQueryData<ChatRoomListResponse>(QUERY_KEYS.CHAT.ROOMS(), (oldData) => {
+        if (!oldData?.data?.content) return oldData;
+
+        const updatedContent = oldData.data.content.map((room: ChatRoom) => {
+          if (room.chatRoomId === updateData.chatRoomId) {
+            return {
+              ...room,
+              lastMessage: updateData.lastMessage,
+              lastMessageTime: updateData.lastMessageTime,
+              unreadCount: updateData.unreadCount,
+            };
+          }
+          return room;
+        });
+
+        updatedContent.sort((a, b) => {
+          return new Date(b.lastMessageTime).getTime() - new Date(a.lastMessageTime).getTime();
+        });
+
+        return {
+          ...oldData,
+          data: {
+            ...oldData.data,
+            content: updatedContent,
+          },
+        };
+      });
+
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.CHAT.UNREAD_COUNT() });
+    });
+
+    return () => {
+      webSocketService.unsubscribeChatListUpdate();
+    };
+  }, [isConnected, queryClient]);
 
   const value: WebSocketContextValue = {
     connectionStatus,

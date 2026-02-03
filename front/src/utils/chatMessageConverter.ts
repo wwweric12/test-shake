@@ -13,12 +13,16 @@ export function convertApiMessageToProfile(
   partnerInfo?: PartnerInfo,
 ): ChatMessageWithProfile {
   const isMine = msg.senderId === currentUserId;
-
+  const profileImage =
+    partnerInfo?.partnerProfileImage && partnerInfo.partnerProfileImage.trim() !== ''
+      ? partnerInfo.partnerProfileImage
+      : undefined;
   return {
     ...msg,
     isMine,
     senderName: isMine ? undefined : partnerInfo?.partnerName,
-    senderProfileImageUrl: isMine ? undefined : partnerInfo?.partnerProfileImage || undefined,
+    senderProfileImageUrl: isMine ? undefined : profileImage,
+    dsti: partnerInfo?.partnerDsti || '',
   };
 }
 
@@ -28,7 +32,10 @@ export function convertWsMessageToProfile(
   receivedData: ReceivedMessageData, // message + isMine을 함께 받음
 ): ChatMessageWithProfile {
   const { message, isMine } = receivedData;
-
+  const profileImage =
+    message.senderProfileImageUrl && message.senderProfileImageUrl.trim() !== ''
+      ? message.senderProfileImageUrl
+      : undefined;
   return {
     id: message.messageId,
     chatRoomId: message.chatRoomId,
@@ -38,6 +45,7 @@ export function convertWsMessageToProfile(
     isRead: message.isRead,
     isMine, // 백엔드가 보낸 값 그대로 사용
     senderName: isMine ? undefined : message.senderName,
-    senderProfileImageUrl: isMine ? undefined : message.senderProfileImageUrl,
+    senderProfileImageUrl: isMine ? undefined : profileImage,
+    dsti: message.dsti || '',
   };
 }

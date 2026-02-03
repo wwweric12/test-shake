@@ -8,6 +8,7 @@ import FileIcon from '@/assets/icon/file-code.svg';
 import SendIcon from '@/assets/icon/paper-plane-right.svg';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
+import { DSTI_CHARACTERS } from '@/constants/dsti';
 import { MESSAGE_MAX_LENGTH } from '@/constants/message';
 import { ChatMessageWithProfile } from '@/types/chat';
 import { ConnectionStatus } from '@/types/webSocket';
@@ -151,7 +152,7 @@ export function ChatRoomView({
           {process.env.NODE_ENV === 'development' && (
             <div className="ml-2 flex items-center gap-1">
               <div className={`h-2 w-2 rounded-full ${getConnectionStatusColor()}`} />
-              <span className="text-xs text-gray-600">{connectionStatus}</span>
+              <span className="footnote text-gray-600">{connectionStatus}</span>
             </div>
           )}
         </div>
@@ -164,11 +165,11 @@ export function ChatRoomView({
 
       <div
         ref={messagesContainerRef}
-        className="flex-1 overflow-y-auto px-5 py-3"
+        className="hide-scrollbar flex-1 overflow-y-auto px-5 py-3"
         onScroll={handleScroll}
       >
         {loadingPrevious && (
-          <div className="mb-2 text-center text-sm text-gray-500">이전 메시지 로딩 중...</div>
+          <div className="subhead2 mb-2 text-center text-gray-500">이전 메시지 로딩 중...</div>
         )}
 
         {messages.length === 0 ? (
@@ -191,8 +192,15 @@ export function ChatRoomView({
                       className="object-cover"
                     />
                   ) : (
-                    <div className="flex h-full w-full items-center justify-center bg-gray-300 text-sm font-semibold text-gray-600">
-                      {msg.senderName?.charAt(0)?.toUpperCase() || '?'}
+                    <div className="subhead1 flex h-full w-full items-center justify-center bg-gray-300 font-semibold text-gray-600">
+                      <Image
+                        src={DSTI_CHARACTERS[msg.dsti]}
+                        alt={`${msg.dsti || '상대방'} 프로필`}
+                        fill
+                        className="object-contain"
+                        priority
+                      />
+                      {/* {msg.senderName?.charAt(0)?.toUpperCase() || '?'} */}
                     </div>
                   )}
                 </div>
@@ -200,7 +208,7 @@ export function ChatRoomView({
 
               <div className={`flex flex-col ${msg.isMine ? 'items-end' : 'items-start'}`}>
                 {!msg.isMine && msg.senderName && (
-                  <span className="mb-1 text-xs text-gray-600">{msg.senderName}</span>
+                  <span className="footnote mb-1 text-gray-600">{msg.senderName}</span>
                 )}
 
                 <div

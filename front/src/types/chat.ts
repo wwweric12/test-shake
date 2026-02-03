@@ -6,6 +6,7 @@ export interface ChatRoom {
   partnerId: number;
   partnerName: string;
   partnerProfileImage: string;
+  partnerDsti: string;
   lastMessage: string;
   lastMessageTime: string;
   unreadCount: number;
@@ -54,6 +55,16 @@ export interface SendMessageRequest {
   content: string;
 }
 
+// SEND /pub/chat/enter - 채팅방 입장 알림
+export interface ChatRoomEnterRequest {
+  chatRoomId: number;
+}
+
+// SEND /pub/chat/leave - 채팅방 퇴장 알림
+export interface ChatRoomLeaveRequest {
+  chatRoomId: number;
+}
+
 // SUBSCRIBE /user/queue/chat/{chatRoomId} - 채팅 수신 (WebSocket)
 export interface ReceivedMessage {
   messageId: string;
@@ -61,6 +72,7 @@ export interface ReceivedMessage {
   senderId: number;
   senderName: string;
   senderProfileImageUrl: string;
+  dsti: string;
   content: string;
   sentAt: string;
   isRead: boolean;
@@ -72,6 +84,19 @@ export interface ReceivedMessageData {
 }
 
 export type ReceivedMessageResponse = ApiResponse<ReceivedMessageData>;
+
+// SUBSCRIBE /user/queue/chat-list/update - 채팅 목록 업데이트
+export interface ChatListUpdateData {
+  chatRoomId: number;
+  lastMessage: string;
+  lastMessageTime: string;
+  unreadCount: number;
+}
+
+export type ChatListUpdateResponse = ApiResponse<ChatListUpdateData>;
+
+// GET /chat/messages/unread-count - 전체 안 읽은 메시지 수
+export type UnreadCountResponse = ApiResponse<number>;
 
 // POST /chat/rooms/{chatRoomId}/report - 채팅방 신고
 export interface ReportChatRequest {
@@ -86,6 +111,7 @@ export interface ChatMessageWithProfile extends ChatMessage {
   isMine: boolean;
   senderName?: string;
   senderProfileImageUrl?: string;
+  dsti: string;
 }
 
 // 파트너 정보
@@ -93,4 +119,5 @@ export interface PartnerInfo {
   partnerId: number;
   partnerName: string;
   partnerProfileImage: string | null;
+  partnerDsti: string;
 }

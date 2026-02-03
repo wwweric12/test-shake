@@ -1,9 +1,3 @@
-/**
- * 채팅방 목록 컴포넌트
- *
- * 채팅방 리스트 표시 및 선택 기능
- */
-
 'use client';
 
 import Image from 'next/image';
@@ -11,9 +5,9 @@ import { motion } from 'framer-motion';
 
 import EmptyChatIcon from '@/assets/icon/chat-dashed.svg';
 import { Badge } from '@/components/ui/Badge';
+import { DSTI_CHARACTERS } from '@/constants/dsti';
 import { ChatRoom } from '@/types/chat';
 import { formatChatTime } from '@/utils/dateFormat';
-
 interface RoomListProps {
   rooms: ChatRoom[]; // 채팅방 목록
   onSelectRoom: (room: ChatRoom) => void; // 채팅방 선택 콜백
@@ -102,7 +96,14 @@ export function RoomList({ rooms, onSelectRoom, isLoading, error }: RoomListProp
                     </div>
                   ) : (
                     <div className="relative flex h-12 w-12 flex-shrink-0 items-center justify-center overflow-hidden rounded-full bg-gray-300">
-                      <span className="text-lg text-white">{room.partnerName?.[0] || '?'}</span>
+                      <Image
+                        src={DSTI_CHARACTERS[room.partnerDsti]}
+                        alt={`${room.partnerName || '상대방'} 프로필`}
+                        fill
+                        className="object-contain"
+                        priority
+                      />
+                      {/* <span className="text-lg text-white">{room.partnerName?.[0] || '?'}</span> */}
                     </div>
                   )}
 

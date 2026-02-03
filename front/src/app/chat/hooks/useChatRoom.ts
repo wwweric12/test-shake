@@ -12,17 +12,11 @@ import { useQueryClient } from '@tanstack/react-query';
 
 interface UseChatRoomParams {
   roomId: number;
-  currentUserId: number;
   partnerInfo?: PartnerInfo;
   enabled?: boolean;
 }
 
-export function useChatRoom({
-  roomId,
-  currentUserId,
-  partnerInfo,
-  enabled = true,
-}: UseChatRoomParams) {
+export function useChatRoom({ roomId, partnerInfo, enabled = true }: UseChatRoomParams) {
   const queryClient = useQueryClient();
   // 무한 스크롤로 추가 로드된 이전 메시지 저장
   const [additionalMessages, setAdditionalMessages] = useState<ChatMessageWithProfile[]>([]);
@@ -35,32 +29,38 @@ export function useChatRoom({
     connectionStatus,
     isLoading,
     error,
+    currentUserId,
   } = useWebSocketChat({
     chatRoomId: roomId,
-    currentUserId,
     partnerInfo,
     enabled,
   });
 
   // 채팅방 입장 시 읽음 처리 (채팅방 목록 캐시 갱신)
   useEffect(() => {
-    if (enabled && roomId) {
+    if (enabled && roomId && currentUserId) {
       // 채팅방 목록 캐시 무효화 → 읽지 않은 메시지 수 업데이트
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.CHAT.ROOMS() });
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.CHAT.UNREAD_COUNT() });
     }
-  }, [roomId, enabled, queryClient]);
+  }, [roomId, currentUserId, enabled, queryClient]);
 
   // 채팅방 나갈 때도 캐시 갱신
   useEffect(() => {
     return () => {
       // 언마운트 시 채팅방 목록 갱신
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.CHAT.ROOMS() });
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.CHAT.UNREAD_COUNT() });
     };
   }, [queryClient]);
 
   // 이전 메시지 페이징 로드 (무한 스크롤)
   const loadPreviousMessages = useCallback(
     async (cursor?: string) => {
+      // ✅ currentUserId가 없으면 빈 배열 반환
+      if (!currentUserId) {
+        return { messages: [], hasNext: false };
+      }
       // API 호출로 이전 메시지 가져오기
       const response = await chatApi.getChatMessages(roomId, cursor, MESSAGE_PAGE_SIZE);
 
@@ -99,5 +99,6 @@ export function useChatRoom({
     connectionStatus,
     error,
     loadPreviousMessages,
+    currentUserId,
   };
 }

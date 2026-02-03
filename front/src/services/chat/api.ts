@@ -8,6 +8,7 @@ import {
   GetMessagesResponse,
   ReportChatRequest,
   ReportChatResponse,
+  UnreadCountResponse,
 } from '@/types/chat';
 
 export const chatApi = {
@@ -43,4 +44,7 @@ export const chatApi = {
   // POST /chat/rooms/{chatRoomId}/report - 채팅방 신고
   reportChatRoom: (chatRoomId: number, data: ReportChatRequest) =>
     api.post<ReportChatResponse>(`/chat/rooms/${chatRoomId}/report`, data),
+
+  // GET /chat/messages/unread-count - 전체 안 읽은 메시지 수 조회
+  getUnreadCount: () => api.get<UnreadCountResponse>('/chat/messages/unread-count'),
 };

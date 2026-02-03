@@ -4,6 +4,7 @@ import LayoutWrapper from '@/components/common/LayoutWrapper';
 import { WebSocketDebugPanel } from '@/components/debug/WebSocketDebugPanel';
 import { MSWProvider } from '@/providers/MSWProvider';
 import { QueryProvider } from '@/providers/QueryProvider';
+import { WebSocketProvider } from '@/providers/WebSocketProvider';
 
 import './globals.css';
 
@@ -18,15 +19,17 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="flex h-full justify-center bg-white md:bg-gray-100">
         <QueryProvider>
           <MSWProvider>
-            <div className="bg-custom-white relative flex h-dvh w-full max-w-[440px] min-w-[375px] flex-col overflow-hidden shadow-xl">
-              <main className="custom-scrollbar flex flex-1 flex-col overflow-y-auto">
-                <LayoutWrapper>
-                  {children}
-                  {/* 개발 환경에서만 디버그 패널 표시 */}
-                  {process.env.NODE_ENV === 'development' && <WebSocketDebugPanel />}
-                </LayoutWrapper>
-              </main>
-            </div>
+            <WebSocketProvider enabled={true}>
+              <div className="bg-custom-white relative flex h-dvh w-full max-w-[440px] min-w-[375px] flex-col overflow-hidden shadow-xl">
+                <main className="custom-scrollbar flex flex-1 flex-col overflow-y-auto">
+                  <LayoutWrapper>
+                    {children}
+                    {/* 개발 환경에서만 디버그 패널 표시 */}
+                    {process.env.NODE_ENV === 'development' && <WebSocketDebugPanel />}
+                  </LayoutWrapper>
+                </main>
+              </div>
+            </WebSocketProvider>
           </MSWProvider>
         </QueryProvider>
       </body>

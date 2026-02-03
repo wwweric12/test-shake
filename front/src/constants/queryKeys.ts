@@ -25,6 +25,7 @@ export const QUERY_KEYS = {
     MESSAGES: (roomId: number) => [...QUERY_KEYS.CHAT.ALL, 'messages', roomId] as const,
     MESSAGES_WITH_CURSOR: (roomId: number, cursor?: string) =>
       [...QUERY_KEYS.CHAT.ALL, 'messages', roomId, cursor ?? 'latest'] as const,
+    UNREAD_COUNT: () => [...QUERY_KEYS.CHAT.ALL, 'unread-count'] as const,
   },
   RECOMMENDATION: {
     ALL: ['recommendation'] as const,

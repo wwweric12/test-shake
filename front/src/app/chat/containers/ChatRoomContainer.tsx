@@ -15,7 +15,6 @@ interface ChatRoomContainerProps {
 
 export function ChatRoomContainer({ roomId, onBack }: ChatRoomContainerProps) {
   const router = useRouter();
-  const currentUserId = 1; // TODO: 실제 사용자 ID로 교체
 
   const { data: roomsData } = useChatRooms();
   const currentRoom = roomsData?.data?.content?.find((room) => room.chatRoomId === roomId);
@@ -28,17 +27,18 @@ export function ChatRoomContainer({ roomId, onBack }: ChatRoomContainerProps) {
     connectionStatus,
     error: chatError,
     loadPreviousMessages,
+    currentUserId,
   } = useChatRoom({
     roomId,
-    currentUserId: currentUserId || 0,
     partnerInfo: currentRoom
       ? {
           partnerId: currentRoom.partnerId,
           partnerName: currentRoom.partnerName,
           partnerProfileImage: currentRoom.partnerProfileImage,
+          partnerDsti: currentRoom.partnerDsti,
         }
       : undefined,
-    enabled: !!currentUserId && !!roomId,
+    enabled: !!roomId,
   });
 
   // URL 업데이트
@@ -52,6 +52,14 @@ export function ChatRoomContainer({ roomId, onBack }: ChatRoomContainerProps) {
     return (
       <div className="flex h-screen items-center justify-center">
         <p className="text-gray-500">메시지를 불러오는 중...</p>
+      </div>
+    );
+  }
+
+  if (!currentUserId) {
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <p className="text-gray-500">사용자 정보를 불러오는 중...</p>
       </div>
     );
   }
