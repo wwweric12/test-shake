@@ -24,10 +24,9 @@ export function SurveyDialog({ open, onOpenChange, onSubmit }: SurveyDialogProps
   // 설문 제출 시 호출할 래퍼 함수
   const handleSurveySubmit = (isSatisfied: boolean, metaInfoType?: string) => {
     onSubmit(isSatisfied, metaInfoType);
-
-    setTimeout(() => {
-      setSurveyStep('SATISFACTION');
-    }, 300);
+    if (!isSatisfied) {
+      onOpenChange(false);
+    }
   };
 
   return (

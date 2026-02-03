@@ -21,9 +21,6 @@ export const useRecommendationController = () => {
   const [isSurveyTarget, setIsSurveyTarget] = useState(false); // 소진 문구 깜빡임 방지용
   const [isSurveyRefetching, setIsSurveyRefetching] = useState(false);
   const [wasSatisfied, setWasSatisfied] = useState<boolean | null>(null);
-  const [extraSurveyStatus, setExtraSurveyStatus] = useState<'BEFORE_SURVEY' | 'AFTER_SURVEY'>(
-    'BEFORE_SURVEY',
-  );
 
   const { data: candidateData, isLoading, isError, refetch } = useCandidates(6);
   const actionMutation = useActionMutation();
@@ -64,7 +61,6 @@ export const useRecommendationController = () => {
         const currentStatus = response.data.extraSurveyStatus;
         const updatedRemaining = remainingSwipes - 1;
 
-        setExtraSurveyStatus(currentStatus);
         setRemainingSwipes(updatedRemaining);
 
         // [AFTER_SURVEY] 2장 남았을 때 미리 카드 보충
@@ -107,9 +103,8 @@ export const useRecommendationController = () => {
       await surveyMutation.mutateAsync({ isSatisfied, metaInfoType });
       setShowSurveyDialog(false);
 
-      // 최소 1.5초 로딩 보장 (사용자 피드백 인지 시간 확보)
       setCards([]);
-      await Promise.all([refetch(), new Promise((resolve) => setTimeout(resolve, 1500))]);
+      refetch();
     } catch (e) {
       console.error('Survey flow failed', e);
     } finally {
