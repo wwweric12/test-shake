@@ -110,14 +110,14 @@ export function ChatRoomView({
       const { messages: prevMessages, hasNext } = await onLoadPrevious(cursor);
 
       if (prevMessages.length > 0) {
-        setTimeout(() => {
-          if (container) {
-            const newScrollHeight = container.scrollHeight;
-            const scrollDiff = newScrollHeight - previousScrollHeight;
-            container.scrollTop = previousScrollTop + scrollDiff;
-          }
-          isLoadingPreviousRef.current = false;
-        }, 100);
+        if (container) {
+          const newScrollHeight = container.scrollHeight;
+          const scrollDiff = newScrollHeight - previousScrollHeight;
+          container.scrollTop = previousScrollTop + scrollDiff;
+        }
+        isLoadingPreviousRef.current = false;
+        // setTimeout(() => {
+        // }, 100);
       } else {
         isLoadingPreviousRef.current = false;
       }

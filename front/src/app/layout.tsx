@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 
 import LayoutWrapper from '@/components/common/LayoutWrapper';
 import { WebSocketDebugPanel } from '@/components/debug/WebSocketDebugPanel';
@@ -11,6 +11,18 @@ import './globals.css';
 export const metadata: Metadata = {
   title: 'HandShake',
   description: '개발 성향 분석을 통한 실시간 개발자 매칭 서비스',
+  manifest: '/manifest.json',
+  icons: {
+    apple: '/icons/icon-192x192.png',
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: '#f9f8fe',
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
