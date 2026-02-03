@@ -19,16 +19,14 @@ interface OverlayElements {
   skipOverlay: HTMLElement | null;
 }
 
-type InteractionState = 'IDLE' | 'PENDING' | 'SWIPING' | 'SCROLLING';
-
 export default function SwipeDeck({ cards, onSwipe }: SwipeDeckProps) {
   const [isInteracting, setIsInteracting] = useState(false);
   const activeIndex = cards.length - 1;
 
-  // 제스처 상태 관리 Ref
+  // 제스처 상태 관리 Ref (렌더링 방지)
   const startPosRef = useRef({ x: 0, y: 0 });
-  const interactionStateRef = useRef<InteractionState>('IDLE');
-  const isDraggingRef = useRef(false);
+  const interactionStateRef = useRef<'IDLE' | 'SWIPING' | 'SCROLLING'>('IDLE');
+  const isDraggingRef = useRef(false); // 실제로 드래그(클릭) 중인가? (hover 방지)
   const currentProgressRef = useRef(0);
 
   const overlaysRef = useRef<OverlayElements>({
@@ -47,16 +45,14 @@ export default function SwipeDeck({ cards, onSwipe }: SwipeDeckProps) {
   }, []);
 
   const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    // 1. 초기화
     startPosRef.current = { x: e.clientX, y: e.clientY };
-    isDraggingRef.current = true;
-    interactionStateRef.current = 'PENDING';
+    isDraggingRef.current = true; // 드래그 시작
+    interactionStateRef.current = 'IDLE';
     currentProgressRef.current = 0;
 
     const element = e.currentTarget;
     element.style.transition = 'none';
-
-    // 🔥 iOS 안정화 핵심
-    element.setPointerCapture(e.pointerId);
 
     overlaysRef.current = {
       likeBadge: element.querySelector('[data-badge="like"]') as HTMLElement,
@@ -64,40 +60,33 @@ export default function SwipeDeck({ cards, onSwipe }: SwipeDeckProps) {
       likeOverlay: element.querySelector('[data-overlay="like"]') as HTMLElement,
       skipOverlay: element.querySelector('[data-overlay="skip"]') as HTMLElement,
     };
+
+    // 포인터 즉시 캡처 (iOS 스와이프 끊김 방지)
+    element.setPointerCapture(e.pointerId);
   };
 
-  const DIRECTION_THRESHOLD = 12;
-
   const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
-    if (!isDraggingRef.current) return;
+    if (!isDraggingRef.current || interactionStateRef.current === 'SCROLLING') return;
 
     const element = e.currentTarget;
     const dx = e.clientX - startPosRef.current.x;
     const dy = e.clientY - startPosRef.current.y;
 
-    const absX = Math.abs(dx);
-    const absY = Math.abs(dy);
+    if (interactionStateRef.current === 'IDLE') {
+      const absX = Math.abs(dx);
+      const absY = Math.abs(dy);
 
-    // 🔥 아직 방향 미정
-    if (interactionStateRef.current === 'PENDING') {
-      e.preventDefault(); // iOS 제스처 판단 차단
-
-      if (absX < DIRECTION_THRESHOLD && absY < DIRECTION_THRESHOLD) return;
+      if (absX < 10 && absY < 10) return;
 
       if (absY > absX) {
-        // 세로 스크롤로 확정
         interactionStateRef.current = 'SCROLLING';
-
-        // 브라우저에게 제어권 반환
-        if (element.hasPointerCapture(e.pointerId)) {
-          element.releasePointerCapture(e.pointerId);
-        }
+        element.releasePointerCapture(e.pointerId); // 스크롤이면 캡처 해제
         return;
+      } else {
+        interactionStateRef.current = 'SWIPING';
+        setIsInteracting(true);
+        // 여기서 캡처하던 것 제거 (이미 Down에서 함)
       }
-
-      // 가로 스와이프로 확정
-      interactionStateRef.current = 'SWIPING';
-      setIsInteracting(true);
     }
 
     if (interactionStateRef.current === 'SWIPING') {
@@ -114,23 +103,27 @@ export default function SwipeDeck({ cards, onSwipe }: SwipeDeckProps) {
   };
 
   const handlePointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
+    isDraggingRef.current = false; // 1. 드래그 종료 (모든 경로에서 공통)
     const element = e.currentTarget;
-    isDraggingRef.current = false;
 
+    // 캡처 해제
     if (element.hasPointerCapture(e.pointerId)) {
       element.releasePointerCapture(e.pointerId);
     }
 
+    // 스크롤 중이었다면 그냥 리셋하고 종료
     if (interactionStateRef.current === 'SCROLLING') {
       interactionStateRef.current = 'IDLE';
       return;
     }
 
     if (interactionStateRef.current !== 'SWIPING') {
+      // 클릭만 하고 끝난 경우 등
       resetCard(element);
       return;
     }
 
+    // 스와이프 결과 처리
     const progress = currentProgressRef.current;
     const isActionTriggered = Math.abs(progress) >= 0.5;
     const isGood = progress > 0;
@@ -143,22 +136,29 @@ export default function SwipeDeck({ cards, onSwipe }: SwipeDeckProps) {
 
       timerRef.current = setTimeout(() => {
         onSwipe(isGood ? 'right' : 'left', cards[activeIndex]);
+
+        // 상태 초기화
         setIsInteracting(false);
         interactionStateRef.current = 'IDLE';
+        startPosRef.current = { x: 0, y: 0 };
+        // overlaysRef는 다음 터치 때 덮어씌워지므로 초기화 안 해도 됨
       }, 300);
     } else {
       resetCard(element);
     }
   };
 
+  // 카드 위치 및 오버레이 초기화 헬퍼 함수
   const resetCard = (element: HTMLElement) => {
     element.style.transform = 'translate(0px, 0px) rotate(0deg)';
     updateOverlays(0);
     setIsInteracting(false);
     interactionStateRef.current = 'IDLE';
+    isDraggingRef.current = false; // 드래그 종료
     startPosRef.current = { x: 0, y: 0 };
   };
 
+  // 오버레이 업데이트 헬퍼 함수
   const updateOverlays = (progress: number) => {
     const { likeBadge, skipBadge, likeOverlay, skipOverlay } = overlaysRef.current;
 
@@ -204,19 +204,19 @@ export default function SwipeDeck({ cards, onSwipe }: SwipeDeckProps) {
             onPointerCancel={isTop ? handlePointerUp : undefined}
             onPointerLeave={isTop ? handlePointerUp : undefined}
           >
-            {/* BADGE */}
+            {/* 오버레이 렌더링 (기존과 동일) */}
             {isTop && (
               <>
                 <div
                   data-badge="like"
-                  className="pointer-events-none absolute top-10 left-10 z-50 rounded-lg border-4 border-green-500 bg-white/20 p-2 px-4 shadow-lg backdrop-blur-sm"
+                  className="pointer-events-none absolute top-10 left-10 z-50 rounded-lg border-4 border-green-500 bg-white/20 p-2 px-4 shadow-lg backdrop-blur-sm transition-opacity duration-200"
                   style={{ opacity: 0, transform: 'rotate(-12deg)' }}
                 >
                   <span className="text-4xl font-bold text-green-500">LIKE</span>
                 </div>
                 <div
                   data-badge="skip"
-                  className="pointer-events-none absolute top-10 right-10 z-50 rounded-lg border-4 border-red-500 bg-white/20 p-2 px-4 shadow-lg backdrop-blur-sm"
+                  className="pointer-events-none absolute top-10 right-10 z-50 rounded-lg border-4 border-red-500 bg-white/20 p-2 px-4 shadow-lg backdrop-blur-sm transition-opacity duration-200"
                   style={{ opacity: 0, transform: 'rotate(12deg)' }}
                 >
                   <span className="text-4xl font-bold text-red-500">SKIP</span>
@@ -228,17 +228,16 @@ export default function SwipeDeck({ cards, onSwipe }: SwipeDeckProps) {
               <SwipingCard card={card} />
             </div>
 
-            {/* OVERLAY */}
             {isTop && (
               <>
                 <div
                   data-overlay="like"
-                  className="pointer-events-none absolute inset-0 z-40 rounded-[30px] bg-green-500"
+                  className="pointer-events-none absolute inset-0 z-40 rounded-[30px] bg-green-500 transition-opacity duration-200"
                   style={{ opacity: 0 }}
                 />
                 <div
                   data-overlay="skip"
-                  className="pointer-events-none absolute inset-0 z-40 rounded-[30px] bg-red-500"
+                  className="pointer-events-none absolute inset-0 z-40 rounded-[30px] bg-red-500 transition-opacity duration-200"
                   style={{ opacity: 0 }}
                 />
               </>
