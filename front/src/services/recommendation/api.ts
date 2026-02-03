@@ -12,4 +12,6 @@ export const recommendationApi = {
   resetPreferences: () =>
     api.post<ResetPreferencesResponse>('/recommendation/preferences/reset', {}),
   action: (data: ActionRequest) => api.post<ActionResponse>('/recommendation/actions', data),
+  submitSurvey: (data: { isSatisfied: boolean; metaInfoType?: string }) =>
+    api.post('/recommendation/survey', data),
 };

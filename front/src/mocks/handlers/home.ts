@@ -18,7 +18,7 @@ export const homeHandlers = [
           profileImageUrl: ['https://picsum.photos/100', ''],
           dsti: ['EDAU', 'PDAR'],
         },
-        remainingSwipes: 10,
+        remainingSwipes: 30,
       },
     };
     return HttpResponse.json(mockSummary);

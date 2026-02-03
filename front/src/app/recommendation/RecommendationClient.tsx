@@ -17,6 +17,8 @@ import {
 } from '@/components/ui/Dialog';
 import { useRecommendationController } from '@/hooks/useRecommendationController';
 
+import { SurveyDialog } from './components/SurveyDialog';
+
 export default function RecommendationClient() {
   const router = useRouter();
   const {
@@ -29,10 +31,26 @@ export default function RecommendationClient() {
     confirmReset,
     handleReset,
     refetch,
+    showSurveyDialog,
+    setShowSurveyDialog,
+    handleSurveySubmit,
+    isSurveyRefetching,
+    wasSatisfied,
+    isSurveyTarget,
   } = useRecommendationController();
 
   const handleBack = () => {
     router.back();
+  };
+
+  // 로딩 문구 결정 로직
+  const getLoadingMessage = () => {
+    if (isSurveyRefetching) {
+      return wasSatisfied
+        ? '취향에 맞는 동료를\n더 찾아보고 있어요...'
+        : '의견을 반영한\n새로운 상대를 찾고 있습니다...';
+    }
+    return '매칭 상대를 찾고 있습니다...';
   };
 
   return (
@@ -50,11 +68,16 @@ export default function RecommendationClient() {
       </header>
 
       {/* Main Content */}
-      <main className="relative flex h-full w-full flex-1 flex-col overflow-auto py-4">
+      <main
+        className={`relative flex h-full w-full flex-1 flex-col overflow-auto py-4 ${showSurveyDialog ? 'pointer-events-none opacity-40 blur-sm grayscale-[20%]' : ''}`}
+      >
         {/* Loading State */}
-        {isLoading && cards.length === 0 && (
-          <div className="text-custom-deepgray flex flex-1 animate-pulse items-center justify-center">
-            매칭 상대를 찾고 있습니다...
+        {(isLoading || isSurveyRefetching) && cards.length === 0 && (
+          <div className="animate-in fade-in flex flex-1 flex-col items-center justify-center gap-4 duration-700">
+            <div className="border-custom-purple h-10 w-10 animate-spin rounded-full border-4 border-t-transparent" />
+            <p className="text-custom-deepgray body2 text-center leading-relaxed font-medium whitespace-pre-wrap">
+              {getLoadingMessage()}
+            </p>
           </div>
         )}
 
@@ -69,7 +92,7 @@ export default function RecommendationClient() {
         )}
 
         {/* Empty State / No More Cards */}
-        {!isLoading && !isError && cards.length === 0 && (
+        {!isLoading && !isError && cards.length === 0 && !showSurveyDialog && !isSurveyTarget && (
           <div className="-mt-14 flex h-full flex-col items-center justify-center px-6 text-center">
             <h2 className="text-custom-deepnavy mb-2 text-xl font-bold whitespace-pre-wrap">
               오늘의 매칭 기회를 모두 소진했습니다.{'\n'}
@@ -102,25 +125,32 @@ export default function RecommendationClient() {
 
       {/* Reset Dialog */}
       <Dialog open={showResetDialog} onOpenChange={setShowResetDialog}>
-        <DialogContent className="max-w-[320px] rounded-[20px] p-6">
+        <DialogContent className="w-[90%] max-w-[355px] rounded-[20px] p-6">
           <DialogHeader className="mb-4">
-            <DialogTitle className="mb-2 text-center text-lg font-bold">매칭 초기화</DialogTitle>
-            <DialogDescription className="text-center text-sm text-gray-500">
+            <DialogTitle className="title3 mb-2 text-center">매칭 초기화</DialogTitle>
+            <DialogDescription className="body3 text-custom-deepgray text-center">
               현재까지의 추천을 초기화하고
               <br />
               새로운 동료를 찾아보시겠습니까?
             </DialogDescription>
           </DialogHeader>
-          <DialogFooter className="sm:justify-center">
+          <DialogFooter className="flex flex-row justify-center gap-2 sm:justify-center">
             <Button
               onClick={confirmReset}
-              className="bg-custom-red hover:bg-custom-red/90 w-full rounded-xl py-6 text-base font-semibold text-white"
+              className="bg-custom-red hover:bg-custom-red/90 subhead1 h-12 w-1/2 rounded-xl text-white disabled:cursor-not-allowed"
             >
               확인
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* 설문 다이얼로그 분리 */}
+      <SurveyDialog
+        open={showSurveyDialog}
+        onOpenChange={setShowSurveyDialog}
+        onSubmit={handleSurveySubmit}
+      />
     </div>
   );
 }

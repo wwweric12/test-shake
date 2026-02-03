@@ -4,11 +4,17 @@ import { UserInfo } from './user';
 
 export type ActionType = 'LIKE' | 'PASS';
 
+export type ExtraSurveyStatus = 'BEFORE_SURVEY' | 'AFTER_SURVEY';
+
 export interface CandidateData {
   exposureId: number;
   dailyLimit: number;
   remainingSwipes: number;
   cards: UserInfo[];
+}
+
+export interface ActionData {
+  extraSurveyStatus: ExtraSurveyStatus;
 }
 
 //Request
@@ -21,6 +27,6 @@ export interface ActionRequest {
 //Response
 export type CandidateResponse = ApiResponse<CandidateData>;
 
-export type ActionResponse = ApiEmptyResponse;
+export type ActionResponse = ApiResponse<ActionData>;
 
 export type ResetPreferencesResponse = ApiEmptyResponse;
