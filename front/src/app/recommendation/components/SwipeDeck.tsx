@@ -63,38 +63,44 @@ export default function SwipeDeck({ cards, onSwipe }: SwipeDeckProps) {
   };
 
   const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
-    if (!isDraggingRef.current || interactionStateRef.current === 'SCROLLING') return;
+    if (!isDraggingRef.current) return;
 
     const element = e.currentTarget;
     const dx = e.clientX - startPosRef.current.x;
     const dy = e.clientY - startPosRef.current.y;
+    const absX = Math.abs(dx);
+    const absY = Math.abs(dy);
+
+    if (interactionStateRef.current === 'SCROLLING') return;
+
+    if (interactionStateRef.current === 'SWIPING') {
+      if (e.cancelable) e.preventDefault(); // 브라우저 스크롤 차단
+
+      const rotateDeg = (dx / 600) * -30;
+
+      element.style.transform = `translate(${dx}px, ${dy * 0.1}px) rotate(${rotateDeg}deg)`;
+
+      const progressVal = clamp(dx / 150, -1, 1);
+      currentProgressRef.current = progressVal;
+      updateOverlays(progressVal);
+      return;
+    }
 
     if (interactionStateRef.current === 'IDLE') {
-      const absX = Math.abs(dx);
-      const absY = Math.abs(dy);
-
-      if (absX < 10 && absY < 10) return;
+      if (absX < 5 && absY < 5) return;
 
       if (absY > absX) {
         interactionStateRef.current = 'SCROLLING';
         return;
-      } else {
-        interactionStateRef.current = 'SWIPING';
-        setIsInteracting(true);
-        element.setPointerCapture(e.pointerId);
       }
-    }
+      if (e.cancelable) e.preventDefault();
 
-    if (interactionStateRef.current === 'SWIPING') {
-      e.preventDefault();
+      interactionStateRef.current = 'SWIPING';
+      setIsInteracting(true);
+      element.setPointerCapture(e.pointerId);
 
       const rotateDeg = (dx / 600) * -30;
-      element.style.transform = `translate(${dx}px, ${dy * 0.2}px) rotate(${rotateDeg}deg)`;
-
-      const progressVal = clamp(dx / 150, -1, 1);
-      currentProgressRef.current = progressVal;
-
-      updateOverlays(progressVal);
+      element.style.transform = `translate(${dx}px, ${dy * 0.1}px) rotate(${rotateDeg}deg)`;
     }
   };
 
@@ -189,10 +195,11 @@ export default function SwipeDeck({ cards, onSwipe }: SwipeDeckProps) {
                 : 'none',
               opacity: !isTop && cards.length - 1 - index > 2 ? 0 : 1,
               transition: isInteracting && isTop ? 'none' : 'transform 0.3s ease-out',
-              touchAction: 'none',
+              touchAction: 'pan-y',
               userSelect: 'none',
               WebkitTouchCallout: 'none',
               WebkitUserSelect: 'none',
+              overscrollBehavior: 'none',
             }}
             onDragStart={(e) => e.preventDefault()}
             onPointerDown={isTop ? handlePointerDown : undefined}
