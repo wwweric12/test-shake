@@ -11,7 +11,7 @@ export default function DstiPage() {
         {DSTI_INDICATORS.map((indicator, index) => (
         <DstiContent 
           key={indicator.title}
-          id={String(index + 1).padStart(2, '0')} // "01", "02" ...
+          id={String(index + 1).padStart(2, '0')}
           title={indicator.title}
           label={indicator.label}
         >
@@ -21,7 +21,7 @@ export default function DstiPage() {
               <DstiTraitItem 
                 key={type}
                 type={type}
-                {...info} // label, copy, desc, tags 자동 전달
+                {...info}
               />
             );
           })}

@@ -15,7 +15,7 @@ export default function TraitItem({ type, label, copy, desc, tags }: TraitItemPr
 
   return (
     <div className="flex flex-col gap-4 p-4">
-      {/* 상단: 원형 아이콘 + 이름 */}
+      
       <div className="flex items-center gap-3">
         <div className={`${typeColorClass} flex h-[30px] w-[30px] items-center justify-center rounded-md text-[12px] font-bold`}>
           {type}
@@ -23,7 +23,6 @@ export default function TraitItem({ type, label, copy, desc, tags }: TraitItemPr
         <p className="text-[20px] font-bold text-custom-realblack leading-tight">{label}</p>
       </div>
       
-      {/* 중단: 큰 인용구 + 상세 설명 */}
       <div className="flex flex-col gap-2">
         <p className="text-[16px] font-bold text-custom-realblack leading-tight">
           {copy}
@@ -33,7 +32,6 @@ export default function TraitItem({ type, label, copy, desc, tags }: TraitItemPr
         </p>
       </div>
 
-      {/* 하단: 태그 리스트 (배경색을 더 연하게 조정) */}
       <div className="flex flex-wrap gap-2 pt-1">
         {tags.map((tag, index) => (
           <span 
