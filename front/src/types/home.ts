@@ -11,6 +11,7 @@ export interface HomeSummaryData {
     dsti: string[];
   };
   remainingSwipes: number;
+  dailyLimit: number;
 }
 
 export interface NotificationUsers {
