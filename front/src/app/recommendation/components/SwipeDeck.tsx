@@ -66,7 +66,7 @@ export default function SwipeDeck({ cards, onSwipe }: SwipeDeckProps) {
   };
 
   const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
-    if (!isDraggingRef.current || interactionStateRef.current === 'SCROLLING') return;
+    if (!isDraggingRef.current) return;
 
     const element = e.currentTarget;
     const dx = e.clientX - startPosRef.current.x;
@@ -84,7 +84,7 @@ export default function SwipeDeck({ cards, onSwipe }: SwipeDeckProps) {
       if (absY > absX) {
         interactionStateRef.current = 'SCROLLING';
         // 바로 스크롤 시작
-        const scrollContainer = element.querySelector('.custom-scrollbar');
+        const scrollContainer = element.querySelector('.custom-scrollbar') as HTMLElement;
         if (scrollContainer) {
           scrollContainer.scrollTop -= deltaY;
         }
@@ -96,7 +96,7 @@ export default function SwipeDeck({ cards, onSwipe }: SwipeDeckProps) {
     }
 
     if (interactionStateRef.current === 'SCROLLING') {
-      const scrollContainer = element.querySelector('.custom-scrollbar');
+      const scrollContainer = element.querySelector('.custom-scrollbar') as HTMLElement;
       if (scrollContainer) {
         scrollContainer.scrollTop -= deltaY;
       }
