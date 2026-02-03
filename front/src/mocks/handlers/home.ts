@@ -13,7 +13,7 @@ export const homeHandlers = [
         dsti: 'EDAU',
         profileImageUrl: '',
         totalUnreadMessages: 5,
-        totalLikeCount: 12,
+        totalLikeCount: 8,
         others: {
           profileImageUrl: ['https://picsum.photos/100', ''],
           dsti: ['EDAU', 'PDAR'],

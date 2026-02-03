@@ -3,16 +3,19 @@
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 
+import NotificationCard from '@/app/home/components/NotificationCard';
 import SwipeDeck from '@/app/recommendation/components/SwipeDeck';
 import backIcon from '@/assets/icon/back.svg';
 import resetIcon from '@/assets/icon/restart_alt.svg';
 import { Button } from '@/components/ui/Button';
 import { useRecommendationController } from '@/hooks/useRecommendationController';
+import { useHomeSummary } from '@/services/home/hooks';
 
 import { ResetDialog } from './components/ResetDialog';
 import { SurveyDialog } from './components/SurveyDialog';
 
 export default function RecommendationClient() {
+  const { data: summaryData } = useHomeSummary();
   const router = useRouter();
   const {
     cards,
@@ -86,25 +89,22 @@ export default function RecommendationClient() {
 
         {/* Empty State / No More Cards */}
         {!isLoading && !isError && cards.length === 0 && !showSurveyDialog && !isSurveyTarget && (
-          <div className="-mt-14 flex h-full flex-col items-center justify-center px-6 text-center">
-            <h2 className="text-custom-deepnavy mb-2 text-xl font-bold whitespace-pre-wrap">
+          <div className="animate-in fade-in slide-in-from-bottom-4 -mt-14 flex h-full flex-col items-center justify-center px-6 text-center duration-700">
+            <h2 className="text-custom-deepnavy title3 mb-8 whitespace-pre-wrap">
               오늘의 매칭 기회를 모두 소진했습니다.{'\n'}
               나를 좋아하는 동료를 확인해보세요!
             </h2>
 
-            {/* Placeholder for "Check Likes" CTA */}
-            <div className="mt-8 mb-8 flex w-full max-w-[280px] cursor-pointer flex-col items-center rounded-[24px] bg-white p-6 shadow-lg transition-transform hover:scale-105">
-              <div className="mb-4 flex justify-center -space-x-3">
-                {/* Mock Avatars */}
-                <div className="h-10 w-10 overflow-hidden rounded-full border-2 border-white bg-gray-300" />
-                <div className="h-10 w-10 overflow-hidden rounded-full border-2 border-white bg-gray-400" />
-                <div className="bg-custom-deepnavy flex h-10 w-10 items-center justify-center rounded-full border-2 border-white">
-                  {/* Bunny Icon Mock */}
-                  <div className="text-xs text-white">🐰</div>
-                </div>
+            {/* 알림 있을 때만 알림 카드 노출 */}
+            {summaryData && summaryData.totalLikeCount > 0 && (
+              <div className="w-full max-w-[320px]">
+                <NotificationCard
+                  count={summaryData.totalLikeCount}
+                  recentImages={summaryData.others.profileImageUrl}
+                  dsti={summaryData.others.dsti}
+                />
               </div>
-              <p className="text-custom-deepnavy text-sm font-bold">새로운 대화 요청 확인 (3+)</p>
-            </div>
+            )}
           </div>
         )}
 
