@@ -3,7 +3,6 @@
 import { useEffect, useRef, useState } from 'react';
 
 import { UserInfo } from '@/types/user';
-import { clamp } from '@/utils/math';
 
 import SwipingCard from './SwipingCard';
 
@@ -12,193 +11,180 @@ interface SwipeDeckProps {
   onSwipe: (direction: 'left' | 'right', card: UserInfo) => void;
 }
 
-interface OverlayElements {
-  likeBadge: HTMLElement | null;
-  skipBadge: HTMLElement | null;
-  likeOverlay: HTMLElement | null;
-  skipOverlay: HTMLElement | null;
-}
-
 export default function SwipeDeck({ cards, onSwipe }: SwipeDeckProps) {
   const [isInteracting, setIsInteracting] = useState(false);
   const activeIndex = cards.length - 1;
 
-  // 제스처 상태 관리 Ref (렌더링 방지)
+  const cardRef = useRef<HTMLDivElement>(null);
+
   const startPosRef = useRef({ x: 0, y: 0 });
-  const interactionStateRef = useRef<'IDLE' | 'SWIPING' | 'SCROLLING'>('IDLE');
-  const isDraggingRef = useRef(false); // 실제로 드래그(클릭) 중인가? (hover 방지)
+  const isDraggingRef = useRef(false);
+  const lockDirectionRef = useRef<'SWIPE' | 'SCROLL' | null>(null);
   const currentProgressRef = useRef(0);
-  const lastPosRef = useRef({ x: 0, y: 0 }); // 델타 계산용 이전 위치
-
-  const overlaysRef = useRef<OverlayElements>({
-    likeBadge: null,
-    skipBadge: null,
-    likeOverlay: null,
-    skipOverlay: null,
-  });
-
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
-    return () => {
-      if (timerRef.current) clearTimeout(timerRef.current);
+    const element = cardRef.current;
+    if (!element) return;
+
+    const handleStart = (clientX: number, clientY: number) => {
+      startPosRef.current = { x: clientX, y: clientY };
+      isDraggingRef.current = true;
+      lockDirectionRef.current = null; // 방향 초기화
+      currentProgressRef.current = 0;
+      element.style.transition = 'none'; // 드래그 중엔 애니메이션 끔
     };
-  }, []);
 
-  const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
-    // 1. 초기화
-    startPosRef.current = { x: e.clientX, y: e.clientY };
-    lastPosRef.current = { x: e.clientX, y: e.clientY };
-    isDraggingRef.current = true; // 드래그 시작
-    interactionStateRef.current = 'IDLE';
-    currentProgressRef.current = 0;
+    const updateOverlays = (element: HTMLElement, progress: number) => {
+      // querySelector가 null일 수 있으므로 옵셔널 체이닝(?) 사용
+      const likeBadge = element.querySelector('[data-badge="like"]') as HTMLElement;
+      const skipBadge = element.querySelector('[data-badge="skip"]') as HTMLElement;
+      const likeOverlay = element.querySelector('[data-overlay="like"]') as HTMLElement;
+      const skipOverlay = element.querySelector('[data-overlay="skip"]') as HTMLElement;
 
-    const element = e.currentTarget;
-    element.setPointerCapture(e.pointerId); // 커스텀 스크롤을 위해 캡처 필수
-    element.style.transition = 'none';
-
-    overlaysRef.current = {
-      likeBadge: element.querySelector('[data-badge="like"]') as HTMLElement,
-      skipBadge: element.querySelector('[data-badge="skip"]') as HTMLElement,
-      likeOverlay: element.querySelector('[data-overlay="like"]') as HTMLElement,
-      skipOverlay: element.querySelector('[data-overlay="skip"]') as HTMLElement,
+      if (progress > 0) {
+        if (likeBadge) likeBadge.style.opacity = progress.toString();
+        if (skipBadge) skipBadge.style.opacity = '0';
+        if (likeOverlay) likeOverlay.style.opacity = (progress * 0.4).toString();
+        if (skipOverlay) skipOverlay.style.opacity = '0';
+      } else {
+        if (likeBadge) likeBadge.style.opacity = '0';
+        if (skipBadge) skipBadge.style.opacity = Math.abs(progress).toString();
+        if (likeOverlay) likeOverlay.style.opacity = '0';
+        if (skipOverlay) skipOverlay.style.opacity = (Math.abs(progress) * 0.4).toString();
+      }
     };
-  };
 
-  const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
-    if (!isDraggingRef.current) return;
+    const clamp = (val: number, min: number, max: number) => Math.min(Math.max(val, min), max);
 
-    const element = e.currentTarget;
-    const dx = e.clientX - startPosRef.current.x;
-    const dy = e.clientY - startPosRef.current.y;
-    // 이전 프레임 대비 이동량 (스크롤용)
-    const deltaY = e.clientY - lastPosRef.current.y;
-    lastPosRef.current = { x: e.clientX, y: e.clientY };
+    const resetCard = (element: HTMLElement) => {
+      element.style.transition = 'transform 0.3s ease-out';
+      element.style.transform = 'translate(0px, 0px) rotate(0deg)';
+      updateOverlays(element, 0);
+      setIsInteracting(false);
+    };
 
-    if (interactionStateRef.current === 'IDLE') {
+    const finishSwipe = (element: HTMLElement) => {
+      const progress = currentProgressRef.current;
+      const isActionTriggered = Math.abs(progress) >= 0.5;
+      const isGood = progress > 0;
+
+      element.style.transition = 'transform 0.3s ease-in-out';
+
+      if (isActionTriggered) {
+        const endX = isGood ? window.innerWidth : -window.innerWidth;
+        element.style.transform = `translate(${endX}px, 50px) rotate(${isGood ? 45 : -45}deg)`;
+
+        setTimeout(() => {
+          onSwipe(isGood ? 'right' : 'left', cards[activeIndex]);
+          setIsInteracting(false);
+        }, 300);
+      } else {
+        resetCard(element);
+      }
+    };
+
+    // 2. 움직임 (핵심 로직: 스크롤 vs 스와이프 판별)
+    const handleMove = (clientX: number, clientY: number, e: TouchEvent | MouseEvent) => {
+      if (!isDraggingRef.current) return;
+      if (lockDirectionRef.current === 'SCROLL') return; // 이미 스크롤로 판정났으면 JS 무시
+
+      const dx = clientX - startPosRef.current.x;
+      const dy = clientY - startPosRef.current.y;
       const absX = Math.abs(dx);
       const absY = Math.abs(dy);
 
-      if (absX < 5 && absY < 5) return; // 민감도 조절
+      // (A) 방향이 아직 결정되지 않았을 때 (초기 움직임 10px 이내)
+      if (!lockDirectionRef.current) {
+        if (absX < 5 && absY < 5) return; // 너무 작은 움직임은 무시
 
-      if (absY > absX) {
-        interactionStateRef.current = 'SCROLLING';
-        // 바로 스크롤 시작
-        const scrollContainer = element.querySelector('.custom-scrollbar') as HTMLElement;
-        if (scrollContainer) {
-          scrollContainer.scrollTop -= deltaY;
+        if (absY > absX) {
+          // 세로 이동이 더 크면 -> 스크롤 모드 (네이티브 스크롤 허용)
+          lockDirectionRef.current = 'SCROLL';
+          return;
+        } else {
+          // 가로 이동이 더 크면 -> 스와이프 모드 (브라우저 동작 막고 카드 이동)
+          lockDirectionRef.current = 'SWIPE';
+          setIsInteracting(true);
         }
-        return;
+      }
+
+      // (B) 스와이프 모드일 때 실행
+      if (lockDirectionRef.current === 'SWIPE') {
+        // iOS 뒤로가기/새로고침 방지 (중요!)
+        if (e.cancelable && e.type === 'touchmove') {
+          e.preventDefault();
+        }
+
+        const rotateDeg = (dx / 600) * -30;
+        element.style.transform = `translate(${dx}px, ${dy * 0.2}px) rotate(${rotateDeg}deg)`;
+
+        const progressVal = clamp(dx / 150, -1, 1);
+        currentProgressRef.current = progressVal;
+
+        // 오버레이 직접 업데이트 (성능 최적화)
+        updateOverlays(element, progressVal);
+      }
+    };
+
+    // 3. 종료 (손 뗌)
+    const handleEnd = () => {
+      if (!isDraggingRef.current) return;
+      isDraggingRef.current = false;
+
+      if (lockDirectionRef.current === 'SWIPE') {
+        finishSwipe(element);
       } else {
-        interactionStateRef.current = 'SWIPING';
-        setIsInteracting(true);
+        // 스크롤이었거나 클릭만 한 경우 원위치
+        resetCard(element);
       }
-    }
+      lockDirectionRef.current = null;
+    };
 
-    if (interactionStateRef.current === 'SCROLLING') {
-      const scrollContainer = element.querySelector('.custom-scrollbar') as HTMLElement;
-      if (scrollContainer) {
-        scrollContainer.scrollTop -= deltaY;
-      }
-      return;
-    }
+    // --- 리스너 바인딩 함수들 ---
 
-    if (interactionStateRef.current === 'SWIPING') {
-      e.preventDefault();
+    const onTouchStart = (e: TouchEvent) => handleStart(e.touches[0].clientX, e.touches[0].clientY);
+    const onTouchMove = (e: TouchEvent) =>
+      handleMove(e.touches[0].clientX, e.touches[0].clientY, e);
 
-      const rotateDeg = (dx / 600) * -30;
-      element.style.transform = `translate(${dx}px, ${dy * 0.2}px) rotate(${rotateDeg}deg)`;
+    const onMouseDown = (e: MouseEvent) => handleStart(e.clientX, e.clientY);
+    const onMouseMove = (e: MouseEvent) => handleMove(e.clientX, e.clientY, e);
 
-      const progressVal = clamp(dx / 150, -1, 1);
-      currentProgressRef.current = progressVal;
+    // [중요] non-passive 옵션으로 등록해야 preventDefault가 먹힘
+    element.addEventListener('touchstart', onTouchStart, { passive: true });
+    element.addEventListener('touchmove', onTouchMove, { passive: false }); // 핵심!
+    element.addEventListener('touchend', handleEnd);
+    element.addEventListener('touchcancel', handleEnd);
 
-      updateOverlays(progressVal);
-    }
-  };
+    // 마우스 이벤트 (테스트용)
+    element.addEventListener('mousedown', onMouseDown);
+    window.addEventListener('mousemove', onMouseMove); // 마우스는 화면 밖으로 나갈 수 있어서 window에
+    window.addEventListener('mouseup', handleEnd);
 
-  const handlePointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
-    isDraggingRef.current = false; // 1. 드래그 종료 (모든 경로에서 공통)
-    const element = e.currentTarget;
+    return () => {
+      element.removeEventListener('touchstart', onTouchStart);
+      element.removeEventListener('touchmove', onTouchMove);
+      element.removeEventListener('touchend', handleEnd);
+      element.removeEventListener('touchcancel', handleEnd);
 
-    // 캡처 해제
-    if (element.hasPointerCapture(e.pointerId)) {
-      element.releasePointerCapture(e.pointerId);
-    }
+      element.removeEventListener('mousedown', onMouseDown);
+      window.removeEventListener('mousemove', onMouseMove);
+      window.removeEventListener('mouseup', handleEnd);
+    };
+  }, [activeIndex, cards]); // 카드가 바뀌면 이벤트 리스너 재등록
 
-    // 스크롤 중이었다면 그냥 리셋하고 종료
-    if (interactionStateRef.current === 'SCROLLING') {
-      interactionStateRef.current = 'IDLE';
-      return;
-    }
-
-    if (interactionStateRef.current !== 'SWIPING') {
-      // 클릭만 하고 끝난 경우 등
-      resetCard(element);
-      return;
-    }
-
-    // 스와이프 결과 처리
-    const progress = currentProgressRef.current;
-    const isActionTriggered = Math.abs(progress) >= 0.5;
-    const isGood = progress > 0;
-
-    element.style.transition = 'transform 0.3s ease-in-out';
-
-    if (isActionTriggered) {
-      const endX = isGood ? window.innerWidth : -window.innerWidth;
-      element.style.transform = `translate(${endX}px, 50px) rotate(${isGood ? 45 : -45}deg)`;
-
-      timerRef.current = setTimeout(() => {
-        onSwipe(isGood ? 'right' : 'left', cards[activeIndex]);
-
-        // 상태 초기화
-        setIsInteracting(false);
-        interactionStateRef.current = 'IDLE';
-        startPosRef.current = { x: 0, y: 0 };
-        // overlaysRef는 다음 터치 때 덮어씌워지므로 초기화 안 해도 됨
-      }, 300);
-    } else {
-      resetCard(element);
-    }
-  };
-
-  // 카드 위치 및 오버레이 초기화 헬퍼 함수
-  const resetCard = (element: HTMLElement) => {
-    element.style.transform = 'translate(0px, 0px) rotate(0deg)';
-    updateOverlays(0);
-    setIsInteracting(false);
-    interactionStateRef.current = 'IDLE';
-    isDraggingRef.current = false; // 드래그 종료
-    startPosRef.current = { x: 0, y: 0 };
-  };
-
-  // 오버레이 업데이트 헬퍼 함수
-  const updateOverlays = (progress: number) => {
-    const { likeBadge, skipBadge, likeOverlay, skipOverlay } = overlaysRef.current;
-
-    if (progress > 0) {
-      if (likeBadge) likeBadge.style.opacity = progress.toString();
-      if (skipBadge) skipBadge.style.opacity = '0';
-      if (likeOverlay) likeOverlay.style.opacity = (progress * 0.4).toString();
-      if (skipOverlay) skipOverlay.style.opacity = '0';
-    } else {
-      if (likeBadge) likeBadge.style.opacity = '0';
-      if (skipBadge) skipBadge.style.opacity = Math.abs(progress).toString();
-      if (likeOverlay) likeOverlay.style.opacity = '0';
-      if (skipOverlay) skipOverlay.style.opacity = (Math.abs(progress) * 0.4).toString();
-    }
-  };
+  // --- 헬퍼 함수들 ---
 
   return (
-    <div className="relative flex h-full w-full items-center justify-center overflow-hidden rounded-4xl">
+    <div className="relative flex h-full w-full items-center justify-center overflow-hidden rounded-4xl bg-gray-100">
       {cards.map((card, index) => {
         const isTop = index === cards.length - 1;
 
         return (
           <div
-            key={card.nickname}
-            className={`absolute top-0 left-0 h-full w-full select-none ${
-              isTop ? 'cursor-grab' : 'pointer-events-none'
+            key={card.nickname} // 고유 키 사용
+            ref={isTop ? cardRef : null} // 맨 위 카드만 ref 연결
+            className={`absolute top-0 left-0 h-full w-full rounded-2xl bg-white shadow-xl select-none ${
+              isTop ? 'cursor-grab touch-pan-y' : 'pointer-events-none'
             } ${isInteracting && isTop ? 'cursor-grabbing' : ''}`}
             style={{
               zIndex: index,
@@ -207,50 +193,48 @@ export default function SwipeDeck({ cards, onSwipe }: SwipeDeckProps) {
                 : 'none',
               opacity: !isTop && cards.length - 1 - index > 2 ? 0 : 1,
               transition: isInteracting && isTop ? 'none' : 'transform 0.3s ease-out',
+              // [중요] CSS로도 세로 스크롤 허용 명시
               touchAction: 'none',
-              userSelect: 'none',
             }}
-            onPointerDown={isTop ? handlePointerDown : undefined}
-            onPointerMove={isTop ? handlePointerMove : undefined}
-            onPointerUp={isTop ? handlePointerUp : undefined}
-            onPointerCancel={isTop ? handlePointerUp : undefined}
-            onPointerLeave={isTop ? handlePointerUp : undefined}
           >
-            {/* 오버레이 렌더링 (기존과 동일) */}
+            {/* 오버레이 배지 */}
             {isTop && (
               <>
                 <div
                   data-badge="like"
-                  className="pointer-events-none absolute top-10 left-10 z-50 rounded-lg border-4 border-green-500 bg-white/20 p-2 px-4 shadow-lg backdrop-blur-sm transition-opacity duration-200"
-                  style={{ opacity: 0, transform: 'rotate(-12deg)' }}
+                  className="absolute top-10 left-10 z-50 rounded-lg border-4 border-green-500 p-2 opacity-0 transition-opacity"
+                  style={{ transform: 'rotate(-12deg)' }}
                 >
                   <span className="text-4xl font-bold text-green-500">LIKE</span>
                 </div>
                 <div
                   data-badge="skip"
-                  className="pointer-events-none absolute top-10 right-10 z-50 rounded-lg border-4 border-red-500 bg-white/20 p-2 px-4 shadow-lg backdrop-blur-sm transition-opacity duration-200"
-                  style={{ opacity: 0, transform: 'rotate(12deg)' }}
+                  className="absolute top-10 right-10 z-50 rounded-lg border-4 border-red-500 p-2 opacity-0 transition-opacity"
+                  style={{ transform: 'rotate(12deg)' }}
                 >
                   <span className="text-4xl font-bold text-red-500">SKIP</span>
                 </div>
               </>
             )}
 
-            <div className="pointer-events-auto h-full w-full">
+            {/* 내부 콘텐츠 (스크롤 가능) */}
+            <div
+              className="h-full w-full overflow-y-auto rounded-2xl"
+              style={{ overscrollBehaviorY: 'contain' }} // 스크롤 끝날 때 부모 흔들림 방지
+            >
               <SwipingCard card={card} />
             </div>
 
+            {/* 색상 오버레이 */}
             {isTop && (
               <>
                 <div
                   data-overlay="like"
-                  className="pointer-events-none absolute inset-0 z-40 rounded-[30px] bg-green-500 transition-opacity duration-200"
-                  style={{ opacity: 0 }}
+                  className="pointer-events-none absolute inset-0 z-40 rounded-2xl bg-green-500 opacity-0"
                 />
                 <div
                   data-overlay="skip"
-                  className="pointer-events-none absolute inset-0 z-40 rounded-[30px] bg-red-500 transition-opacity duration-200"
-                  style={{ opacity: 0 }}
+                  className="pointer-events-none absolute inset-0 z-40 rounded-2xl bg-red-500 opacity-0"
                 />
               </>
             )}
