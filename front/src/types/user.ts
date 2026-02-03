@@ -43,6 +43,21 @@ export type UpdateTechSkillsRequest = { techSkills: TechSkill[] };
 export type UpdatePositionsRequest = { positions: Position[] };
 export type UpdateNetworksRequest = { networks: Network[] };
 
+export interface PresignedUrlRequest {
+  fileName: string;
+  contentType: string;
+  fileSize: number;
+  extension: string;
+}
+
+export interface PresignedUrlData {
+  preSignedUrl: string;
+  profileImageUrl: string;
+}
+
+export interface UpdateProfileImageRequest {
+  profileImageUrl: string;
+}
 // Response
 
 export type UserInfoResponse = ApiResponse<UserInfo>;
@@ -62,3 +77,7 @@ export type UpdateSelfIntroResponse = ApiEmptyResponse;
 export type UpdateTechSkillsResponse = ApiEmptyResponse;
 export type UpdatePositionsResponse = ApiEmptyResponse;
 export type UpdateNetworksResponse = ApiEmptyResponse;
+
+export type PresignedUrlResponse = ApiResponse<PresignedUrlData>;
+
+export type UpdateProfileImageResponse = ApiEmptyResponse;

@@ -18,6 +18,12 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       {
         protocol: 'https',
+        hostname: 'd2blv8nn6wgtte.cloudfront.net',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
         hostname: 'picsum.photos',
       },
     ],
