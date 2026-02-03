@@ -23,11 +23,12 @@ export default function SwipeDeck({ cards, onSwipe }: SwipeDeckProps) {
   const [isInteracting, setIsInteracting] = useState(false);
   const activeIndex = cards.length - 1;
 
-  // 제스처 상태 관리 Ref
+  // 제스처 상태 관리 Ref (렌더링 방지)
   const startPosRef = useRef({ x: 0, y: 0 });
   const interactionStateRef = useRef<'IDLE' | 'SWIPING' | 'SCROLLING'>('IDLE');
-  const isDraggingRef = useRef(false);
+  const isDraggingRef = useRef(false); // 실제로 드래그(클릭) 중인가? (hover 방지)
   const currentProgressRef = useRef(0);
+  const lastPosRef = useRef({ x: 0, y: 0 }); // 델타 계산용 이전 위치
 
   const overlaysRef = useRef<OverlayElements>({
     likeBadge: null,
@@ -47,16 +48,13 @@ export default function SwipeDeck({ cards, onSwipe }: SwipeDeckProps) {
   const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
     // 1. 초기화
     startPosRef.current = { x: e.clientX, y: e.clientY };
-    isDraggingRef.current = true;
+    lastPosRef.current = { x: e.clientX, y: e.clientY };
+    isDraggingRef.current = true; // 드래그 시작
     interactionStateRef.current = 'IDLE';
     currentProgressRef.current = 0;
 
     const element = e.currentTarget;
-
-    // [중요 수정 1] 터치 시작 즉시 포인터 권한을 가져옵니다.
-    // 이렇게 해야 iOS Safari가 스크롤이나 제스처로 이벤트를 뺏어가지 못합니다.
-    element.setPointerCapture(e.pointerId);
-
+    element.setPointerCapture(e.pointerId); // 커스텀 스크롤을 위해 캡처 필수
     element.style.transition = 'none';
 
     overlaysRef.current = {
@@ -73,27 +71,39 @@ export default function SwipeDeck({ cards, onSwipe }: SwipeDeckProps) {
     const element = e.currentTarget;
     const dx = e.clientX - startPosRef.current.x;
     const dy = e.clientY - startPosRef.current.y;
+    // 이전 프레임 대비 이동량 (스크롤용)
+    const deltaY = e.clientY - lastPosRef.current.y;
+    lastPosRef.current = { x: e.clientX, y: e.clientY };
 
     if (interactionStateRef.current === 'IDLE') {
       const absX = Math.abs(dx);
       const absY = Math.abs(dy);
 
-      // 작은 움직임은 무시
-      if (absX < 10 && absY < 10) return;
+      if (absX < 5 && absY < 5) return; // 민감도 조절
 
-      // 수직 이동이 더 크면 스크롤 의도로 판단
       if (absY > absX) {
         interactionStateRef.current = 'SCROLLING';
+        // 바로 스크롤 시작
+        const scrollContainer = element.querySelector('.custom-scrollbar');
+        if (scrollContainer) {
+          scrollContainer.scrollTop -= deltaY;
+        }
         return;
       } else {
         interactionStateRef.current = 'SWIPING';
         setIsInteracting(true);
-        // [수정] setPointerCapture는 이미 handlePointerDown에서 수행했으므로 제거
       }
     }
 
+    if (interactionStateRef.current === 'SCROLLING') {
+      const scrollContainer = element.querySelector('.custom-scrollbar');
+      if (scrollContainer) {
+        scrollContainer.scrollTop -= deltaY;
+      }
+      return;
+    }
+
     if (interactionStateRef.current === 'SWIPING') {
-      // iOS 터치 스크롤 방지
       e.preventDefault();
 
       const rotateDeg = (dx / 600) * -30;
@@ -107,24 +117,27 @@ export default function SwipeDeck({ cards, onSwipe }: SwipeDeckProps) {
   };
 
   const handlePointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
-    isDraggingRef.current = false;
+    isDraggingRef.current = false; // 1. 드래그 종료 (모든 경로에서 공통)
     const element = e.currentTarget;
 
-    // 캡처 해제 (안전장치)
+    // 캡처 해제
     if (element.hasPointerCapture(e.pointerId)) {
       element.releasePointerCapture(e.pointerId);
     }
 
+    // 스크롤 중이었다면 그냥 리셋하고 종료
     if (interactionStateRef.current === 'SCROLLING') {
       interactionStateRef.current = 'IDLE';
       return;
     }
 
     if (interactionStateRef.current !== 'SWIPING') {
+      // 클릭만 하고 끝난 경우 등
       resetCard(element);
       return;
     }
 
+    // 스와이프 결과 처리
     const progress = currentProgressRef.current;
     const isActionTriggered = Math.abs(progress) >= 0.5;
     const isGood = progress > 0;
@@ -137,24 +150,29 @@ export default function SwipeDeck({ cards, onSwipe }: SwipeDeckProps) {
 
       timerRef.current = setTimeout(() => {
         onSwipe(isGood ? 'right' : 'left', cards[activeIndex]);
+
+        // 상태 초기화
         setIsInteracting(false);
         interactionStateRef.current = 'IDLE';
         startPosRef.current = { x: 0, y: 0 };
+        // overlaysRef는 다음 터치 때 덮어씌워지므로 초기화 안 해도 됨
       }, 300);
     } else {
       resetCard(element);
     }
   };
 
+  // 카드 위치 및 오버레이 초기화 헬퍼 함수
   const resetCard = (element: HTMLElement) => {
     element.style.transform = 'translate(0px, 0px) rotate(0deg)';
     updateOverlays(0);
     setIsInteracting(false);
     interactionStateRef.current = 'IDLE';
-    isDraggingRef.current = false;
+    isDraggingRef.current = false; // 드래그 종료
     startPosRef.current = { x: 0, y: 0 };
   };
 
+  // 오버레이 업데이트 헬퍼 함수
   const updateOverlays = (progress: number) => {
     const { likeBadge, skipBadge, likeOverlay, skipOverlay } = overlaysRef.current;
 
@@ -185,17 +203,11 @@ export default function SwipeDeck({ cards, onSwipe }: SwipeDeckProps) {
             style={{
               zIndex: index,
               transform: !isTop
-                ? `translateY(${(cards.length - 1 - index) * 10}px) scale(${
-                    1 - (cards.length - 1 - index) * 0.05
-                  })`
+                ? `translateY(${(cards.length - 1 - index) * 10}px) scale(${1 - (cards.length - 1 - index) * 0.05})`
                 : 'none',
               opacity: !isTop && cards.length - 1 - index > 2 ? 0 : 1,
               transition: isInteracting && isTop ? 'none' : 'transform 0.3s ease-out',
-
-              // [중요 수정 2] iOS 제스처 충돌 방지 및 최적화 스타일
-              touchAction: 'none', // 브라우저 기본 스크롤 동작 차단
-              WebkitUserSelect: 'none', // iOS 텍스트 선택 방지
-              WebkitTouchCallout: 'none', // iOS 길게 누르기 메뉴 방지
+              touchAction: 'none',
               userSelect: 'none',
             }}
             onPointerDown={isTop ? handlePointerDown : undefined}
@@ -204,6 +216,7 @@ export default function SwipeDeck({ cards, onSwipe }: SwipeDeckProps) {
             onPointerCancel={isTop ? handlePointerUp : undefined}
             onPointerLeave={isTop ? handlePointerUp : undefined}
           >
+            {/* 오버레이 렌더링 (기존과 동일) */}
             {isTop && (
               <>
                 <div
