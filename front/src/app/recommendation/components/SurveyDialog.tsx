@@ -10,6 +10,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/Dialog';
+import { SURVEY_META_OPTIONS } from '@/constants/recommendation';
 
 interface SurveyDialogProps {
   open: boolean;
@@ -29,13 +30,6 @@ export function SurveyDialog({ open, onOpenChange, onSubmit }: SurveyDialogProps
     }, 300);
   };
 
-  const metaOptions = [
-    { label: '보유 기술', value: 'tech_skills' },
-    { label: '네트워킹 목적', value: 'networks' },
-    { label: '직무', value: 'positions' },
-    { label: '개발 성향(DSTI)', value: 'dsti' },
-  ];
-
   return (
     <Dialog
       open={open}
@@ -50,11 +44,11 @@ export function SurveyDialog({ open, onOpenChange, onSubmit }: SurveyDialogProps
         onPointerDownOutside={(e) => e.preventDefault()}
         onInteractOutside={(e) => e.preventDefault()}
         onEscapeKeyDown={(e) => e.preventDefault()}
-        className="w-[90%] max-w-[355px] rounded-[30px] border-none p-8 shadow-2xl [&>button]:hidden"
+        className="flex min-h-[260px] w-[90%] max-w-[355px] flex-col justify-center rounded-[30px] border-none p-8 shadow-2xl [&>button]:hidden"
       >
         {surveyStep === 'SATISFACTION' ? (
           <div className="flex flex-col items-center">
-            <DialogHeader className="mb-6">
+            <DialogHeader className="mb-8">
               <DialogTitle className="text-custom-realblack title3 text-center">
                 매칭이 만족스러우신가요?
               </DialogTitle>
@@ -81,14 +75,18 @@ export function SurveyDialog({ open, onOpenChange, onSubmit }: SurveyDialogProps
         ) : (
           <div className="flex flex-col items-center">
             <DialogHeader className="mb-6">
-              <DialogTitle className="title3 text-center">어떤 정보가 더 필요하신가요?</DialogTitle>
+              <DialogTitle className="title3 text-center">어떤 동료를 찾으시나요?</DialogTitle>
+              <DialogDescription className="text-custom-deepgray subhead3 pt-2 text-center">
+                선택하신 정보를 다음 추천에 반영할게요.
+              </DialogDescription>
             </DialogHeader>
+
             <div className="grid w-full grid-cols-2 gap-3">
-              {metaOptions.map((option) => (
+              {SURVEY_META_OPTIONS.map((option) => (
                 <Button
                   key={option.value}
                   variant="secondary"
-                  className="text-custom-realblack body3 rounded-xl bg-gray-100 py-6 hover:bg-gray-200"
+                  className="text-custom-realblack body3 bg-custom-border-gray hover:bg-custom-border-gray rounded-xl py-6"
                   onClick={() => handleSurveySubmit(false, option.value)}
                 >
                   {option.label}

@@ -24,9 +24,16 @@ export interface ActionRequest {
   actionType: ActionType;
 }
 
+export interface SurveyRequest {
+  isSatisfied: boolean;
+  metaInfoType?: string;
+}
+
 //Response
 export type CandidateResponse = ApiResponse<CandidateData>;
 
 export type ActionResponse = ApiResponse<ActionData>;
+
+export type SurveyResponse = ApiEmptyResponse;
 
 export type ResetPreferencesResponse = ApiEmptyResponse;
