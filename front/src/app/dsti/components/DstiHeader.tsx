@@ -15,7 +15,7 @@ export default function DstiHeader() {
         
     <header className="sticky top-0 z-50 flex h-[60px] items-center justify-between bg-white px-5 shadow-sm">
       <button onClick={handleBack} className="flex h-6 w-6 items-center justify-center transition-opacity hover:opacity-70">
-        <Image src={backIcon} alt="Back" className="h-7 w-14 text-custom-realblack" />
+        <Image src={backIcon} alt="Back" />
       </button>
       <h1 className="body2 text-custom-realblack">
         DSTI 정보
