@@ -70,7 +70,7 @@ export async function middleware(request: NextRequest) {
       const reissueResponse = await fetch(`${baseUrl}/user/reissue`, {
         method: 'POST',
         headers: {
-          Cookie: `refreshToken=${refreshToken}`,
+          Cookie: `REFRESH_TOKEN=${refreshToken}`,
           'Content-Type': 'application/json',
         },
       });
@@ -92,7 +92,7 @@ export async function middleware(request: NextRequest) {
               request.cookies.set(cleanedKey, cleanedValue);
 
               // 갱신된 accessToken 반영
-              if (cleanedKey === 'accessToken') {
+              if (cleanedKey === 'ACCESS_TOKEN') {
                 accessToken = cleanedValue;
               }
             }
