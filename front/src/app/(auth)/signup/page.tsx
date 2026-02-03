@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation';
 import backIcon from '@/assets/icon/back.svg';
 import { Progress } from '@/components/ui/Progress';
 import { INITIAL_SIGNUP_DATA, SIGNUP_MESSAGES, STEP_INFO } from '@/constants/auth';
+import { useLogoutMutation } from '@/services/auth/hooks';
 import { useRegisterUserProfileMutation } from '@/services/user/hooks';
 import { UserInfo } from '@/types/user';
 
@@ -23,14 +24,23 @@ export default function SignupPage() {
   const [formData, setFormData] = useState<UserInfo>(INITIAL_SIGNUP_DATA as UserInfo);
 
   const { mutate: registerUser } = useRegisterUserProfileMutation();
+  const { mutate: logout } = useLogoutMutation();
 
   const updateFormData = (newData: Partial<UserInfo>) => {
     setFormData((prev) => ({ ...prev, ...newData }));
   };
 
   const handleBack = () => {
-    if (step === 'step1') router.back();
-    else if (step === 'step2') setStep('step1');
+    if (step === 'step1') {
+      logout(undefined, {
+        onSuccess: () => {
+          router.replace('/login');
+        },
+        onError: () => {
+          router.replace('/login');
+        },
+      });
+    } else if (step === 'step2') setStep('step1');
   };
 
   const handleInfoSubmit = (finalData?: UserInfo) => {
