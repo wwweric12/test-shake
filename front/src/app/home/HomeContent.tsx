@@ -24,7 +24,10 @@ export default function HomeContent() {
           recentImages={summaryData.others.profileImageUrl}
           dsti={summaryData.others.dsti}
         />
-        <MatchingCard remainingSwipes={summaryData.remainingSwipes} />
+        <MatchingCard
+          remainingSwipes={summaryData.remainingSwipes}
+          dailyLimit={summaryData.dailyLimit}
+        />
       </div>
     </main>
   );
