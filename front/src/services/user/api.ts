@@ -22,6 +22,8 @@ export const userApi = {
   registerUserProfile: (data: UserProfileRequest) =>
     api.post<UserProfileResponse>('/user/info', data),
 
+  getOtherUserInfo: (userId: number) => api.get<UserInfoResponse>(`/user/info/${userId}`),
+
   checkNickname: (data: CheckNicknameRequest) =>
     api.post<CheckNicknameResponse>('/user/nickname', data),
 

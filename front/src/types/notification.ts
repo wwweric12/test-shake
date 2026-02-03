@@ -25,7 +25,7 @@ export interface RejectNotificationRequest {
 
 //Response
 
-export type NotificationResponse = ApiResponse<NotificationsData>;
+export type NotificationResponse = ApiResponse<NotificationData[]>;
 
 export type AcceptNotificationResponse = ApiResponse<{
   chatRoomId: number;

@@ -11,12 +11,12 @@ export const notificationHandlers = [
       message: 'OK',
       data: [
         {
-          notificationId: 1,
+          targetUserId: 1,
           targetNickname: '매칭상대1',
           targetImageUrl: 'https://picsum.photos/201',
         },
         {
-          notificationId: 2,
+          targetUserId: 2,
           targetNickname: '매칭상대2',
           targetImageUrl: 'https://picsum.photos/202',
         },

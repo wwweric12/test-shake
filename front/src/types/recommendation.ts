@@ -6,8 +6,8 @@ export type ActionType = 'LIKE' | 'PASS';
 
 export interface CandidateData {
   exposureId: number;
-  remainingCardCnt: number;
-  quotaDate: string;
+  dailyLimit: number;
+  remainingSwipes: number;
   cards: UserInfo[];
 }
 

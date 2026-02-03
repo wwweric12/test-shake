@@ -11,14 +11,6 @@ export const useNotifications = () => {
   });
 };
 
-//TODO: 수정 중
-// export const useTargetProfile = () => {
-//   return useQuery({
-//     queryKey: QUERY_KEYS.NOTIFICATION.TARGET_PROFILE(),
-//     queryFn: notificationApi.getTargetProfile,
-//   });
-// };
-
 export const useAcceptNotificationMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
