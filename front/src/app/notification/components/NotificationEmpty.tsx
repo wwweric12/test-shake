@@ -13,9 +13,9 @@ export default function NotificationEmpty() {
       </div>
 
       <div className="flex flex-col items-center gap-1 text-center">
-        <p className="body2 text-custom-darkgray">도착한 요청이 없어요</p>
+        <p className="body2 text-custom-darkgray">새로운 알림이 없습니다.</p>
         <p className="footnote text-slate-400">
-          새로운 커피챗이나 협업 요청이 오면<br />
+          새로운 알림 요청이 오면<br />
           여기에 표시될 거예요.
         </p>
       </div>
