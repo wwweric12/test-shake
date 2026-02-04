@@ -3,8 +3,8 @@
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 
-import NotificationCard from '@/app/home/components/NotificationCard';
-import SwipeDeck from '@/app/recommendation/components/SwipeDeck';
+import NotificationCard from '@/app/(main)/home/components/NotificationCard';
+import SwipeDeck from '@/app/(main)/recommendation/components/SwipeDeck';
 import backIcon from '@/assets/icon/back.svg';
 import resetIcon from '@/assets/icon/restart_alt.svg';
 import { Button } from '@/components/ui/Button';
