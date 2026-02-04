@@ -134,7 +134,7 @@ export const useUpdateProfileImageMutation = () => {
 
   return useMutation({
     mutationFn: async (file: File) => {
-      // Step 1: Presigned URL 요청 데이터 준비
+      // 1. URL 발급 요청 데이터
       const requestData = {
         fileName: file.name,
         contentType: file.type,
@@ -142,27 +142,23 @@ export const useUpdateProfileImageMutation = () => {
         extension: file.name.substring(file.name.lastIndexOf('.')),
       };
 
-      // Step 2: 서버로부터 URL 발급
-      const response = await userApi.getPresignedUrl(requestData);
-      const { preSignedUrl, profileImageUrl } = response.data;
+      // 2. 서버로부터 URL 발급
+      const { data } = await userApi.getPresignedUrl(requestData);
+      const { preSignedUrl, profileImageUrl } = data;
 
-      console.log('S3 업로드 경로 (PUT 대상):', preSignedUrl);
-      console.log('DB 저장용 경로 (CloudFront):', profileImageUrl);
-
-      // Step 3: S3에 파일 직접 업로드
+      // 3. S3 직접 업로드
       await userApi.uploadImageToS3(preSignedUrl, file);
 
-      // Step 4: 우리 서버 DB에 이미지 URL 주소 업데이트
+      // 4. DB 업데이트 (profileImageUrl이 이미 전체 경로이므로 그대로 전달)
       await userApi.updateProfileImage({ profileImageUrl });
 
       return profileImageUrl;
     },
     onSuccess: () => {
-      // 프로필 이미지 변경 후 사용자 정보 캐시 무효화
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.USER.INFO() });
     },
     onError: (error) => {
-      console.error('이미지 업로드 실패:', error);
+      alert('이미지 업로드에 실패했습니다.');
     },
   });
 };

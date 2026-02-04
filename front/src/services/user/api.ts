@@ -48,7 +48,7 @@ export const userApi = {
   getPresignedUrl: (data: PresignedUrlRequest) =>
     api.post<PresignedUrlResponse>('/user/profiles/presigned-url', data),
 
-  // 2. S3 직접 업로드 (공통 인스턴스 대신 네이티브 fetch 사용)
+  // 2. S3 직접 업로드
   uploadImageToS3: async (presignedUrl: string, file: File) => {
     const response = await fetch(presignedUrl, {
       method: 'PUT',
@@ -58,7 +58,9 @@ export const userApi = {
       },
     });
 
-    if (!response.ok) throw new Error('S3 업로드 실패');
+    if (!response.ok) {
+      throw new Error('S3 업로드 실패');
+    }
     return response;
   },
   // 3. DB에 바뀐 URL 저장

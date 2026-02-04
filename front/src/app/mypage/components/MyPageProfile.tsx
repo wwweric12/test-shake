@@ -4,17 +4,19 @@ import { useRef } from 'react';
 import Image from 'next/image';
 
 import CameraIcon from '@/assets/icon/camera.svg';
+import { DSTI_CHARACTERS } from '@/constants/dsti';
 import { useUpdateProfileImageMutation } from '@/services/user/hooks';
 
 interface MyPageProfileProps {
   nickname: string;
   profileImageUrl?: string;
+  dsti: string;
   onLogout: () => void;
 }
 
-export function MyPageProfile({ nickname, profileImageUrl, onLogout }: MyPageProfileProps) {
-  const fileInputRef = useRef<HTMLInputElement>(null); // 🎯 input 참조용
-  const { mutate: uploadImage, isPending } = useUpdateProfileImageMutation(); // 🎯 업로드 훅 사용
+export function MyPageProfile({ nickname, profileImageUrl, onLogout, dsti }: MyPageProfileProps) {
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const { mutate: uploadImage, isPending } = useUpdateProfileImageMutation();
 
   // 카메라 버튼 클릭 시 숨겨진 input 클릭
   const handleCameraButtonClick = () => {
@@ -32,7 +34,7 @@ export function MyPageProfile({ nickname, profileImageUrl, onLogout }: MyPagePro
       return;
     }
 
-    uploadImage(file); // 🎯 업로드 프로세스 시작 (Presigned 발급 -> S3 업로드 -> DB 저장)
+    uploadImage(file); // 업로드 프로세스 시작 (Presigned 발급 -> S3 업로드 -> DB 저장)
   };
 
   return (
@@ -41,7 +43,7 @@ export function MyPageProfile({ nickname, profileImageUrl, onLogout }: MyPagePro
         <div className="relative h-[150px] w-[150px] overflow-hidden rounded-full border border-gray-100 bg-gray-50">
           {/* Fallback to a placeholder if empty */}
           <Image
-            src={profileImageUrl || 'https://github.com/shadcn.png'}
+            src={profileImageUrl || DSTI_CHARACTERS[dsti]}
             alt="Profile"
             fill
             className="object-cover"
@@ -57,7 +59,7 @@ export function MyPageProfile({ nickname, profileImageUrl, onLogout }: MyPagePro
           <Image src={CameraIcon} alt="Edit" width={20} height={20} />
         </button>
 
-        {/* 🎯 숨겨진 파일 선택 Input */}
+        {/* 파일 선택 Input */}
         <input
           type="file"
           ref={fileInputRef}
