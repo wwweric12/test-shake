@@ -4,7 +4,7 @@ import { createContext, useContext, useEffect, useRef, useState } from 'react';
 
 import { WS_URL } from '@/constants/api';
 import { QUERY_KEYS } from '@/constants/queryKeys';
-import { webSocketService } from '@/services/chat/websocket';
+import { webSocketService } from '@/services/socket/WebSocketService';
 import { ChatListUpdateData, ChatRoom, ChatRoomListResponse } from '@/types/chat';
 import { ConnectionStatus } from '@/types/webSocket';
 
