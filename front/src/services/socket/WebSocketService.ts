@@ -33,6 +33,7 @@ import {
 import {
   ConnectionStatus,
   ErrorSubscription,
+  HomeBadgeCountData, NotificationUpdateData,
   StompSubscription,
   WebSocketConfig,
   WebSocketError,
@@ -68,6 +69,12 @@ class WebSocketService {
   private errorHandlers: Set<(error: WebSocketError) => void> = new Set(); // 🔥 에러 핸들러 Set
 
   private subscriptionMonitorInterval: NodeJS.Timeout | null = null;
+
+  private notificationSubscription: StompSub | null = null;
+  private notificationHandler: ((data: NotificationUpdateData) => void) | null = null;
+
+  private badgeCountSubscription: StompSub | null = null;
+  private badgeCountHandler: ((data: HomeBadgeCountData) => void) | null = null;
 
   private log(message: string, ...args: unknown[]): void {
     if (this.debug) {
@@ -177,6 +184,16 @@ class WebSocketService {
 
     // 🔥 에러 큐 구독 복원
     this.subscribeErrorQueue();
+
+    if (this.notificationHandler) {
+      this.log('홈 알림 구독 복원 중...');
+      this.subscribeNotification(this.notificationHandler);
+    }
+
+    if (this.badgeCountHandler) {
+      this.log('홈 채팅 구독 복원 중...');
+      this.subscribeHomeBadgeCount(this.badgeCountHandler);
+    }
   }
 
   disconnect(): void {
@@ -410,6 +427,76 @@ class WebSocketService {
     });
 
     this.log(`메시지 전송 (chatRoomId: ${chatRoomId}): ${content}`);
+  }
+
+  subscribeNotification(onUpdate: (data: NotificationUpdateData) => void): void {
+    this.notificationHandler = onUpdate;
+
+    if (!this.client?.connected) {
+      this.log('WebSocket 미연결 상태: 알림 구독 실패 (연결 시 자동 복원됨)');
+      return;
+    }
+
+    if (this.notificationSubscription) {
+      this.notificationSubscription.unsubscribe();
+    }
+
+    const destination = '/user/queue/notification';
+    this.log(`알림 구독 시작: ${destination}`);
+
+    this.notificationSubscription = this.client.subscribe(destination, (message: IMessage) => {
+      try {
+        const parsed = JSON.parse(message.body);
+        const notificationData = parsed.data;
+
+        this.log('실시간 알림 수신:', notificationData);
+        
+        if (typeof window !== 'undefined') {
+          window.dispatchEvent(new CustomEvent('websocket-message'));
+        }
+
+        onUpdate(notificationData);
+      } catch (error) {
+        this.log('알림 데이터 파싱 에러:', error);
+      }
+    });
+  }
+
+  unsubscribeNotification(): void {
+    if (this.notificationSubscription) {
+      this.notificationSubscription.unsubscribe();
+      this.notificationSubscription = null;
+      this.notificationHandler = null;
+      this.log('알림 구독 해제 완료');
+    }
+  }
+
+  subscribeHomeBadgeCount(onUpdate: (data: HomeBadgeCountData) => void): void {
+    this.badgeCountHandler = onUpdate;
+
+    if (!this.client?.connected) return;
+
+    if (this.badgeCountSubscription) {
+      this.badgeCountSubscription.unsubscribe();
+    }
+
+    const destination = '/user/queue/home/badge-count';
+    this.badgeCountSubscription = this.client.subscribe(destination, (message) => {
+      try {
+        const parsed = JSON.parse(message.body);
+        onUpdate(parsed.data);
+      } catch (error) {
+        this.log('배지 카운트 파싱 에러:', error);
+      }
+    });
+  }
+
+  unsubscribeHomeBadgeCount(): void {
+    if (this.badgeCountSubscription) {
+      this.badgeCountSubscription.unsubscribe();
+      this.badgeCountSubscription = null;
+      this.badgeCountHandler = null;
+    }
   }
 
   // ==================== 상태 조회 ====================
