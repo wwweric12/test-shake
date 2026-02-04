@@ -41,17 +41,6 @@ export default function NotificationPage() {
     observer.observe(observerTarget.current);
     return () => observer.disconnect();
     }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
-    
-  useEffect(() => {
-    const handleFocus = () => refetch();
-    window.addEventListener('focus', handleFocus);
-    document.addEventListener('visibilitychange', handleFocus);
-
-    return () => {
-      window.removeEventListener('focus', handleFocus);
-      document.removeEventListener('visibilitychange', handleFocus);
-    };
-  }, [refetch]);
 
   if (isLoading) {
     return (
