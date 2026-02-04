@@ -49,8 +49,7 @@ export const useExitChatRoomMutation = () => {
 // POST /chat/rooms/{chatRoomId}/report - 채팅방 신고
 export const useReportChatRoomMutation = () => {
   return useMutation({
-    mutationFn: ({ chatRoomId, data }: { chatRoomId: number; data: ReportChatRequest }) =>
-      chatApi.reportChatRoom(chatRoomId, data),
+    mutationFn: (data: ReportChatRequest) => chatApi.reportChatRoom(data),
   });
 };
 
@@ -58,8 +57,14 @@ export const useReportChatRoomMutation = () => {
 export const useUnreadCount = () => {
   return useQuery({
     queryKey: QUERY_KEYS.CHAT.UNREAD_COUNT(),
-    queryFn: chatApi.getUnreadCount,
+    // queryFn: chatApi.getUnreadCount,
+    queryFn: async () => {
+      const response = await chatApi.getUnreadCount();
+      return response.data; // 👈 여기서 숫자만 추출
+    },
     staleTime: 10 * 1000, // 10초
     refetchInterval: 30 * 1000, // 30초마다 자동 갱신
+    // gcTime: 1000 * 60 * 5,
+    // refetchOnWindowFocus: false,
   });
 };
