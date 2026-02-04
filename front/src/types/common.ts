@@ -9,3 +9,9 @@ export interface ApiEmptyResponse {
   message: string;
   data?: null;
 }
+
+export interface PageResponse<T> {
+  content: T[];
+  size: number;
+  hasNext: boolean;
+}

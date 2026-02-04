@@ -4,11 +4,15 @@ import {
   CheckNicknameResponse,
   DstiRequest,
   DstiResponse,
+  PresignedUrlRequest,
+  PresignedUrlResponse,
   UpdateCareerRequest,
   UpdateExperienceRequest,
   UpdateGithubRequest,
   UpdateNetworksRequest,
   UpdatePositionsRequest,
+  UpdateProfileImageRequest,
+  UpdateProfileImageResponse,
   UpdateResponse,
   UpdateSelfIntroRequest,
   UpdateTechSkillsRequest,
@@ -40,4 +44,26 @@ export const userApi = {
   updatePositions: (data: UpdatePositionsRequest) =>
     api.put<UpdateResponse>('/user/position', data),
   updateNetworks: (data: UpdateNetworksRequest) => api.put<UpdateResponse>('/user/networks', data),
+  // 1. Presigned URL 발급 요청
+  getPresignedUrl: (data: PresignedUrlRequest) =>
+    api.post<PresignedUrlResponse>('/user/profiles/presigned-url', data),
+
+  // 2. S3 직접 업로드
+  uploadImageToS3: async (presignedUrl: string, file: File) => {
+    const response = await fetch(presignedUrl, {
+      method: 'PUT',
+      body: file,
+      headers: {
+        'Content-Type': file.type,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error('S3 업로드 실패');
+    }
+    return response;
+  },
+  // 3. DB에 바뀐 URL 저장
+  updateProfileImage: (data: UpdateProfileImageRequest) =>
+    api.put<UpdateProfileImageResponse>('/user/profiles/image-url', data),
 };

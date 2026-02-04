@@ -8,6 +8,7 @@ import {
   UpdateGithubRequest,
   UpdateNetworksRequest,
   UpdatePositionsRequest,
+  UpdateProfileImageRequest,
   UpdateSelfIntroRequest,
   UpdateTechSkillsRequest,
   UserProfileRequest,
@@ -124,6 +125,40 @@ export const useUpdateNetworksMutation = () => {
     mutationFn: (data: UpdateNetworksRequest) => userApi.updateNetworks(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.USER.INFO() });
+    },
+  });
+};
+
+export const useUpdateProfileImageMutation = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (file: File) => {
+      // 1. URL 발급 요청 데이터
+      const requestData = {
+        fileName: file.name,
+        contentType: file.type,
+        fileSize: file.size,
+        extension: file.name.substring(file.name.lastIndexOf('.')),
+      };
+
+      // 2. 서버로부터 URL 발급
+      const { data } = await userApi.getPresignedUrl(requestData);
+      const { preSignedUrl, profileImageUrl } = data;
+
+      // 3. S3 직접 업로드
+      await userApi.uploadImageToS3(preSignedUrl, file);
+
+      // 4. DB 업데이트 (profileImageUrl이 이미 전체 경로이므로 그대로 전달)
+      await userApi.updateProfileImage({ profileImageUrl });
+
+      return profileImageUrl;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.USER.INFO() });
+    },
+    onError: (error) => {
+      alert('이미지 업로드에 실패했습니다.');
     },
   });
 };

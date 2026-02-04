@@ -1,25 +1,49 @@
 import { api } from '@/services/api';
 import {
-  ChatMessagesResponse,
-  ChatRoomsResponse,
-  ExitResponse,
+  ChatRoomListResponse,
+  CreateChatRoomRequest,
+  CreateChatRoomResponse,
+  EnterChatRoomResponse,
+  ExitChatRoomResponse,
+  GetMessagesResponse,
   ReportChatRequest,
-  ReportResponse,
-  SendMessageRequest,
-  SendMessageResponse,
+  ReportChatResponse,
+  UnreadCountResponse,
 } from '@/types/chat';
 
 export const chatApi = {
-  getChatRooms: () => api.get<ChatRoomsResponse>('/chat/rooms'),
+  // GET /chat/rooms - 내 채팅방 목록 조회
+  getChatRooms: () => api.get<ChatRoomListResponse>('/chat/rooms'),
 
-  getChatMessages: (roomId: number) =>
-    api.get<ChatMessagesResponse>(`/chat/rooms/${roomId}/messages`),
+  // POST /chat/rooms - 채팅방 생성
+  createChatRoom: (data: CreateChatRoomRequest) =>
+    api.post<CreateChatRoomResponse>('/chat/rooms', data),
 
-  sendMessage: (roomId: number, data: SendMessageRequest) =>
-    api.post<SendMessageResponse>(`/chat/rooms/${roomId}/messages`, data),
+  // GET /chat/messages/{chatRoomId}/enter - 채팅방 입장
+  enterChatRoom: (chatRoomId: number) =>
+    api.get<EnterChatRoomResponse>(`/chat/messages/${chatRoomId}/enter`),
 
-  exitChatRoom: (roomId: number) => api.post<ExitResponse>(`/chat/rooms/${roomId}/exit`, {}),
+  // // GET /chat/messages/{chatRoomId} - 채팅 메시지 페이징 조회
+  getChatMessages: (chatRoomId: number, cursor?: string, size: number = 50) => {
+    const params = new URLSearchParams();
 
-  reportChatRoom: (roomId: number, data: ReportChatRequest) =>
-    api.post<ReportResponse>(`/chat/rooms/${roomId}/report`, data),
+    if (cursor) {
+      params.append('cursor', cursor);
+    }
+
+    params.append('size', size.toString());
+
+    const queryString = params.toString();
+    return api.get<GetMessagesResponse>(`/chat/messages/${chatRoomId}?${queryString}`);
+  },
+
+  // DELETE /chat/rooms/{chatRoomId}/exit - 채팅방 나가기
+  exitChatRoom: (chatRoomId: number) =>
+    api.delete<ExitChatRoomResponse>(`/chat/rooms/${chatRoomId}/exit`),
+
+  // POST /chat/rooms/{chatRoomId}/report - 채팅방 신고
+  reportChatRoom: (data: ReportChatRequest) => api.post<ReportChatResponse>(`/reports`, data),
+
+  // GET /chat/messages/unread-count - 전체 안 읽은 메시지 수 조회
+  getUnreadCount: () => api.get<UnreadCountResponse>('/chat/messages/unread-count'),
 };
