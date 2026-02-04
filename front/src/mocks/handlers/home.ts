@@ -19,6 +19,7 @@ export const homeHandlers = [
           dsti: ['EDAU', 'PDAR'],
         },
         remainingSwipes: 20,
+        dailyLimit: 30,
       },
     };
     return HttpResponse.json(mockSummary);
