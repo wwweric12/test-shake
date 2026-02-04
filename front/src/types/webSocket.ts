@@ -47,3 +47,12 @@ export interface WebSocketEventListeners {
   onError?: (error: WebSocketError) => void;
   onMessage?: (message: ReceivedMessage) => void;
 }
+
+// 알림 업데이트 데이터 타입
+export interface NotificationUpdateData {
+  targetUserId: number;
+  targetNickname: string;
+  targetImageUrl: string;
+  dsti: string;
+  unreadCount: number;
+}

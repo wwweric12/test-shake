@@ -6,7 +6,8 @@ import { WS_URL } from '@/constants/api';
 import { QUERY_KEYS } from '@/constants/queryKeys';
 import { webSocketService } from '@/services/socket/WebSocketService';
 import { ChatListUpdateData, ChatRoom, ChatRoomListResponse } from '@/types/chat';
-import { ConnectionStatus } from '@/types/webSocket';
+import { HomeSummaryData } from '@/types/home';
+import { ConnectionStatus, NotificationUpdateData } from '@/types/webSocket';
 
 import { useQueryClient } from '@tanstack/react-query';
 
@@ -96,9 +97,35 @@ export function WebSocketProvider({ children, enabled = true }: WebSocketProvide
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.CHAT.UNREAD_COUNT() });
     };
 
-    webSocketService.subscribeChatListUpdate(handleUpdate);
+    const handleNotificationUpdate = (newData: NotificationUpdateData) => {
+      queryClient.setQueryData<HomeSummaryData>(QUERY_KEYS.HOME.SUMMARY(), (oldData) => {
+        if (!oldData) return oldData;
 
-    return () => webSocketService.unsubscribeChatListUpdate();
+        return {
+          ...oldData,
+          totalLikeCount: newData.unreadCount,
+          others: {
+            ...oldData.others,
+            profileImageUrl: [
+              newData.targetImageUrl,
+              ...(oldData.others?.profileImageUrl || [])
+            ].slice(0, 3),
+            dsti: [
+              newData.dsti,
+              ...(oldData.others?.dsti || [])
+            ].slice(0, 3),
+          }
+        };
+      });
+    };
+
+    webSocketService.subscribeChatListUpdate(handleUpdate);
+    webSocketService.subscribeNotification(handleNotificationUpdate);
+
+    return () => {
+      webSocketService.unsubscribeChatListUpdate();
+      webSocketService.unsubscribeNotification();
+    }
   }, [isConnected, queryClient]);
 
   return (
