@@ -100,8 +100,9 @@ export type UnreadCountResponse = ApiResponse<number>;
 
 // POST /chat/rooms/{chatRoomId}/report - 채팅방 신고
 export interface ReportChatRequest {
-  chatRoomId: number;
-  reason: string;
+  chatroomId: number;
+  reporteeId: number;
+  content: string;
 }
 
 export type ReportChatResponse = ApiEmptyResponse;
