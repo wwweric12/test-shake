@@ -1,12 +1,10 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
-import { WS_URL } from '@/constants/api';
 import { QUERY_KEYS } from '@/constants/queryKeys';
+import { useWebSocket } from '@/providers/WebSocketProvider';
 import { useEnterChatRoom } from '@/services/chat/hooks';
 import { webSocketService } from '@/services/chat/websocket';
-import { ChatMessageWithProfile, ReceivedMessageData } from '@/types/chat';
-import { PartnerInfo } from '@/types/chat';
-import { ConnectionStatus } from '@/types/webSocket';
+import { ChatMessageWithProfile, PartnerInfo, ReceivedMessageData } from '@/types/chat';
 import {
   convertApiMessageToProfile,
   convertWsMessageToProfile,
@@ -20,116 +18,63 @@ interface UseWebSocketChatParams {
   enabled?: boolean;
 }
 
-interface UseWebSocketChatReturn {
-  messages: ChatMessageWithProfile[];
-  sendMessage: (content: string) => void;
-  connectionStatus: ConnectionStatus;
-  isConnected: boolean;
-  isLoading: boolean;
-  error: Error | null;
-  currentUserId: number | undefined;
-}
-
 export function useWebSocketChat({
   chatRoomId,
   partnerInfo,
   enabled = true,
-}: UseWebSocketChatParams): UseWebSocketChatReturn {
+}: UseWebSocketChatParams) {
   const queryClient = useQueryClient();
-  // 실시간으로 수신된 메시지 저장
+  const { isConnected, connectionStatus } = useWebSocket();
   const [realtimeMessages, setRealtimeMessages] = useState<ChatMessageWithProfile[]>([]);
-  // WebSocket 연결 상태 관리
-  const [connectionStatus, setConnectionStatus] = useState<ConnectionStatus>(
-    enabled ? 'CONNECTING' : 'DISCONNECTED',
-  );
-  // WebSocket 에러 상태 저장
-  const [error, setError] = useState<Error | null>(null);
-  // 중복 연결 방지 플래그
-  const isConnectingRef = useRef(false);
-  const hasEnteredRef = useRef(false);
+  const [messageError, setMessageError] = useState<string | null>(null);
+  const [partnerLeft, setPartnerLeft] = useState(false);
 
-  // 채팅방 입장 시 초기 메시지 로드
-  const { data: enterData, isLoading, error: enterError } = useEnterChatRoom(chatRoomId, enabled);
-
-  // enter API에서 userId 추출
+  const { data: enterData, isLoading, error } = useEnterChatRoom(chatRoomId, enabled);
   const currentUserId = enterData?.data?.userId;
-  // WebSocket 수신 메시지를 UI용 메시지로 변환
+
   const handleMessageReceived = useCallback(
-    (receivedData: ReceivedMessageData) => {
-      const newMsg = convertWsMessageToProfile(receivedData);
-
-      if (!newMsg.id) return;
-
-      // 중복 메시지 필터링 후 상태 업데이트
-      setRealtimeMessages((prev) => {
-        if (prev.some((m) => m.id === newMsg.id)) return prev;
-        return [...prev, newMsg];
-      });
-
-      // 채팅방 목록 캐시 갱신
+    (received: ReceivedMessageData) => {
+      const msg = convertWsMessageToProfile(received);
+      if (!msg.id) return;
+      setRealtimeMessages((prev) => (prev.some((m) => m.id === msg.id) ? prev : [...prev, msg]));
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.CHAT.ROOMS() });
     },
     [queryClient],
   );
 
-  // REST API로 받은 초기 메시지를 UI용 형태로 변환 (currentUserId로 계산)
   const initialMessages = useMemo(() => {
-    const contentData = enterData?.data?.content?.content;
-    if (!contentData || !currentUserId) return [];
+    const content = enterData?.data?.content?.content;
+    if (!content || !currentUserId) return [];
+    return content.map((m) => convertApiMessageToProfile(m, currentUserId, partnerInfo));
+  }, [enterData, currentUserId, partnerInfo]);
 
-    return contentData.map((msg) => convertApiMessageToProfile(msg, currentUserId, partnerInfo));
-  }, [enterData?.data?.content?.content, currentUserId, partnerInfo]);
-
-  // 초기 메시지와 실시간 메시지 병합 후 시간순 정렬
   const messages = useMemo(() => {
-    const initialIds = new Set(initialMessages.map((m) => m.id));
-    const newRealtimeMessages = realtimeMessages.filter((m) => !initialIds.has(m.id));
-
-    const combined = [...initialMessages, ...newRealtimeMessages];
-    return combined.sort((a, b) => new Date(a.sentAt).getTime() - new Date(b.sentAt).getTime());
+    const ids = new Set(initialMessages.map((m) => m.id));
+    return [...initialMessages, ...realtimeMessages.filter((m) => !ids.has(m.id))].sort(
+      (a, b) => new Date(a.sentAt).getTime() - new Date(b.sentAt).getTime(),
+    );
   }, [initialMessages, realtimeMessages]);
 
-  // WebSocket 연결 설정
+  // 🔥 WebSocket 에러 구독
   useEffect(() => {
-    if (!enabled || isConnectingRef.current) return;
-    isConnectingRef.current = true;
+    if (!isConnected) return;
 
-    // 연결 상태 변화 이벤트 리스너 등록
-    webSocketService.setEventListeners({
-      onConnect: () => {
-        setConnectionStatus('CONNECTED');
-        setError(null);
-      },
-      onDisconnect: () => setConnectionStatus('DISCONNECTED'),
-      onError: (err) => {
-        setConnectionStatus('ERROR');
-        setError(err);
-      },
+    const subscription = webSocketService.subscribeError((err) => {
+      if (err.type === 'PARTNER_LEFT') {
+        setPartnerLeft(true);
+        setMessageError(err.message);
+      } else {
+        setMessageError(err.message);
+      }
     });
 
-    if (!webSocketService.isConnected()) {
-      webSocketService.connect({
-        url: WS_URL,
-        reconnectDelay: 3000,
-        heartbeatIncoming: 10000,
-        heartbeatOutgoing: 10000,
-        debug: process.env.NODE_ENV === 'development',
-      });
-    }
+    return () => subscription.unsubscribe();
+  }, [isConnected]);
 
-    return () => {
-      isConnectingRef.current = false;
-    };
-  }, [enabled]);
-
-  // ✅ 채팅방 입장 처리 (구독 로직 개선)
   useEffect(() => {
-    if (!enabled || !chatRoomId || hasEnteredRef.current || !webSocketService.isConnected()) return;
-
-    hasEnteredRef.current = true;
+    if (!enabled || !chatRoomId || !isConnected) return;
 
     webSocketService.enterChatRoom(chatRoomId);
-    webSocketService.messageHandlers.set(chatRoomId, handleMessageReceived);
 
     if (!webSocketService.isSubscribedToChatRoom(chatRoomId)) {
       webSocketService.subscribeChatRoom(chatRoomId, handleMessageReceived);
@@ -139,27 +84,43 @@ export function useWebSocketChat({
       if (webSocketService.isConnected()) {
         webSocketService.leaveChatRoom(chatRoomId);
       }
-
-      webSocketService.unsubscribeChatRoom(chatRoomId);
-      hasEnteredRef.current = false;
     };
-  }, [chatRoomId, handleMessageReceived, enabled]);
+  }, [chatRoomId, enabled, isConnected, handleMessageReceived]);
 
   const sendMessage = useCallback(
     (content: string) => {
       if (!content.trim()) return;
-      webSocketService.sendMessage(chatRoomId, content);
+
+      if (partnerLeft) {
+        setMessageError('상대방이 채팅방을 나가 메시지를 보낼 수 없습니다.');
+        return;
+      }
+
+      if (!isConnected) {
+        setMessageError('연결이 끊어져 메시지를 전송할 수 없습니다.');
+        return;
+      }
+
+      try {
+        webSocketService.sendMessage(chatRoomId, content);
+        setMessageError(null);
+      } catch {
+        setMessageError('메시지 전송에 실패했습니다.');
+      }
     },
-    [chatRoomId],
+    [chatRoomId, isConnected, partnerLeft],
   );
 
   return {
     messages,
     sendMessage,
     connectionStatus,
-    isConnected: webSocketService.isConnected(),
+    isConnected,
     isLoading,
-    error: error || (enterError as Error | null),
+    error: error as Error | null,
     currentUserId,
+    messageError,
+    clearMessageError: () => setMessageError(null),
+    partnerLeft,
   };
 }
