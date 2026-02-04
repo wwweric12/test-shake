@@ -6,6 +6,7 @@ import { motion } from 'framer-motion';
 import EmptyChatIcon from '@/assets/icon/chat-dashed.svg';
 import { Badge } from '@/components/ui/Badge';
 import { DSTI_CHARACTERS } from '@/constants/dsti';
+import { useUnreadCount } from '@/services/chat/hooks';
 import { ChatRoom } from '@/types/chat';
 import { formatChatTime } from '@/utils/dateFormat';
 interface RoomListProps {
@@ -21,8 +22,7 @@ interface RoomListProps {
  */
 export function RoomList({ rooms, onSelectRoom, isLoading, error }: RoomListProps) {
   // 전체 읽지 않은 메시지 수 계산
-  const totalUnreadCount = rooms.reduce((sum, room) => sum + room.unreadCount, 0);
-
+  const { data: totalUnreadCount = 0 } = useUnreadCount();
   // 로딩 중
   if (isLoading) {
     return (
