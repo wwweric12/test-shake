@@ -8,13 +8,12 @@ import {
 } from '@/types/notification';
 
 export const notificationApi = {
-  getNotifications: () => api.get<NotificationResponse>('/notifications'),
-  acceptNotification: (
-    notificationId: number,
-    data: AcceptNotificationRequest | RejectNotificationRequest,
-  ) =>
-    api.post<AcceptNotificationResponse | RejectNotificationResponse>(
-      `/notifications/${notificationId}`,
-      data,
-    ),
+  getNotifications: (page: number, size: number) => 
+    api.get<NotificationResponse>(`/notifications?page=${page}&size=${size}`),
+  
+  acceptNotification: (data: AcceptNotificationRequest) =>
+    api.post<AcceptNotificationResponse>(`/notifications/accept`, data),
+
+  rejectNotification: (data: RejectNotificationRequest) =>
+    api.post<RejectNotificationResponse>(`/notifications/reject`, data),
 };

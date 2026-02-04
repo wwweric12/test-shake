@@ -74,26 +74,24 @@ export async function middleware(request: NextRequest) {
           'Content-Type': 'application/json',
         },
       });
-
       if (reissueResponse.ok) {
         const setCookieHeaders = reissueResponse.headers.getSetCookie();
 
         if (setCookieHeaders.length > 0) {
           newCookies = setCookieHeaders;
-
           setCookieHeaders.forEach((cookieString) => {
             const [keyVal] = cookieString.split(';');
-            const [key, value] = keyVal.split('=');
-            if (key && value) {
-              const cleanedKey = key.trim();
-              const cleanedValue = value.trim();
+            const separatorIndex = keyVal.indexOf('=');
 
-              // Request 쿠키 동기화
-              request.cookies.set(cleanedKey, cleanedValue);
+            if (separatorIndex > 0) {
+              const key = keyVal.substring(0, separatorIndex).trim();
+              const value = keyVal.substring(separatorIndex + 1).trim();
 
-              // 갱신된 accessToken 반영
-              if (cleanedKey === 'ACCESS_TOKEN') {
-                accessToken = cleanedValue;
+              if (value) {
+                request.cookies.set(key, value);
+                if (key === 'ACCESS_TOKEN') {
+                  accessToken = value;
+                }
               }
             }
           });
@@ -101,8 +99,12 @@ export async function middleware(request: NextRequest) {
       } else {
         // 갱신 실패 (만료): 로그인으로 이동
         const response = NextResponse.redirect(new URL('/login', request.url));
-        response.cookies.delete('ACCESS_TOKEN');
-        response.cookies.delete('REFRESH_TOKEN');
+        const setCookieHeaders = reissueResponse.headers.getSetCookie();
+        if (setCookieHeaders.length > 0) {
+          setCookieHeaders.forEach((cookieString) => {
+            response.headers.append('Set-Cookie', cookieString);
+          });
+        }
         return response;
       }
     } catch {
@@ -114,7 +116,11 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  let response = NextResponse.next();
+  let response = NextResponse.next({
+    request: {
+      headers: request.headers,
+    },
+  });
 
   // Role 기반 리다이렉트 처리
   if (accessToken) {
