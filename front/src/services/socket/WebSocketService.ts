@@ -7,10 +7,11 @@ import {
   ReceivedMessageData,
   SendMessageRequest,
 } from '@/types/chat';
+import { HomeBadgeCountData } from '@/types/home';
+import { NotificationUpdateData } from '@/types/notification';
 import {
   ConnectionStatus,
   ErrorSubscription,
-  HomeBadgeCountData, NotificationUpdateData,
   StompSubscription,
   WebSocketConfig,
   WebSocketError,

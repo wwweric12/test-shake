@@ -6,8 +6,9 @@ import { WS_URL } from '@/constants/api';
 import { QUERY_KEYS } from '@/constants/queryKeys';
 import { webSocketService } from '@/services/socket/WebSocketService';
 import { ChatListUpdateData, ChatRoom, ChatRoomListResponse } from '@/types/chat';
-import { HomeSummaryData } from '@/types/home';
-import { ConnectionStatus, HomeBadgeCountData,NotificationUpdateData } from '@/types/webSocket';
+import { HomeBadgeCountData, HomeBadgeCountResponse } from '@/types/home';
+import { NotificationUpdateData, NotificationUpdateResponse } from '@/types/notification';
+import { ConnectionStatus} from '@/types/webSocket';
 
 import { useQueryClient } from '@tanstack/react-query';
 
@@ -98,21 +99,20 @@ export function WebSocketProvider({ children, enabled = true }: WebSocketProvide
     };
 
     const handleNotificationUpdate = (newData: NotificationUpdateData) => {
-      queryClient.setQueryData<HomeSummaryData>(QUERY_KEYS.HOME.SUMMARY(), (oldData) => {
-        if (!oldData) return oldData;
+      queryClient.setQueryData<NotificationUpdateResponse >(QUERY_KEYS.HOME.SUMMARY(), (old) => {
+        if (!old?.data) return old;
 
         return {
-          ...oldData,
+          ...old,
           totalLikeCount: newData.unreadCount,
           others: {
-            ...oldData.others,
             profileImageUrl: [
               newData.targetImageUrl,
-              ...(oldData.others?.profileImageUrl || [])
+              ...(old.data.targetImageUrl || [])
             ].slice(0, 3),
             dsti: [
               newData.dsti,
-              ...(oldData.others?.dsti || [])
+              ...(old.data.dsti || [])
             ].slice(0, 3),
           }
         };
@@ -120,16 +120,15 @@ export function WebSocketProvider({ children, enabled = true }: WebSocketProvide
     };
 
     const handleBadgeUpdate = (newData: HomeBadgeCountData) => {
-    queryClient.setQueryData<HomeSummaryData>(QUERY_KEYS.HOME.SUMMARY(), (oldData) => {
-      if (!oldData) return oldData;
+    queryClient.setQueryData<HomeBadgeCountResponse>(QUERY_KEYS.HOME.SUMMARY(), (old) => {
+    if (!old?.data) return old;
 
       return {
-        ...oldData,
+        ...old,
         totalUnreadMessages: newData.totalUnreadMessages, 
       };
     });
 
-    // 전역 배지 카운트 쿼리가 따로 있다면 무효화 처리
     queryClient.invalidateQueries({ queryKey: QUERY_KEYS.CHAT.UNREAD_COUNT() });
   };
 
