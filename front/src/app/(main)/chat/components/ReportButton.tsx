@@ -16,9 +16,10 @@ import { useReportChatRoomMutation } from '@/services/chat/hooks';
 
 interface ReportButtonProps {
   roomId: number;
+  reporteeId: number;
 }
 
-export function ReportButton({ roomId }: ReportButtonProps) {
+export function ReportButton({ roomId, reporteeId }: ReportButtonProps) {
   const [open, setOpen] = useState(false);
   const [reason, setReason] = useState('');
   const reportMutation = useReportChatRoomMutation();
@@ -32,8 +33,9 @@ export function ReportButton({ roomId }: ReportButtonProps) {
     }
 
     await reportMutation.mutateAsync({
-      chatRoomId: roomId,
-      data: { chatRoomId: roomId, reason: trimmedReason },
+      chatroomId: roomId,
+      reporteeId,
+      content: trimmedReason,
     });
 
     alert('신고가 접수되었습니다.');
