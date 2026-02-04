@@ -25,17 +25,14 @@ interface WebSocketProviderProps {
 
 export function WebSocketProvider({ children, enabled = true }: WebSocketProviderProps) {
   const queryClient = useQueryClient();
-  const [connectionStatus, setConnectionStatus] = useState<ConnectionStatus>(
-    enabled ? 'CONNECTING' : 'DISCONNECTED',
-  );
-  const [isConnected, setIsConnected] = useState(false);
-  const [error, setError] = useState<Error | null>(null);
   const hasInitialized = useRef(false);
 
-  // WebSocket 연결
+  const [connectionStatus, setConnectionStatus] = useState<ConnectionStatus>('DISCONNECTED');
+  const [isConnected, setIsConnected] = useState(false);
+  const [error, setError] = useState<Error | null>(null);
+
   useEffect(() => {
     if (!enabled || hasInitialized.current) return;
-
     hasInitialized.current = true;
 
     webSocketService.setEventListeners({
@@ -71,60 +68,48 @@ export function WebSocketProvider({ children, enabled = true }: WebSocketProvide
     };
   }, [enabled]);
 
-  // 채팅 목록 실시간 업데이트 구독
   useEffect(() => {
     if (!isConnected) return;
 
-    webSocketService.subscribeChatListUpdate((updateData: ChatListUpdateData) => {
-      queryClient.setQueryData<ChatRoomListResponse>(QUERY_KEYS.CHAT.ROOMS(), (oldData) => {
-        if (!oldData?.data?.content) return oldData;
+    const handleUpdate = (update: ChatListUpdateData) => {
+      queryClient.setQueryData<ChatRoomListResponse>(QUERY_KEYS.CHAT.ROOMS(), (old) => {
+        if (!old?.data?.content) return old;
 
-        const updatedContent = oldData.data.content.map((room: ChatRoom) => {
-          if (room.chatRoomId === updateData.chatRoomId) {
-            return {
-              ...room,
-              lastMessage: updateData.lastMessage,
-              lastMessageTime: updateData.lastMessageTime,
-              unreadCount: updateData.unreadCount,
-            };
-          }
-          return room;
-        });
+        const content = old.data.content.map((room: ChatRoom) =>
+          room.chatRoomId === update.chatRoomId
+            ? {
+                ...room,
+                lastMessage: update.lastMessage,
+                lastMessageTime: update.lastMessageTime,
+                unreadCount: update.unreadCount,
+              }
+            : room,
+        );
 
-        updatedContent.sort((a, b) => {
-          return new Date(b.lastMessageTime).getTime() - new Date(a.lastMessageTime).getTime();
-        });
+        content.sort(
+          (a, b) => new Date(b.lastMessageTime).getTime() - new Date(a.lastMessageTime).getTime(),
+        );
 
-        return {
-          ...oldData,
-          data: {
-            ...oldData.data,
-            content: updatedContent,
-          },
-        };
+        return { ...old, data: { ...old.data, content } };
       });
 
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.CHAT.UNREAD_COUNT() });
-    });
-
-    return () => {
-      webSocketService.unsubscribeChatListUpdate();
     };
+
+    webSocketService.subscribeChatListUpdate(handleUpdate);
+
+    return () => webSocketService.unsubscribeChatListUpdate();
   }, [isConnected, queryClient]);
 
-  const value: WebSocketContextValue = {
-    connectionStatus,
-    isConnected,
-    error,
-  };
-
-  return <WebSocketContext.Provider value={value}>{children}</WebSocketContext.Provider>;
+  return (
+    <WebSocketContext.Provider value={{ connectionStatus, isConnected, error }}>
+      {children}
+    </WebSocketContext.Provider>
+  );
 }
 
 export function useWebSocket() {
-  const context = useContext(WebSocketContext);
-  if (!context) {
-    throw new Error('useWebSocket must be used within WebSocketProvider');
-  }
-  return context;
+  const ctx = useContext(WebSocketContext);
+  if (!ctx) throw new Error('useWebSocket must be used within WebSocketProvider');
+  return ctx;
 }
