@@ -236,11 +236,11 @@ export function ChatRoomView({
 
       {/* 연결 에러 배너 */}
       {!isConnected && connectionStatus === 'ERROR' && (
-        <div className="border-b border-yellow-300 bg-yellow-100 px-4 py-2">
+        <div className="border-b border-yellow-300 bg-yellow-100/70 px-4 py-2">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-yellow-800">⚠️ 실시간 연결 실패</p>
-              <p className="mt-0.5 text-xs text-yellow-600">
+              <p className="footnote font-medium text-yellow-800">⚠️ 실시간 연결 실패</p>
+              <p className="caption3 mt-0.5 text-yellow-600">
                 이전 메시지는 볼 수 있지만, 새 메시지 전송이 불가능합니다
               </p>
             </div>
