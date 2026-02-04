@@ -1,6 +1,5 @@
 import type { Metadata, Viewport } from 'next';
 
-import LayoutWrapper from '@/components/common/LayoutWrapper';
 import { MSWProvider } from '@/providers/MSWProvider';
 import { QueryProvider } from '@/providers/QueryProvider';
 
@@ -29,9 +28,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="flex h-full justify-center bg-white md:bg-gray-100">
         <QueryProvider>
           <MSWProvider>
+            {/* 공통 컨테이너 - 모든 페이지에 적용 */}
             <div className="bg-custom-white relative flex h-dvh w-full max-w-[440px] min-w-[375px] flex-col overflow-hidden shadow-xl">
               <main className="custom-scrollbar flex flex-1 flex-col overflow-y-auto">
-                <LayoutWrapper>{children}</LayoutWrapper>
+                {children}
               </main>
             </div>
           </MSWProvider>

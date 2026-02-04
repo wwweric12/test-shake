@@ -10,24 +10,32 @@ export const chatHandlers = [
     const response: ChatRoomsResponse = {
       statusCode: 200,
       message: 'OK',
-      data: [
-        {
-          chatRoomId: 101,
-          otherUserNickname: '대화상대1',
-          otherUserProfileImageUrl: 'https://picsum.photos/301',
-          lastMessage: '안녕하세요!',
-          lastMessageAt: '2026-01-23T10:00:00',
-          unreadCount: 2,
-        },
-        {
-          chatRoomId: 102,
-          otherUserNickname: '대화상대2',
-          otherUserProfileImageUrl: 'https://picsum.photos/302',
-          lastMessage: '오늘 점심!',
-          lastMessageAt: '2026-01-23T09:30:00',
-          unreadCount: 0,
-        },
-      ],
+      data: {
+        content: [
+          {
+            chatRoomId: 101,
+            partnerId: 1001,
+            partnerName: '대화상대1',
+            partnerProfileImage: 'https://picsum.photos/301',
+            lastMessage: '안녕하세요!',
+            lastMessageTime: '2026-01-23T10:00:00',
+            unreadCount: 2,
+            canSendMessage: true,
+          },
+          {
+            chatRoomId: 102,
+            partnerId: 1002,
+            partnerName: '대화상대2',
+            partnerProfileImage: 'https://picsum.photos/302',
+            lastMessage: '오늘 점심!',
+            lastMessageTime: '2026-01-23T09:30:00',
+            unreadCount: 5,
+            canSendMessage: true,
+          },
+        ],
+        size: 2,
+        hasNext: false,
+      },
     };
     return HttpResponse.json(response);
   }),
@@ -39,41 +47,36 @@ export const chatHandlers = [
     const response: ChatMessagesResponse = {
       statusCode: 200,
       message: 'OK',
-      data: [
-        {
-          messageId: 1,
-          chatRoomId: roomId,
-          senderId: 'user-001',
-          senderNickname: '대화상대1',
-          content: '안녕하세요!',
-          sendTime: '2026-01-23T09:00:00',
-          senderProfileUrl: 'https://picsum.photos/301',
-          isRead: true,
-          isMine: false,
-        },
-        {
-          messageId: 2,
-          chatRoomId: roomId,
-          senderId: 'mock-user-1',
-          senderNickname: '나',
-          content: '반갑습니다.',
-          sendTime: '2026-01-23T09:01:00',
-          senderProfileUrl: 'https://picsum.photos/302',
-          isRead: true,
-          isMine: true,
-        },
-        {
-          messageId: 3,
-          chatRoomId: roomId,
-          senderId: 'user-001',
-          senderNickname: '대화상대1',
-          content: '오늘 날씨 좋네요!',
-          sendTime: '2026-01-23T09:02:00',
-          senderProfileUrl: 'https://picsum.photos/301',
-          isRead: false,
-          isMine: false,
-        },
-      ],
+      data: {
+        content: [
+          {
+            id: 'msg-1',
+            chatRoomId: roomId,
+            senderId: 1001,
+            content: '안녕하세요!',
+            sentAt: '2026-01-23T09:00:00',
+            isRead: true,
+          },
+          {
+            id: 'msg-2',
+            chatRoomId: roomId,
+            senderId: 9999, // 본인 ID
+            content: '반갑습니다.',
+            sentAt: '2026-01-23T09:01:00',
+            isRead: true,
+          },
+          {
+            id: 'msg-3',
+            chatRoomId: roomId,
+            senderId: 1001,
+            content: '오늘 날씨 좋네요!',
+            sentAt: '2026-01-23T09:02:00',
+            isRead: false,
+          },
+        ],
+        size: 3,
+        hasNext: false,
+      },
     };
     return HttpResponse.json(response);
   }),
