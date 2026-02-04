@@ -21,4 +21,11 @@ export interface NotificationUsers {
 
 //Response
 
+// 홈 요약 데이터 업데이트 타입
+export interface HomeBadgeCountData {
+  totalUnreadMessages: number;
+  totalLikeCount: number;
+}
+
+export type HomeBadgeCountResponse = ApiResponse<HomeBadgeCountData>;
 export type HomeSummaryResponse = ApiResponse<HomeSummaryData>;
