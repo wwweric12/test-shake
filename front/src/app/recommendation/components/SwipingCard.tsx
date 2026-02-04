@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import Image from 'next/image';
 
 import github from '@/assets/icon/github.svg';
@@ -16,7 +17,7 @@ interface SwipingCardProps {
   card: UserInfo;
 }
 
-export default function SwipingCard({ card }: SwipingCardProps) {
+export default memo(function SwipingCard({ card }: SwipingCardProps) {
   const networkRotateStyles = ['rotate-[-2deg]', 'rotate-[1deg]', 'rotate-[-1deg]'];
 
   const radius = 87;
@@ -197,4 +198,4 @@ export default function SwipingCard({ card }: SwipingCardProps) {
       </div>
     </div>
   );
-}
+});
