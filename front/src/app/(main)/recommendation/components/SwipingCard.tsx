@@ -3,6 +3,7 @@ import Image from 'next/image';
 
 import github from '@/assets/icon/github.svg';
 import { Badge } from '@/components/ui/Badge';
+import { DSTI_CHARACTERS } from '@/constants/dsti';
 import { NETWORK_STYLES } from '@/constants/style';
 import { TECH_SKILL_ICONS } from '@/constants/techSkillIcons';
 import {
@@ -22,6 +23,8 @@ export default memo(function SwipingCard({ card }: SwipingCardProps) {
 
   const radius = 87;
   const circumference = 2 * Math.PI * radius;
+
+  const img = card.profileImageUrl || DSTI_CHARACTERS[card.dsti];
 
   return (
     <div className="relative h-full w-full overflow-hidden rounded-[30px] bg-white shadow-xl select-none">
@@ -69,19 +72,13 @@ export default memo(function SwipingCard({ card }: SwipingCardProps) {
               {/* 내부 이미지 */}
               <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
                 <div className="relative z-10 size-[164px] overflow-hidden rounded-full border-4 border-white bg-gray-100 shadow-lg">
-                  {card.profileImageUrl ? (
-                    <Image
-                      src={card.profileImageUrl}
-                      alt={card.nickname}
-                      fill
-                      draggable={false}
-                      className="object-cover"
-                    />
-                  ) : (
-                    <div className="flex h-full w-full items-center justify-center bg-gray-200 text-gray-400">
-                      No Image
-                    </div>
-                  )}
+                  <Image
+                    src={img}
+                    alt={card.nickname}
+                    fill
+                    draggable={false}
+                    className="object-cover"
+                  />
                 </div>
               </div>
             </div>
