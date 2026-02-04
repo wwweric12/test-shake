@@ -71,16 +71,16 @@ export default function NotificationPage() {
     );
   }
 
-    const allNotifications = data?.pages.flatMap(page => page.data.notificationResponse.content) || [];
+  const allNotifications = data?.pages.flatMap(page => page.data.notificationResponse.content) || [];
 
-    const notifications = Array.from(
+  const notifications = Array.from(
   new Map(allNotifications.map((item) => [item.targetUserId, item])).values()
     );
     
   return (
     <main className="bg-custom-white flex h-dvh flex-col overflow-hidden">
           <NotificationHeader />
-          <div className="flex-1 overflow-y-auto px-5 py-4">
+          <div className="flex-1 overflow-y-auto px-5 py-4 custom-scrollbar">
       <NotificationList 
         notifications={notifications}
         onAccept={(targetUserId) => acceptNotification({ targetUserId })}
