@@ -3,13 +3,14 @@ import { http, HttpResponse } from 'msw';
 import { BASE_URL } from '@/constants/api';
 import {
   CheckNicknameRequest,
-  DstiResponse, // ApiResponse 대신 구체적인 Response 타입을 활용
+  DstiResponse,
+  UpdateProfileImageRequest, // 추가
   UserInfo,
   UserProfileRequest,
 } from '@/types/user';
 
-// 1. Mock 데이터 정의 (UserInfo 기반)
-const MOCK_USER_INFO: UserInfo = {
+// 🎯 let으로 변경하여 데이터 수정 허용
+let MOCK_USER_INFO: UserInfo = {
   userId: 1,
   nickname: '싸피테스트',
   profileImageUrl: 'https://picsum.photos/200',
@@ -25,7 +26,7 @@ const MOCK_USER_INFO: UserInfo = {
 };
 
 export const userHandlers = [
-  // 유저 정보 조회
+  // 유저 정보 조회 (항상 현재 MOCK_USER_INFO 반환)
   http.get(`${BASE_URL}/user/info`, () => {
     return HttpResponse.json({
       statusCode: 200,
@@ -34,20 +35,36 @@ export const userHandlers = [
     });
   }),
 
-  // 회원가입 프로필 등록 (image_26ab57.png 에러 해결)
+  // 🎯 DB 이미지 URL 업데이트 핸들러
+  // 이 부분이 실행되어야 invalidateQueries 시 새로운 이미지가 보입니다.
+  http.put(`${BASE_URL}/user/profiles/image-url`, async ({ request }) => {
+    const { profileImageUrl } = (await request.json()) as UpdateProfileImageRequest;
+
+    // ✅ 메모리 데이터 갱신
+    MOCK_USER_INFO = {
+      ...MOCK_USER_INFO,
+      profileImageUrl: profileImageUrl,
+    };
+
+    return HttpResponse.json({
+      statusCode: 200,
+      message: 'OK',
+      data: null,
+    });
+  }),
+
+  // 회원가입 프로필 등록
   http.post(`${BASE_URL}/user/info`, async ({ request }) => {
-    // ✅ 타입을 명시적으로 단언하여 스프레드 연산자 에러 해결
     const body = (await request.json()) as UserProfileRequest;
+
+    // Mock 데이터 업데이트
+    MOCK_USER_INFO = { ...MOCK_USER_INFO, ...body };
 
     return HttpResponse.json(
       {
         statusCode: 201,
         message: 'Created',
-        data: {
-          ...MOCK_USER_INFO,
-          ...body, // 이제 에러가 발생하지 않습니다.
-          nickname: '새로운회원',
-        },
+        data: MOCK_USER_INFO,
       },
       { status: 201 },
     );

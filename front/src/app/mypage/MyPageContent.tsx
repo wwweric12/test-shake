@@ -49,6 +49,7 @@ export default function MyPageContent() {
         nickname={nickname}
         profileImageUrl={profileImageUrl}
         onLogout={handleLogout}
+        dsti={dsti}
       />
       <div className="flex w-full flex-col items-baseline gap-5 px-5 pt-5 pb-30">
         <MyPageDSTI dsti={dsti} />
