@@ -13,9 +13,19 @@ interface SwipeDeckProps {
 
 export default function SwipeDeck({ cards, onSwipe }: SwipeDeckProps) {
   const [isInteracting, setIsInteracting] = useState(false);
+
+  // 방어 코드: 카드가 없을 때 처리
+  const hasCards = cards.length > 0;
   const activeIndex = cards.length - 1;
+  const activeCard = hasCards ? cards[activeIndex] : null;
 
   const cardRef = useRef<HTMLDivElement>(null);
+
+  // [개선 2] onSwipe가 바뀌어도 useEffect가 재실행되지 않도록 Ref로 관리
+  const onSwipeRef = useRef(onSwipe);
+  useEffect(() => {
+    onSwipeRef.current = onSwipe;
+  }, [onSwipe]);
 
   const startPosRef = useRef({ x: 0, y: 0 });
   const isDraggingRef = useRef(false);
@@ -24,18 +34,10 @@ export default function SwipeDeck({ cards, onSwipe }: SwipeDeckProps) {
 
   useEffect(() => {
     const element = cardRef.current;
-    if (!element) return;
+    if (!element || !activeCard) return;
 
-    const handleStart = (clientX: number, clientY: number) => {
-      startPosRef.current = { x: clientX, y: clientY };
-      isDraggingRef.current = true;
-      lockDirectionRef.current = null; // 방향 초기화
-      currentProgressRef.current = 0;
-      element.style.transition = 'none'; // 드래그 중엔 애니메이션 끔
-    };
-
-    const updateOverlays = (element: HTMLElement, progress: number) => {
-      // querySelector가 null일 수 있으므로 옵셔널 체이닝(?) 사용
+    // 유틸리티 함수: querySelector 최적화를 위해 변수 캐싱 고려 가능하나, 현재 수준도 무방
+    const updateOverlays = (progress: number) => {
       const likeBadge = element.querySelector('[data-badge="like"]') as HTMLElement;
       const skipBadge = element.querySelector('[data-badge="skip"]') as HTMLElement;
       const likeOverlay = element.querySelector('[data-overlay="like"]') as HTMLElement;
@@ -54,113 +56,113 @@ export default function SwipeDeck({ cards, onSwipe }: SwipeDeckProps) {
       }
     };
 
-    const clamp = (val: number, min: number, max: number) => Math.min(Math.max(val, min), max);
+    const handleStart = (clientX: number, clientY: number) => {
+      startPosRef.current = { x: clientX, y: clientY };
+      isDraggingRef.current = true;
+      lockDirectionRef.current = null;
+      currentProgressRef.current = 0;
+      element.style.transition = 'none';
+    };
 
-    const resetCard = (element: HTMLElement) => {
+    const resetCard = () => {
       element.style.transition = 'transform 0.3s ease-out';
       element.style.transform = 'translate(0px, 0px) rotate(0deg)';
-      updateOverlays(element, 0);
+      updateOverlays(0);
       setIsInteracting(false);
     };
 
-    const finishSwipe = (element: HTMLElement) => {
+    const finishSwipe = () => {
       const progress = currentProgressRef.current;
-      const isActionTriggered = Math.abs(progress) >= 0.5;
+      const isActionTriggered = Math.abs(progress) >= 0.5; // 50% 이상 이동 시 트리거
       const isGood = progress > 0;
 
       element.style.transition = 'transform 0.3s ease-in-out';
 
       if (isActionTriggered) {
         const endX = isGood ? window.innerWidth : -window.innerWidth;
+        // 약간의 회전과 y축 이동을 더해 자연스럽게 날아가는 느낌
         element.style.transform = `translate(${endX}px, 50px) rotate(${isGood ? 45 : -45}deg)`;
 
+        // 애니메이션 시간 후 상태 업데이트
         setTimeout(() => {
-          onSwipe(isGood ? 'right' : 'left', cards[activeIndex]);
+          // [개선 2] Ref를 통해 최신 onSwipe 함수 호출
+          onSwipeRef.current(isGood ? 'right' : 'left', activeCard);
           setIsInteracting(false);
         }, 300);
       } else {
-        resetCard(element);
+        resetCard();
       }
     };
 
-    // 2. 움직임 (핵심 로직: 스크롤 vs 스와이프 판별)
     const handleMove = (clientX: number, clientY: number, e: TouchEvent | MouseEvent) => {
       if (!isDraggingRef.current) return;
-      if (lockDirectionRef.current === 'SCROLL') return; // 이미 스크롤로 판정났으면 JS 무시
+      if (lockDirectionRef.current === 'SCROLL') return;
 
       const dx = clientX - startPosRef.current.x;
       const dy = clientY - startPosRef.current.y;
       const absX = Math.abs(dx);
       const absY = Math.abs(dy);
 
-      // (A) 방향이 아직 결정되지 않았을 때 (초기 움직임 10px 이내)
       if (!lockDirectionRef.current) {
-        if (absX < 5 && absY < 5) return; // 너무 작은 움직임은 무시
+        // [UX 튜닝] 민감도 조절: 5px -> 10px로 약간 둔감하게 하여 오작동 방지
+        if (absX < 10 && absY < 10) return;
 
         if (absY > absX) {
-          // 세로 이동이 더 크면 -> 스크롤 모드 (네이티브 스크롤 허용)
           lockDirectionRef.current = 'SCROLL';
           return;
         } else {
-          // 가로 이동이 더 크면 -> 스와이프 모드 (브라우저 동작 막고 카드 이동)
           lockDirectionRef.current = 'SWIPE';
           setIsInteracting(true);
         }
       }
 
-      // (B) 스와이프 모드일 때 실행
       if (lockDirectionRef.current === 'SWIPE') {
-        // iOS 뒤로가기/새로고침 방지 (중요!)
+        // [중요] passive: false 옵션이 있더라도, 여기서 preventDefault는 신중해야 함.
+        // CSS touch-action: pan-y를 사용하면 이 부분 의존도를 낮출 수 있음.
         if (e.cancelable && e.type === 'touchmove') {
           e.preventDefault();
         }
 
-        const rotateDeg = (dx / 600) * -30;
+        const rotateDeg = (dx / 600) * -30; // 회전 각도 계산
         element.style.transform = `translate(${dx}px, ${dy * 0.2}px) rotate(${rotateDeg}deg)`;
 
-        const progressVal = clamp(dx / 150, -1, 1);
+        // clamp 함수 인라인화 or 외부 분리
+        const progressVal = Math.min(Math.max(dx / 150, -1), 1);
         currentProgressRef.current = progressVal;
-
-        // 오버레이 직접 업데이트 (성능 최적화)
-        updateOverlays(element, progressVal);
+        updateOverlays(progressVal);
       }
     };
 
-    // 3. 종료 (손 뗌)
     const handleEnd = () => {
       if (!isDraggingRef.current) return;
       isDraggingRef.current = false;
 
       if (lockDirectionRef.current === 'SWIPE') {
-        finishSwipe(element);
+        finishSwipe();
       } else {
-        // 스크롤이었거나 클릭만 한 경우 원위치
-        resetCard(element);
+        resetCard();
       }
       lockDirectionRef.current = null;
     };
 
-    // --- 리스너 바인딩 함수들 ---
-
     const onTouchStart = (e: TouchEvent) => handleStart(e.touches[0].clientX, e.touches[0].clientY);
     const onTouchMove = (e: TouchEvent) =>
       handleMove(e.touches[0].clientX, e.touches[0].clientY, e);
-
     const onMouseDown = (e: MouseEvent) => handleStart(e.clientX, e.clientY);
     const onMouseMove = (e: MouseEvent) => handleMove(e.clientX, e.clientY, e);
 
-    // [중요] non-passive 옵션으로 등록해야 preventDefault가 먹힘
+    // 이벤트 등록
     element.addEventListener('touchstart', onTouchStart, { passive: true });
-    element.addEventListener('touchmove', onTouchMove, { passive: false }); // 핵심!
+    element.addEventListener('touchmove', onTouchMove, { passive: false }); // iOS 스크롤 방지 필수
     element.addEventListener('touchend', handleEnd);
     element.addEventListener('touchcancel', handleEnd);
 
-    // 마우스 이벤트 (테스트용)
     element.addEventListener('mousedown', onMouseDown);
-    window.addEventListener('mousemove', onMouseMove); // 마우스는 화면 밖으로 나갈 수 있어서 window에
+    window.addEventListener('mousemove', onMouseMove);
     window.addEventListener('mouseup', handleEnd);
 
     return () => {
+      // 이벤트 해제
       element.removeEventListener('touchstart', onTouchStart);
       element.removeEventListener('touchmove', onTouchMove);
       element.removeEventListener('touchend', handleEnd);
@@ -170,9 +172,15 @@ export default function SwipeDeck({ cards, onSwipe }: SwipeDeckProps) {
       window.removeEventListener('mousemove', onMouseMove);
       window.removeEventListener('mouseup', handleEnd);
     };
-  }, [activeIndex, cards]); // 카드가 바뀌면 이벤트 리스너 재등록
+  }, [activeCard]); // [개선 2] onSwipe를 의존성에서 제거하여 불필요한 재등록 방지
 
-  // --- 헬퍼 함수들 ---
+  if (!hasCards) {
+    return (
+      <div className="flex h-full w-full items-center justify-center text-gray-400">
+        카드가 없습니다.
+      </div>
+    );
+  }
 
   return (
     <div className="relative flex h-full w-full items-center justify-center overflow-hidden rounded-4xl bg-gray-100">
@@ -181,23 +189,24 @@ export default function SwipeDeck({ cards, onSwipe }: SwipeDeckProps) {
 
         return (
           <div
-            key={card.nickname} // 고유 키 사용
-            ref={isTop ? cardRef : null} // 맨 위 카드만 ref 연결
-            className={`absolute top-0 left-0 h-full w-full rounded-2xl bg-white shadow-xl select-none ${
-              isTop ? 'cursor-grab touch-pan-y' : 'pointer-events-none'
+            key={card.nickname || index} // 고유 키가 없다면 index 사용 주의
+            ref={isTop ? cardRef : null}
+            // [개선 1] touch-action: pan-y 추가 (가로 스와이프 시 브라우저 개입 차단)
+            className={`absolute top-0 left-0 h-full w-full touch-pan-y rounded-2xl bg-white shadow-xl select-none ${
+              isTop ? 'cursor-grab' : 'pointer-events-none'
             } ${isInteracting && isTop ? 'cursor-grabbing' : ''}`}
             style={{
               zIndex: index,
+              // 스택 효과 로직 유지
               transform: !isTop
                 ? `translateY(${(cards.length - 1 - index) * 10}px) scale(${1 - (cards.length - 1 - index) * 0.05})`
                 : 'none',
+              // 뒤에 있는 카드는 3번째부터 숨김 처리 (성능 최적화)
               opacity: !isTop && cards.length - 1 - index > 2 ? 0 : 1,
               transition: isInteracting && isTop ? 'none' : 'transform 0.3s ease-out',
-              // [중요] CSS로도 세로 스크롤 허용 명시
-              touchAction: 'none',
             }}
           >
-            {/* 오버레이 배지 */}
+            {/* ... 오버레이 및 뱃지 코드 유지 ... */}
             {isTop && (
               <>
                 <div
@@ -217,15 +226,10 @@ export default function SwipeDeck({ cards, onSwipe }: SwipeDeckProps) {
               </>
             )}
 
-            {/* 내부 콘텐츠 (스크롤 가능) */}
-            <div
-              className="h-full w-full overflow-y-auto rounded-2xl"
-              style={{ overscrollBehaviorY: 'contain' }} // 스크롤 끝날 때 부모 흔들림 방지
-            >
+            <div className="pointer-events-auto h-full w-full">
               <SwipingCard card={card} />
             </div>
 
-            {/* 색상 오버레이 */}
             {isTop && (
               <>
                 <div
