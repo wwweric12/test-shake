@@ -56,3 +56,9 @@ export interface NotificationUpdateData {
   dsti: string;
   unreadCount: number;
 }
+
+// 홈 요약 데이터 업데이트 타입
+export interface HomeBadgeCountData {
+  totalUnreadMessages: number;
+  totalLikeCount: number;
+}

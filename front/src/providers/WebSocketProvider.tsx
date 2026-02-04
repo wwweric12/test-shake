@@ -7,7 +7,7 @@ import { QUERY_KEYS } from '@/constants/queryKeys';
 import { webSocketService } from '@/services/socket/WebSocketService';
 import { ChatListUpdateData, ChatRoom, ChatRoomListResponse } from '@/types/chat';
 import { HomeSummaryData } from '@/types/home';
-import { ConnectionStatus, NotificationUpdateData } from '@/types/webSocket';
+import { ConnectionStatus, HomeBadgeCountData,NotificationUpdateData } from '@/types/webSocket';
 
 import { useQueryClient } from '@tanstack/react-query';
 
@@ -119,12 +119,28 @@ export function WebSocketProvider({ children, enabled = true }: WebSocketProvide
       });
     };
 
+    const handleBadgeUpdate = (newData: HomeBadgeCountData) => {
+    queryClient.setQueryData<HomeSummaryData>(QUERY_KEYS.HOME.SUMMARY(), (oldData) => {
+      if (!oldData) return oldData;
+
+      return {
+        ...oldData,
+        totalUnreadMessages: newData.totalUnreadMessages, 
+      };
+    });
+
+    // 전역 배지 카운트 쿼리가 따로 있다면 무효화 처리
+    queryClient.invalidateQueries({ queryKey: QUERY_KEYS.CHAT.UNREAD_COUNT() });
+  };
+
     webSocketService.subscribeChatListUpdate(handleUpdate);
     webSocketService.subscribeNotification(handleNotificationUpdate);
+    webSocketService.subscribeHomeBadgeCount(handleBadgeUpdate);
 
     return () => {
       webSocketService.unsubscribeChatListUpdate();
       webSocketService.unsubscribeNotification();
+      webSocketService.unsubscribeHomeBadgeCount();
     }
   }, [isConnected, queryClient]);
 
