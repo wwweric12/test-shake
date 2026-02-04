@@ -3,35 +3,42 @@ import { ApiEmptyResponse, ApiResponse } from '@/types/common';
 export interface NotificationData {
   targetUserId: number;
   targetNickname: string;
-  targetImageUrl: string;
+  targetImageUrl: string | null;
+  dsti: string;
 }
 
-export interface NotificationsData {
-  totalCount: number;
-  notifications: NotificationData[];
+export interface NotificationListResponse {
+  content: NotificationData[];
+  size: number;
+  hasNext: boolean;
+}
+
+export interface NotificationMainData {
+  unreadCount: number;
+  notificationResponse: NotificationListResponse;
 }
 
 //Request
 
-export interface AcceptNotificationRequest {
+export interface NotificationActionRequest {
   targetUserId: number;
+  is_accepted: boolean;
+}
+
+export interface AcceptNotificationRequest extends NotificationActionRequest {
   is_accepted: true;
 }
 
-export interface RejectNotificationRequest {
-  targetUserId: number;
+export interface RejectNotificationRequest extends NotificationActionRequest {
   is_accepted: false;
 }
 
 //Response
 
-export type NotificationResponse = ApiResponse<NotificationData[]>;
+export type NotificationResponse = ApiResponse<NotificationMainData>;
 
 export type AcceptNotificationResponse = ApiResponse<{
   chatRoomId: number;
 }>;
 
 export type RejectNotificationResponse = ApiEmptyResponse;
-
-// TODO: 수정 중
-// export interface TargetProfileResponse {}

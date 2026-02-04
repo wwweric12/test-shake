@@ -32,3 +32,14 @@ export const useActionMutation = () => {
     },
   });
 };
+
+export const useSubmitSurveyMutation = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: recommendationApi.submitSurvey,
+    onSuccess: () => {
+      // 설문 완료 후 상태가 AFTER_SURVEY로 변하므로 캐시 무효화 및 새 카드 요청
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.RECOMMENDATION.CANDIDATES() });
+    },
+  });
+};
