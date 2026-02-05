@@ -100,7 +100,7 @@ export function RoomList({ rooms, onSelectRoom, isLoading, error }: RoomListProp
                       }
                       alt={`${room.partnerName || '상대방'} 프로필`}
                       fill
-                      className={room.partnerProfileImage ? 'object-cover' : 'object-contain'}
+                      className="object-cover"
                       priority={!room.partnerProfileImage}
                     />
                   </div>

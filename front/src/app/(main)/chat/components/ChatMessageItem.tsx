@@ -27,7 +27,7 @@ export function ChatMessageItem({ message }: ChatMessageItemProps) {
                 src={DSTI_CHARACTERS[message.dsti]}
                 alt={`${message.dsti || '상대방'} 프로필`}
                 fill
-                className="object-contain"
+                className="object-cover"
                 priority
               />
             </div>
