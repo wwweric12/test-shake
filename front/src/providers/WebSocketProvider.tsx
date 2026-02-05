@@ -121,6 +121,8 @@ export function WebSocketProvider({ children, enabled = true }: WebSocketProvide
           }
         };
       });
+
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.HOME.SUMMARY() });
     };
 
     const handleBadgeUpdate = (newData: HomeBadgeCountData) => {
