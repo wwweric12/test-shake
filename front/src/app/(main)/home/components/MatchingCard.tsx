@@ -14,7 +14,7 @@ export default function MatchingCard({ remainingSwipes, dailyLimit }: MatchingCa
   return (
     <Link href="/recommendation" className="block w-full">
       <div
-        className={`relative flex w-full flex-col items-center justify-center rounded-3xl p-6 text-white ${
+        className={`relative flex w-full flex-col items-center justify-center rounded-[10px] p-6 text-white shadow-sm ${
           isAvailable
             ? 'bg-[linear-gradient(90deg,#CEE2FF_0%,#B4A6FF_62%,#879EFE_100%)] shadow-indigo-200'
             : 'bg-custom-darkgray cursor-not-allowed'

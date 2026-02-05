@@ -4,6 +4,7 @@
   "description": "개발 성향 분석을 통한 실시간 개발자 매칭 서비스",
   "start_url": "/home",
   "display": "standalone",
+  "orientation": "portrait",
   "background_color": "#f9f8fe",
   "theme_color": "#f9f8fe",
   "icons": [

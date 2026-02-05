@@ -63,6 +63,7 @@ export default function SelectionModal({
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DialogContent
+        onOpenAutoFocus={(e) => e.preventDefault()}
         className={`flex w-[90%] max-w-[355px] flex-col overflow-hidden rounded-[32px] border-none p-0 shadow-xl ${className}`}
       >
         <div className="flex h-full flex-col bg-white p-6">

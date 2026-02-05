@@ -18,16 +18,19 @@ export default function NotificationCard({ count, recentImages, dsti }: Notifica
       <div className="mb-5 flex h-32 w-full items-center justify-center rounded-[10px] border border-gray-100 bg-white px-3.5 py-6 shadow-sm">
         {hasNotifications ? (
           <div className="flex flex-col items-center gap-2">
-            <div className="mb-2 flex items-center -space-x-2">
+            <div className="mb-2 flex items-center -space-x-3">
               {recentImages.slice(0, 3).map((img, i) => (
-                <Image
+                <div
                   key={i}
-                  src={img || DSTI_CHARACTERS[dsti[i]]}
-                  width={48}
-                  height={48}
-                  alt="profile"
-                  className="rounded-full border-2 border-white object-cover"
-                />
+                  className="relative h-12 w-12 shrink-0 overflow-hidden rounded-full border-1 border-gray-100 bg-gray-50"
+                >
+                  <Image
+                    src={img || DSTI_CHARACTERS[dsti[i]]}
+                    fill
+                    alt="profile"
+                    className="object-cover"
+                  />
+                </div>
               ))}
 
               {count > 3 && (
