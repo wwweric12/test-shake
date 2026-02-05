@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
-import { QUERY_KEYS } from '@/constants/queryKeys';
 import { useWebSocket } from '@/providers/WebSocketProvider';
 import { useEnterChatRoom } from '@/services/chat/hooks';
 import { webSocketService } from '@/services/socket/WebSocketService';
@@ -10,8 +9,6 @@ import {
   convertApiMessageToProfile,
   convertWsMessageToProfile,
 } from '@/utils/chatMessageConverter';
-
-import { useQueryClient } from '@tanstack/react-query';
 
 interface UseWebSocketChatParams {
   chatRoomId: number;
@@ -24,7 +21,6 @@ export function useWebSocketChat({
   partnerInfo,
   enabled = true,
 }: UseWebSocketChatParams) {
-  const queryClient = useQueryClient();
   const { isConnected, connectionStatus } = useWebSocket();
   const [realtimeMessages, setRealtimeMessages] = useState<ChatMessageWithProfile[]>([]);
   const [messageError, setMessageError] = useState<string | null>(null);
@@ -37,11 +33,15 @@ export function useWebSocketChat({
   const handleMessageReceived = useCallback(
     (received: ReceivedMessageData) => {
       const msg = convertWsMessageToProfile(received);
-      if (!msg.id) return;
+      
+      if (!msg.chatRoomId) {
+      msg.chatRoomId = chatRoomId; 
+    }
+
+    if (!msg.id) return;
       setRealtimeMessages((prev) => (prev.some((m) => m.id === msg.id) ? prev : [...prev, msg]));
-      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.CHAT.MESSAGES(msg.chatRoomId) });
     },
-    [queryClient],
+    [chatRoomId],
   );
 
   const initialMessages = useMemo(() => {
