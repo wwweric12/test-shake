@@ -85,27 +85,19 @@ export function RoomList({ rooms, onSelectRoom, isLoading, error }: RoomListProp
               >
                 <div className="flex items-center gap-3">
                   {/* 프로필 이미지 - null 처리 */}
-                  {room.partnerProfileImage ? (
-                    <div className="relative h-12 w-12 flex-shrink-0 overflow-hidden rounded-full">
-                      <Image
-                        src={room.partnerProfileImage}
-                        alt={`${room.partnerName || '상대방'} 프로필`}
-                        fill
-                        className="object-cover"
-                      />
-                    </div>
-                  ) : (
-                    <div className="relative flex h-12 w-12 flex-shrink-0 items-center justify-center overflow-hidden rounded-full bg-gray-300">
-                      <Image
-                        src={DSTI_CHARACTERS[room.partnerDsti]}
-                        alt={`${room.partnerName || '상대방'} 프로필`}
-                        fill
-                        className="object-contain"
-                        priority
-                      />
-                      {/* <span className="text-lg text-white">{room.partnerName?.[0] || '?'}</span> */}
-                    </div>
-                  )}
+                  <div className="relative h-12 w-12 flex-shrink-0 overflow-hidden rounded-full">
+                    <Image
+                      src={
+                        room.partnerProfileImage
+                          ? room.partnerProfileImage
+                          : DSTI_CHARACTERS[room.partnerDsti]
+                      }
+                      alt={`${room.partnerName || '상대방'} 프로필`}
+                      fill
+                      className={room.partnerProfileImage ? 'object-cover' : 'object-contain'}
+                      priority={!room.partnerProfileImage}
+                    />
+                  </div>
 
                   {/* 채팅 정보 - null 처리 */}
                   <div className="min-w-0 flex-1">
@@ -113,7 +105,8 @@ export function RoomList({ rooms, onSelectRoom, isLoading, error }: RoomListProp
                       <h3 className="body1 truncate">{room.partnerName || '이름 없음'}</h3>
                     </div>
                     <p className="subhead3 mt-1 line-clamp-1 text-gray-600">
-                      {room.lastMessage || '메시지 없음'}
+                      {room.lastMessage ||
+                        `${room.partnerName || '사용자'} 님과 대화를 시작해보세요!`}
                     </p>
                   </div>
 

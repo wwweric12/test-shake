@@ -17,7 +17,7 @@ export default function BottomNavigation() {
   const isActive = (path: string) => pathname === path;
 
   return (
-    <nav className="pb-safe fixed bottom-0 left-1/2 z-50 flex h-16 w-full max-w-[440px] -translate-x-1/2 items-center justify-around border-t bg-white">
+    <nav className="pb-safe fixed bottom-0 left-1/2 z-50 flex h-20 w-full max-w-[440px] -translate-x-1/2 items-center justify-around border-t bg-white">
       <div className="h-[61px] w-[64px]">
         <Link
           href="/chat"
