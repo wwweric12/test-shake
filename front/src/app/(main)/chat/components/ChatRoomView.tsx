@@ -3,7 +3,7 @@
 import { useRef, useState } from 'react';
 
 import { ChatMessageWithProfile } from '@/types/chat';
-import { ConnectionStatus } from '@/types/webSocket';
+import { ConnectionStatus, WebSocketError } from '@/types/webSocket';
 
 import { ChatMessageInput } from './ChatMessageInput';
 import { ChatMessageList } from './ChatMessageList';
@@ -27,6 +27,7 @@ interface ChatRoomViewProps {
   isConnected?: boolean; // WebSocket 연결 여부
   connectionStatus?: ConnectionStatus; // 연결 상태
   messageError?: string | null; // 메시지 에러
+  messageErrorType?: WebSocketError['type'] | null;
   onClearMessageError?: () => void; // 메시지 에러 초기화
   canSendMessage?: boolean; // 메시지 전송 가능 여부 (상대방이 나갔거나 백엔드에서 false로 보낸 경우)
 }
@@ -57,6 +58,7 @@ export function ChatRoomView({
   isConnected = false,
   connectionStatus = 'DISCONNECTED',
   messageError,
+  messageErrorType,
   onClearMessageError,
   canSendMessage = true,
 }: ChatRoomViewProps) {
@@ -85,6 +87,7 @@ export function ChatRoomView({
         connectionStatus={connectionStatus}
         canSendMessage={canSendMessage}
         messageError={messageError}
+        messageErrorType={messageErrorType}
         onClearMessageError={onClearMessageError}
       />
 

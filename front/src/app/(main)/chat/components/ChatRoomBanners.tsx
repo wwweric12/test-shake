@@ -5,15 +5,19 @@ interface ChatRoomBannersProps {
   connectionStatus: ConnectionStatus;
   canSendMessage: boolean;
   messageError?: string | null;
+  messageErrorType?: 'PARTNER_LEFT' | 'STOMP_ERROR' | 'CONNECTION_ERROR' | 'SEND_ERROR' | null;
   onClearMessageError?: () => void;
 }
 
 export function ChatRoomBanners({
   isConnected,
   connectionStatus,
+
   messageError,
+  messageErrorType,
   onClearMessageError,
 }: ChatRoomBannersProps) {
+  const shouldShowErrorBanner = messageError && messageErrorType !== 'PARTNER_LEFT';
   return (
     <>
       {/* 연결 에러 배너 */}
@@ -37,7 +41,7 @@ export function ChatRoomBanners({
       )}
 
       {/* 메시지 에러 배너 */}
-      {messageError && !messageError.concat('상대방이') && (
+      {shouldShowErrorBanner && (
         <div className="border-b border-red-300 bg-red-100 px-4 py-2">
           <div className="flex items-center justify-between">
             <p className="text-sm font-medium text-red-800">{messageError}</p>

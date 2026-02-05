@@ -29,6 +29,7 @@ export function useChatRoom({ roomId, partnerInfo, enabled = true }: UseChatRoom
     error,
     currentUserId,
     messageError,
+    messageErrorType,
     clearMessageError,
     partnerLeft,
   } = useWebSocketChat({
@@ -98,6 +99,7 @@ export function useChatRoom({ roomId, partnerInfo, enabled = true }: UseChatRoom
     loadPreviousMessages,
     currentUserId,
     messageError,
+    messageErrorType,
     clearMessageError,
     partnerLeft,
   };

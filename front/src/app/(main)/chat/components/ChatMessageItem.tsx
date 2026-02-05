@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import Link from 'next/link';
 
 import { DSTI_CHARACTERS } from '@/constants/dsti';
 import { ChatMessageWithProfile } from '@/types/chat';
@@ -16,12 +17,16 @@ export function ChatMessageItem({ message }: ChatMessageItemProps) {
       {/* 상대방 프로필 이미지 (내 메시지가 아닐 때만) */}
       {!message.isMine && (
         <div className="relative mr-2 h-10 w-10 flex-shrink-0 overflow-hidden rounded-full bg-gray-200">
-          <Image
-            src={img}
-            alt={message.senderName || '상대방 프로필'}
-            fill
-            className="object-cover"
-          />
+          <Link href={`/user/info/${message.senderId}`}>
+            <div className="relative mr-2 h-10 w-10 flex-shrink-0 cursor-pointer overflow-hidden rounded-full bg-gray-200">
+              <Image
+                src={img}
+                alt={message.senderName || '상대방 프로필'}
+                fill
+                className="object-cover"
+              />
+            </div>
+          </Link>
         </div>
       )}
 

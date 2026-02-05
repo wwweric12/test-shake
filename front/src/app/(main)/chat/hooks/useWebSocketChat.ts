@@ -5,6 +5,7 @@ import { useWebSocket } from '@/providers/WebSocketProvider';
 import { useEnterChatRoom } from '@/services/chat/hooks';
 import { webSocketService } from '@/services/socket/WebSocketService';
 import { ChatMessageWithProfile, PartnerInfo, ReceivedMessageData } from '@/types/chat';
+import { WebSocketError } from '@/types/webSocket';
 import {
   convertApiMessageToProfile,
   convertWsMessageToProfile,
@@ -27,6 +28,7 @@ export function useWebSocketChat({
   const { isConnected, connectionStatus } = useWebSocket();
   const [realtimeMessages, setRealtimeMessages] = useState<ChatMessageWithProfile[]>([]);
   const [messageError, setMessageError] = useState<string | null>(null);
+  const [messageErrorType, setMessageErrorType] = useState<WebSocketError['type'] | null>(null);
   const [partnerLeft, setPartnerLeft] = useState(false);
 
   const { data: enterData, isLoading, error } = useEnterChatRoom(chatRoomId, enabled);
@@ -62,9 +64,13 @@ export function useWebSocketChat({
     const subscription = webSocketService.subscribeError((err) => {
       if (err.type === 'PARTNER_LEFT') {
         setPartnerLeft(true);
+        // PARTNER_LEFT 타입 에러는 메시지는 저장하지만 배너로 표시 안 함
         setMessageError(err.message);
+        setMessageErrorType(err.type);
       } else {
+        // 다른 에러는 배너로 표시
         setMessageError(err.message);
+        setMessageErrorType(err.type);
       }
     });
 
@@ -120,6 +126,7 @@ export function useWebSocketChat({
     error: error as Error | null,
     currentUserId,
     messageError,
+    messageErrorType,
     clearMessageError: () => setMessageError(null),
     partnerLeft,
   };
