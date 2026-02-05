@@ -60,7 +60,11 @@ export function WebSocketProvider({ children, enabled = true }: WebSocketProvide
         reconnectDelay: 10000,
         heartbeatIncoming: 10000,
         heartbeatOutgoing: 10000,
-        debug: process.env.NODE_ENV === 'development',
+        debug: (str: string) => {
+          if (process.env.NODE_ENV === 'development') {
+            console.log(str);
+          }
+        },
       });
     }
 
