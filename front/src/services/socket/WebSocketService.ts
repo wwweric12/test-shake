@@ -429,7 +429,7 @@ class WebSocketService {
         const notificationData = parsed.data;
 
         this.log('실시간 알림 수신:', notificationData);
-        
+
         if (typeof window !== 'undefined') {
           window.dispatchEvent(new CustomEvent('websocket-message'));
         }

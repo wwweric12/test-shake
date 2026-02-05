@@ -49,6 +49,12 @@ export function RoomList({ rooms, onSelectRoom, isLoading, error }: RoomListProp
     );
   }
 
+  const sortedRooms = [...rooms].sort((a, b) => {
+    const timeA = new Date(a.lastMessageTime).getTime();
+    const timeB = new Date(b.lastMessageTime).getTime();
+    return timeB - timeA; // 최신이 위로
+  });
+
   return (
     <div className="flex h-screen flex-col bg-gray-50">
       {/* 헤더 */}
@@ -65,7 +71,7 @@ export function RoomList({ rooms, onSelectRoom, isLoading, error }: RoomListProp
 
       {/* 채팅방 목록 */}
       <div className="bg-custom-white flex-1 overflow-y-auto">
-        {rooms.length === 0 ? (
+        {sortedRooms.length === 0 ? (
           // 빈 상태
           <div className="flex h-full flex-col items-center justify-center text-gray-400">
             <Image src={EmptyChatIcon} alt="빈 채팅" width={48} height={48} />
@@ -74,7 +80,7 @@ export function RoomList({ rooms, onSelectRoom, isLoading, error }: RoomListProp
         ) : (
           // 채팅방 목록
           <div className="divide-y">
-            {rooms.map((room, index) => (
+            {sortedRooms.map((room, index) => (
               <motion.button
                 key={room.chatRoomId}
                 initial={{ opacity: 0, x: -20 }}
@@ -85,27 +91,19 @@ export function RoomList({ rooms, onSelectRoom, isLoading, error }: RoomListProp
               >
                 <div className="flex items-center gap-3">
                   {/* 프로필 이미지 - null 처리 */}
-                  {room.partnerProfileImage ? (
-                    <div className="relative h-12 w-12 flex-shrink-0 overflow-hidden rounded-full">
-                      <Image
-                        src={room.partnerProfileImage}
-                        alt={`${room.partnerName || '상대방'} 프로필`}
-                        fill
-                        className="object-cover"
-                      />
-                    </div>
-                  ) : (
-                    <div className="relative flex h-12 w-12 flex-shrink-0 items-center justify-center overflow-hidden rounded-full bg-gray-300">
-                      <Image
-                        src={DSTI_CHARACTERS[room.partnerDsti]}
-                        alt={`${room.partnerName || '상대방'} 프로필`}
-                        fill
-                        className="object-contain"
-                        priority
-                      />
-                      {/* <span className="text-lg text-white">{room.partnerName?.[0] || '?'}</span> */}
-                    </div>
-                  )}
+                  <div className="relative h-12 w-12 flex-shrink-0 overflow-hidden rounded-full">
+                    <Image
+                      src={
+                        room.partnerProfileImage
+                          ? room.partnerProfileImage
+                          : DSTI_CHARACTERS[room.partnerDsti]
+                      }
+                      alt={`${room.partnerName || '상대방'} 프로필`}
+                      fill
+                      className="object-cover"
+                      priority={!room.partnerProfileImage}
+                    />
+                  </div>
 
                   {/* 채팅 정보 - null 처리 */}
                   <div className="min-w-0 flex-1">
@@ -113,7 +111,8 @@ export function RoomList({ rooms, onSelectRoom, isLoading, error }: RoomListProp
                       <h3 className="body1 truncate">{room.partnerName || '이름 없음'}</h3>
                     </div>
                     <p className="subhead3 mt-1 line-clamp-1 text-gray-600">
-                      {room.lastMessage || '메시지 없음'}
+                      {room.lastMessage ||
+                        `${room.partnerName || '사용자'} 님과 대화를 시작해보세요!`}
                     </p>
                   </div>
 

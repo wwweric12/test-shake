@@ -70,7 +70,7 @@ export default function MyPageContent() {
 
         <hr className="w-full border-gray-100" />
 
-        <div className="flex w-full">
+        {/* <div className="flex w-full">
           <Button
             className="body2 bg-custom-white w-full border-1 border-gray-400 py-7 text-red-600 opacity-50"
             variant="secondary"
@@ -79,7 +79,7 @@ export default function MyPageContent() {
           >
             회원탈퇴
           </Button>
-        </div>
+        </div> */}
       </div>
     </div>
   );
