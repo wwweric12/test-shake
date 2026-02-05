@@ -211,7 +211,11 @@ export function WebSocketDebugPanel() {
                   url: process.env.NEXT_PUBLIC_WS_URL!,
                   heartbeatIncoming: 10000,
                   heartbeatOutgoing: 10000,
-                  debug: true,
+                  debug: (str: string) => {
+                    if (process.env.NODE_ENV === 'development') {
+                      console.log(str);
+                    }
+                  },
                 });
                 addLog('info', '수동 연결 시도');
               }}
