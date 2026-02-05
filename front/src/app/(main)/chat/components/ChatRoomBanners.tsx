@@ -11,7 +11,6 @@ interface ChatRoomBannersProps {
 export function ChatRoomBanners({
   isConnected,
   connectionStatus,
-  canSendMessage,
   messageError,
   onClearMessageError,
 }: ChatRoomBannersProps) {
@@ -36,15 +35,6 @@ export function ChatRoomBanners({
           </div>
         </div>
       )}
-
-      {/* 상대방이 나간 채팅방 배너 */}
-      {/* {!canSendMessage && (
-        <div className="border-b border-orange-300 bg-orange-100 px-4 py-2">
-          <p className="text-sm font-medium text-orange-800">
-            ℹ️ 상대방이 채팅방을 나가 메시지를 보낼 수 없습니다
-          </p>
-        </div>
-      )} */}
 
       {/* 메시지 에러 배너 */}
       {messageError && !messageError.concat('상대방이') && (

@@ -46,7 +46,7 @@ export function LeaveRoomButton({ roomId, onLeave }: LeaveRoomButtonProps) {
               <DialogDescription className="footnote text-custom-deepgray">
                 채팅방을 나가시겠습니까?
                 <br />
-                {/* 나가면 대화 내역이 모두 삭제됩니다. */}
+                {/* TODO : 나가면 대화 내역이 모두 삭제됩니다. 백엔드 데이터 삭제 미구현 */}
               </DialogDescription>
             </DialogHeader>
             <div className="mt-auto flex shrink-0 justify-center">
