@@ -41,4 +41,14 @@ export type AcceptNotificationResponse = ApiResponse<{
   chatRoomId: number;
 }>;
 
+// 알림 업데이트 데이터 타입
+export interface NotificationUpdateData {
+  targetUserId: number;
+  targetNickname: string;
+  targetImageUrl: string;
+  dsti: string;
+  unreadCount: number;
+}
+
+export type NotificationUpdateResponse = ApiResponse<NotificationUpdateData>;
 export type RejectNotificationResponse = ApiEmptyResponse;
