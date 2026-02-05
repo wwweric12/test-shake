@@ -36,8 +36,8 @@ export function MyPageTechSkills({ techSkills }: MyPageTechSkillsProps) {
 
   return (
     <section className="w-full">
-      <label className="body1 text-custom-realblack mb-1 block">보유 기술</label>
-      <p className="footnote text-custom-deepgray mb-3">최대 5개를 선택할 수 있습니다.</p>
+      <label className="body1 text-custom-realblack block">보유 기술</label>
+      <p className="footnote text-custom-deepgray mb-2">최대 5개를 선택할 수 있습니다.</p>
 
       {/* Selected Badges */}
       <div className={`flex flex-wrap gap-2 ${localTechSkills.length > 0 ? 'mb-3' : ''}`}>

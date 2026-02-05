@@ -49,7 +49,7 @@ export const useRecommendationController = () => {
   const handleSwipe = async (direction: 'left' | 'right', card: UserInfo) => {
     const nextCards = cards.slice(0, -1);
     setCards(nextCards); // UI 즉시 반영
-
+    const updatedRemaining = remainingSwipes - 1;
     if (exposureId !== null) {
       try {
         const response = await actionMutation.mutateAsync({
@@ -59,22 +59,18 @@ export const useRecommendationController = () => {
         });
 
         const currentStatus = response.data.extraSurveyStatus;
-        const updatedRemaining = remainingSwipes - 1;
-
-        setRemainingSwipes(updatedRemaining);
-
-        // [AFTER_SURVEY] 2장 남았을 때 미리 카드 보충
-        if (nextCards.length === 2 && currentStatus === 'AFTER_SURVEY' && updatedRemaining > 0) {
-          refetch();
-        }
-
         // [BEFORE_SURVEY] 카드 소진 시 설문 트리거
         if (nextCards.length === 0 && currentStatus === 'BEFORE_SURVEY') {
           setIsSurveyTarget(true); // 소진 문구 노출 차단
           setShowSurveyDialog(true);
         }
+        setRemainingSwipes(updatedRemaining);
       } catch (e) {
         console.error('Action failed', e);
+      } finally {
+        if (nextCards.length <= 2 && updatedRemaining > 0) {
+          refetch();
+        }
       }
     }
   };

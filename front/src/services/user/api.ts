@@ -34,16 +34,19 @@ export const userApi = {
   submitDsti: (data: DstiRequest) => api.post<DstiResponse>('/user/dsti', data),
 
   updateExperience: (data: UpdateExperienceRequest) =>
-    api.put<UpdateResponse>('/user/experience', data),
-  updateCareer: (data: UpdateCareerRequest) => api.put<UpdateResponse>('/user/career', data),
-  updateGithub: (data: UpdateGithubRequest) => api.put<UpdateResponse>('/user/github', data),
+    api.put<UpdateResponse>('/user/profiles/experience', data),
+  updateCareer: (data: UpdateCareerRequest) =>
+    api.put<UpdateResponse>('/user/profiles/career', data),
+  updateGithub: (data: UpdateGithubRequest) =>
+    api.put<UpdateResponse>('/user/profiles/github', data),
   updateSelfIntro: (data: UpdateSelfIntroRequest) =>
-    api.put<UpdateResponse>('/user/self-intro', data),
+    api.put<UpdateResponse>('/user/profiles/self-intro', data),
   updateTechSkills: (data: UpdateTechSkillsRequest) =>
-    api.put<UpdateResponse>('/user/tech-skills', data),
+    api.put<UpdateResponse>('/user/profiles/tech-skills', data),
   updatePositions: (data: UpdatePositionsRequest) =>
-    api.put<UpdateResponse>('/user/position', data),
-  updateNetworks: (data: UpdateNetworksRequest) => api.put<UpdateResponse>('/user/networks', data),
+    api.put<UpdateResponse>('/user/profiles/positions', data),
+  updateNetworks: (data: UpdateNetworksRequest) =>
+    api.put<UpdateResponse>('/user/profiles/networks', data),
   // 1. Presigned URL 발급 요청
   getPresignedUrl: (data: PresignedUrlRequest) =>
     api.post<PresignedUrlResponse>('/user/profiles/presigned-url', data),

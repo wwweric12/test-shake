@@ -17,10 +17,10 @@ export default function ProfileCard({ dsti, profileImageUrl }: ProfileCardProps)
     <div className="mb-8 flex gap-2">
       <div className="flex min-w-[128px] flex-col items-center justify-center rounded-[10px] bg-white py-[18px]">
         <div className="bg-custom-deepgray/10 relative mb-3 h-[70px] w-[70px] overflow-hidden rounded-full">
-          <Image src={characterImg} alt="profile-img" fill className="object-contain" priority />
+          <Image src={characterImg} alt="profile-img" fill className="object-cover" priority />
         </div>
         <p className="title1 text-custom-realblack">{dsti}</p>
-        <p className="body1 text-custom-realblack">[ {dstiTitle} ]</p>
+        <p className="subhead1 text-custom-realblack">[{dstiTitle}]</p>
       </div>
       <div className="flex w-full flex-col gap-2">
         <div className="mb-2 flex flex-1 flex-col justify-between rounded-[10px] bg-white px-5 py-4">
@@ -42,7 +42,7 @@ export default function ProfileCard({ dsti, profileImageUrl }: ProfileCardProps)
           href="/dsti"
           className="bg-custom-blue flex w-full items-center justify-center rounded-[10px] px-[14px] py-2 text-white"
         >
-          <span className="footout flex-1 text-center">DSTI 상세보기</span>
+          <span className="footout flex-1 text-center">DSTI 상세 정보</span>
           <Image src={right_vector} alt="arrow-right" width={4} height={8} />
         </Link>
       </div>
