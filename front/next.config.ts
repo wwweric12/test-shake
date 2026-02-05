@@ -42,7 +42,7 @@ const nextConfig: NextConfig = {
       // [Font] Pretendard 폰트 파일 허용
       "font-src 'self' data: https://cdn.jsdelivr.net;",
       // [Connect] API 서버와 S3 업로드 주소 모두 허용 (중요!)
-      "connect-src 'self' https://api.hand-shake.site https://d2blv8nn6wgtte.cloudfront.net https://hand-shake-bucket.s3.ap-northeast-2.amazonaws.com https://*.kakao.com;",
+      "connect-src 'self' https://api.hand-shake.site wss://api.hand-shake.site https://d2blv8nn6wgtte.cloudfront.net https://hand-shake-bucket.s3.ap-northeast-2.amazonaws.com https://*.kakao.com;",
     ].join(' ');
 
     return [
