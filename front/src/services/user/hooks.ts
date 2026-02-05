@@ -55,6 +55,7 @@ export const useSubmitDstiMutation = () => {
     mutationFn: (data: DstiRequest) => userApi.submitDsti(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.USER.INFO() });
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.HOME.SUMMARY() });
     },
   });
 };
