@@ -13,7 +13,7 @@ export interface WebSocketConfig {
   reconnectDelay?: number; // 재연결 대기 시간 (ms)
   heartbeatIncoming?: number; // 서버로부터 heartbeat 수신 간격 (ms)
   heartbeatOutgoing?: number; // 서버로 heartbeat 전송 간격 (ms)
-  debug?: boolean; // 디버그 모드
+  debug?: (str: string) => void;
 }
 
 // WebSocket 연결 상태 정보
