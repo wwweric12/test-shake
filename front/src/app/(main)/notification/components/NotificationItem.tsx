@@ -26,7 +26,7 @@ export default function NotificationItem({
     DSTI_CHARACTERS[notification.dsti]
   );
 
-    return (
+  return (
     <div className="flex flex-col rounded-[12px] border border-gray-100 bg-white shadow-sm overflow-hidden">
       
       <div className="flex items-center justify-between px-4 pt-4 pb-2">
@@ -47,7 +47,8 @@ export default function NotificationItem({
           
           <div className="flex flex-col">
             <p className="body1 font-bold text-custom-realblack leading-tight">
-              {notification.targetNickname}
+                {notification.targetNickname}
+              <span className="footnote inline-block ml-1 text-gray-500">님이</span>
             </p>
             <p className="footnote text-gray-500">
               채팅 요청을 보냈어요
@@ -82,6 +83,6 @@ export default function NotificationItem({
           프로필 보러가기
         </p>
       </Link>
-    </div>
+      </div>
   );
 }

@@ -29,6 +29,7 @@ export function ChatRoomContainer({ roomId, onBack }: ChatRoomContainerProps) {
     loadPreviousMessages,
     currentUserId,
     messageError,
+    messageErrorType,
     clearMessageError,
     partnerLeft,
   } = useChatRoom({
@@ -85,6 +86,7 @@ export function ChatRoomContainer({ roomId, onBack }: ChatRoomContainerProps) {
       isConnected={isConnected}
       connectionStatus={connectionStatus}
       messageError={messageError}
+      messageErrorType={messageErrorType}
       onClearMessageError={clearMessageError}
       canSendMessage={!partnerLeft && (currentRoom?.canSendMessage ?? true)}
     />

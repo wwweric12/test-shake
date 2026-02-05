@@ -4,11 +4,11 @@ import { useState } from 'react';
 import Image from 'next/image';
 
 import SirenIcon from '@/assets/icon/siren.svg';
+import { Button } from '@/components/ui/Button';
 import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/Dialog';
@@ -50,44 +50,41 @@ export function ReportButton({ roomId, reporteeId }: ReportButtonProps) {
       </button>
 
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>채팅방 신고</DialogTitle>
-            <DialogDescription>
-              신고 사유를 상세히 입력해주세요.
-              <br />
-              허위 신고 시 제재를 받을 수 있습니다.
-            </DialogDescription>
-          </DialogHeader>
+        <DialogContent
+          className={`flex h-[355px] w-[90%] max-w-[355px] flex-col overflow-hidden rounded-[32px] border-none p-0 shadow-xl`}
+        >
+          <div className="flex h-full flex-col bg-white p-6">
+            <DialogHeader className="mb-4 shrink-0">
+              <DialogTitle className="title4">채팅방 신고</DialogTitle>
+              <DialogDescription className="footnote text-custom-deepgray">
+                신고 사유를 상세히 입력해주세요.
+                <br />
+                허위 신고 시 제재를 받을 수 있습니다.
+              </DialogDescription>
+            </DialogHeader>
 
-          <textarea
-            value={reason}
-            onChange={(e) => setReason(e.target.value)}
-            placeholder="신고 사유를 입력하세요 (최소 10자)"
-            maxLength={500}
-            rows={5}
-            disabled={reportMutation.isPending}
-            className="w-full resize-none rounded-lg border border-gray-300 p-3 focus:ring-2 focus:ring-blue-500 focus:outline-none disabled:bg-gray-100"
-          />
-
-          <div className="text-right text-xs text-gray-500">{reason.length} / 500</div>
-
-          <DialogFooter>
-            <button
-              onClick={() => setOpen(false)}
+            <textarea
+              value={reason}
+              onChange={(e) => setReason(e.target.value)}
+              placeholder="신고 사유를 입력하세요 (최소 10자)"
+              maxLength={500}
+              rows={5}
               disabled={reportMutation.isPending}
-              className="rounded bg-gray-200 px-4 py-2 text-gray-700 hover:bg-gray-300 disabled:opacity-50"
-            >
-              취소
-            </button>
-            <button
-              onClick={handleSubmit}
-              disabled={reportMutation.isPending || reason.trim().length < 10}
-              className="rounded bg-red-500 px-4 py-2 text-white hover:bg-red-600 disabled:opacity-50"
-            >
-              {reportMutation.isPending ? '신고 중...' : '신고하기'}
-            </button>
-          </DialogFooter>
+              className="w-full resize-none rounded-lg border border-gray-300 p-3 focus:ring-2 focus:ring-blue-500 focus:outline-none disabled:bg-gray-100"
+            />
+
+            <div className="footnote text-right text-gray-500">{reason.length} / 500</div>
+
+            <div className="mt-auto flex shrink-0 justify-center">
+              <Button
+                onClick={handleSubmit}
+                disabled={reportMutation.isPending || reason.trim().length < 10}
+                className="subhead1 bg-custom-red hover:bg-custom-red h-12 w-1/2 rounded rounded-xl px-4 py-2 text-white"
+              >
+                {reportMutation.isPending ? '신고 중...' : '신고하기'}
+              </Button>
+            </div>
+          </div>
         </DialogContent>
       </Dialog>
     </>
