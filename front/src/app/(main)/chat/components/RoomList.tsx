@@ -49,6 +49,12 @@ export function RoomList({ rooms, onSelectRoom, isLoading, error }: RoomListProp
     );
   }
 
+  const sortedRooms = [...rooms].sort((a, b) => {
+    const timeA = new Date(a.lastMessageTime).getTime();
+    const timeB = new Date(b.lastMessageTime).getTime();
+    return timeB - timeA; // 최신이 위로
+  });
+
   return (
     <div className="flex h-screen flex-col bg-gray-50">
       {/* 헤더 */}
@@ -65,7 +71,7 @@ export function RoomList({ rooms, onSelectRoom, isLoading, error }: RoomListProp
 
       {/* 채팅방 목록 */}
       <div className="bg-custom-white flex-1 overflow-y-auto">
-        {rooms.length === 0 ? (
+        {sortedRooms.length === 0 ? (
           // 빈 상태
           <div className="flex h-full flex-col items-center justify-center text-gray-400">
             <Image src={EmptyChatIcon} alt="빈 채팅" width={48} height={48} />
@@ -74,7 +80,7 @@ export function RoomList({ rooms, onSelectRoom, isLoading, error }: RoomListProp
         ) : (
           // 채팅방 목록
           <div className="divide-y">
-            {rooms.map((room, index) => (
+            {sortedRooms.map((room, index) => (
               <motion.button
                 key={room.chatRoomId}
                 initial={{ opacity: 0, x: -20 }}
