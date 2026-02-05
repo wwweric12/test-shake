@@ -29,7 +29,7 @@ export function MyPageSelfIntro({ selfIntro }: MyPageSelfIntroProps) {
   return (
     <section className="w-full">
       <div className="mb-2 flex items-center gap-1">
-        <label className="subhead2 text-custom-realblack">자기소개</label>
+        <label className="body1 text-custom-realblack block">자기소개</label>
         <EditIcon isEditing={isEditing} onClick={handleSave} />
       </div>
       <div className="relative">

@@ -9,7 +9,7 @@ import { Checkbox } from '@/components/ui/Checkbox';
 import { Input } from '@/components/ui/Input';
 import { Textarea } from '@/components/ui/Textarea';
 import { NETWORK_LIST, SIGNUP_MESSAGES, SIGNUP_PLACEHOLDERS } from '@/constants/auth';
-import { Network, UserInfo, UserProfile } from '@/types/user';
+import { Network, UserInfo } from '@/types/user';
 
 import { SelectButton } from './Button';
 

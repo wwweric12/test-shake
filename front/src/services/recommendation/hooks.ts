@@ -25,10 +25,11 @@ export const useResetPreferencesMutation = () => {
 };
 
 export const useActionMutation = () => {
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (data: ActionRequest) => recommendationApi.action(data),
     onSuccess: () => {
-      // Logic for invalidation if needed
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.HOME.SUMMARY() });
     },
   });
 };

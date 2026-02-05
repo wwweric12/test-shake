@@ -3,7 +3,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { QUERY_KEYS } from '@/constants/queryKeys';
 import { useWebSocket } from '@/providers/WebSocketProvider';
 import { useEnterChatRoom } from '@/services/chat/hooks';
-import { webSocketService } from '@/services/chat/websocket';
+import { webSocketService } from '@/services/socket/WebSocketService';
 import { ChatMessageWithProfile, PartnerInfo, ReceivedMessageData } from '@/types/chat';
 import {
   convertApiMessageToProfile,

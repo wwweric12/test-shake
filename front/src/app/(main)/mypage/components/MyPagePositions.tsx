@@ -36,8 +36,8 @@ export function MyPagePositions({ positions }: MyPagePositionsProps) {
 
   return (
     <section className="w-full">
-      <label className="body1 text-custom-realblack mb-1 block">직무</label>
-      <p className="footnote text-custom-deepgray mb-3">최대 3개를 선택할 수 있습니다.</p>
+      <label className="body1 text-custom-realblack block">직무</label>
+      <p className="footnote text-custom-deepgray mb-2">최대 3개를 선택할 수 있습니다.</p>
 
       <div className={`flex flex-wrap gap-2 ${localPositions.length > 0 ? 'mb-3' : ''}`}>
         {localPositions.map((posId) => (

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 
-import { webSocketService } from '@/services/chat/websocket';
+import { webSocketService } from '@/services/socket/WebSocketService';
 import { ConnectionStatus } from '@/types/webSocket';
 
 interface LogEntry {

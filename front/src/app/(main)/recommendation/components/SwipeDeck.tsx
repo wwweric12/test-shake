@@ -171,7 +171,7 @@ export default function SwipeDeck({ cards, onSwipe }: SwipeDeckProps) {
   }
 
   return (
-    <div className="relative flex h-full w-full items-center justify-center overflow-hidden rounded-4xl bg-gray-100">
+    <div className="relative flex h-full w-full items-center justify-center overflow-hidden rounded-4xl">
       {cards.map((card, index) => {
         const isTop = index === cards.length - 1;
 

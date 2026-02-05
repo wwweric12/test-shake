@@ -18,7 +18,7 @@ export function EditIcon({ isEditing, onClick }: EditIconProps) {
       type="button"
     >
       {isEditing ? (
-        <span className="subhead3 text-custom-blue px-1 font-semibold whitespace-nowrap">완료</span>
+        <span className="subhead3 text-custom-blue px-1 font-semibold whitespace-nowrap">저장</span>
       ) : (
         <Image src={PencilIcon} alt="Edit" width={14} height={14} />
       )}

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 
 import { SelectButton } from '@/app/(auth)/signup/components/Button';
+import { SIGNUP_MESSAGES } from '@/constants/auth';
 import { NETWORKS } from '@/constants/user';
 import { useUpdateNetworksMutation } from '@/services/user/hooks';
 import { Network } from '@/types/user';
@@ -48,10 +49,11 @@ export function MyPageNetwork({ networks }: MyPageNetworkProps) {
 
   return (
     <section>
-      <div className="mb-2 flex items-center gap-1">
-        <label className="body1 text-custom-realblack">네트워크 목적</label>
+      <div className="flex items-center gap-1">
+        <label className="body1 text-custom-realblack block">네트워킹 목적</label>
         <EditIcon isEditing={isEditing} onClick={handleEditClick} />
       </div>
+      <p className="text-custom-deepgray footnote mb-2">{SIGNUP_MESSAGES.INTRO_GUIDE}</p>
       {isEditing ? (
         <div className="flex flex-wrap gap-2">
           {networkOptions.map((item) => (
