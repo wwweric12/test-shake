@@ -39,7 +39,7 @@ class WebSocketService {
   private reconnectAttempts = 0;
   private maxReconnectAttempts = 5;
   private eventListeners: WebSocketEventListeners = {};
-  private debug: boolean = false;
+  private isDebugMode: boolean = false;
 
   // 재연결 시 복원용 핸들러
   public messageHandlers: Map<number, (data: ReceivedMessageData) => void> = new Map();
@@ -55,7 +55,7 @@ class WebSocketService {
   private badgeCountHandler: ((data: HomeBadgeCountData) => void) | null = null;
 
   private log(message: string, ...args: unknown[]): void {
-    if (this.debug) {
+    if (this.isDebugMode) {
       console.log(`[WebSocket] ${message}`, ...args);
     }
   }
@@ -67,7 +67,7 @@ class WebSocketService {
     }
 
     this.connectionStatus = 'CONNECTING';
-    this.debug = config.debug ?? false;
+    this.isDebugMode = !!config.debug;
 
     this.client = new Client({
       webSocketFactory: () =>
@@ -79,7 +79,7 @@ class WebSocketService {
       heartbeatIncoming: config.heartbeatIncoming ?? 10000,
       heartbeatOutgoing: config.heartbeatOutgoing ?? 10000,
       reconnectDelay: 0,
-      debug: config.debug ? (str) => this.log(str) : undefined,
+      debug: config.debug,
 
       onConnect: () => {
         this.connectionStatus = 'CONNECTED';
@@ -500,7 +500,7 @@ class WebSocketService {
   }
 
   setDebug(debug: boolean): void {
-    this.debug = debug;
+    this.isDebugMode = debug;
   }
 
   // ==================== 디버깅 메서드 ====================
