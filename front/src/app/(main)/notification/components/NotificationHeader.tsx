@@ -23,7 +23,7 @@ export default function NotificationHeader() {
   };
 
   return (
-    <header className="flex h-[60px] shrink-0 items-center bg-white px-4 border-b border-gray-100/50">
+    <header className="flex h-[60px] shrink-0 items-center bg-gray--50 px-4 border-b border-gray-100/50">
       
       <button 
         onClick={handleBack} 
@@ -34,10 +34,10 @@ export default function NotificationHeader() {
       </button>
 
       <div className="flex items-center gap-2">
-        <h1 className="text-[20px] font-bold text-custom-realblack">알림</h1>
+        <h1 className="title2">알림</h1>
         
         {unreadCount > 0 && (
-          <div className="flex h-6 min-w-[24px] items-center justify-center rounded-full bg-[#F06262] px-1.5 shadow-sm">
+          <div className="flex h-6 min-w-[24px] items-center justify-center rounded-full bg-custom-red px-1.5 shadow-sm">
             <span className="text-[13px] font-bold text-white leading-none">
               {unreadCount > 99 ? '99+' : unreadCount}
             </span>
