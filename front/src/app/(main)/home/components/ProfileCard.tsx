@@ -15,7 +15,7 @@ export default function ProfileCard({ dsti, profileImageUrl }: ProfileCardProps)
 
   return (
     <div className="mb-8 flex gap-2">
-      <div className="flex min-w-[128px] flex-col items-center justify-center rounded-[10px] bg-white py-[18px]">
+      <div className="flex min-w-[128px] flex-col items-center justify-center rounded-[10px] bg-white py-[18px] shadow-sm">
         <div className="bg-custom-deepgray/10 relative mb-3 h-[70px] w-[70px] overflow-hidden rounded-full">
           <Image src={characterImg} alt="profile-img" fill className="object-cover" priority />
         </div>
@@ -23,7 +23,7 @@ export default function ProfileCard({ dsti, profileImageUrl }: ProfileCardProps)
         <p className="subhead1 text-custom-realblack">[{dstiTitle}]</p>
       </div>
       <div className="flex w-full flex-col gap-2">
-        <div className="mb-2 flex flex-1 flex-col justify-between rounded-[10px] bg-white px-5 py-4">
+        <div className="flex flex-1 flex-col justify-between rounded-[10px] bg-white px-5 py-4 shadow-sm">
           <div className="flex flex-col gap-1.5">
             {dsti.split('').map((char, index) => {
               const info = DSTI_INFO[char] || { label: char, desc: '' };
@@ -40,10 +40,10 @@ export default function ProfileCard({ dsti, profileImageUrl }: ProfileCardProps)
         </div>
         <Link
           href="/dsti"
-          className="bg-custom-blue flex w-full items-center justify-center rounded-[10px] px-[14px] py-2 text-white"
+          className="bg-custom-blue flex w-full items-center justify-center rounded-[10px] px-[14px] py-2 text-white shadow-sm"
         >
           <span className="footout flex-1 text-center">DSTI 상세 정보</span>
-          <Image src={right_vector} alt="arrow-right" width={4} height={8} />
+          <Image src={right_vector} alt="arrow-right" width={4} height={4} />
         </Link>
       </div>
     </div>
