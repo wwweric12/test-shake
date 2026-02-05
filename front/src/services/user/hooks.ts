@@ -157,6 +157,7 @@ export const useUpdateProfileImageMutation = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.USER.INFO() });
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.HOME.SUMMARY() });
     },
     onError: (error) => {
       alert('이미지 업로드에 실패했습니다.');
