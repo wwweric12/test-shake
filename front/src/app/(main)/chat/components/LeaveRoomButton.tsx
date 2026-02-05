@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Image from 'next/image';
 
 import QuitIcon from '@/assets/icon/door-open.svg';
+import { Button } from '@/components/ui/Button';
 import {
   Dialog,
   DialogContent,
@@ -36,31 +37,28 @@ export function LeaveRoomButton({ roomId, onLeave }: LeaveRoomButtonProps) {
       </button>
 
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>채팅방 나가기</DialogTitle>
-            <DialogDescription>
-              채팅방을 나가시겠습니까?
-              <br />
-              나가면 대화 내역이 모두 삭제됩니다.
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <button
-              onClick={() => setOpen(false)}
-              disabled={exitMutation.isPending}
-              className="rounded bg-gray-200 px-4 py-2 text-gray-700 hover:bg-gray-300 disabled:opacity-50"
-            >
-              취소
-            </button>
-            <button
-              onClick={handleLeave}
-              disabled={exitMutation.isPending}
-              className="rounded bg-red-500 px-4 py-2 text-white hover:bg-red-600 disabled:opacity-50"
-            >
-              {exitMutation.isPending ? '나가는 중...' : '나가기'}
-            </button>
-          </DialogFooter>
+        <DialogContent
+          className={`flex h-[150px] w-[90%] max-w-[355px] flex-col overflow-hidden rounded-[32px] border-none p-0 shadow-xl`}
+        >
+          <div className="flex h-full flex-col bg-white p-6">
+            <DialogHeader className="mb-4 shrink-0">
+              <DialogTitle className="title4">채팅방 나가기</DialogTitle>
+              <DialogDescription className="footnote text-custom-deepgray">
+                채팅방을 나가시겠습니까?
+                <br />
+                {/* 나가면 대화 내역이 모두 삭제됩니다. */}
+              </DialogDescription>
+            </DialogHeader>
+            <div className="mt-auto flex shrink-0 justify-center">
+              <Button
+                onClick={handleLeave}
+                disabled={exitMutation.isPending}
+                className="rounded bg-red-500 px-4 py-2 text-white hover:bg-red-600 disabled:opacity-50"
+              >
+                {exitMutation.isPending ? '나가는 중...' : '나가기'}
+              </Button>
+            </div>
+          </div>
         </DialogContent>
       </Dialog>
     </>

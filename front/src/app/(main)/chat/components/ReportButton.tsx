@@ -82,7 +82,6 @@ export function ReportButton({ roomId, reporteeId }: ReportButtonProps) {
                 disabled={reportMutation.isPending || reason.trim().length < 10}
                 className="subhead1 bg-custom-red hover:bg-custom-red h-12 w-1/2 rounded rounded-xl px-4 py-2 text-white"
               >
-                {/* bg-custom-realblack hover:bg-custom-realblack subhead1 h-12 w-1/2 rounded-xl text-white disabled:cursor-not-allowed disabled:bg-gray-300 */}
                 {reportMutation.isPending ? '신고 중...' : '신고하기'}
               </Button>
             </div>

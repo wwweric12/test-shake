@@ -97,6 +97,7 @@ export function ChatRoomView({
         onHasPreviousChange={setHasPrevious}
         onLoadingChange={setLoadingPrevious}
         isLoadingPreviousRef={isLoadingPreviousRef}
+        canSendMessage={canSendMessage}
       />
 
       {/* 메시지 입력 폼 */}

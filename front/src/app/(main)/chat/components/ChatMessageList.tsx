@@ -15,6 +15,7 @@ interface ChatMessageListProps {
   onHasPreviousChange: (hasPrevious: boolean) => void;
   onLoadingChange: (loading: boolean) => void;
   isLoadingPreviousRef: React.MutableRefObject<boolean>;
+  canSendMessage: boolean;
 }
 
 export function ChatMessageList({
@@ -25,6 +26,7 @@ export function ChatMessageList({
   onHasPreviousChange,
   onLoadingChange,
   isLoadingPreviousRef,
+  canSendMessage,
 }: ChatMessageListProps) {
   // Refs
   const messagesContainerRef = useRef<HTMLDivElement>(null);
@@ -133,6 +135,14 @@ export function ChatMessageList({
 
       {/* 자동 스크롤 타겟 */}
       <div ref={messagesEndRef} />
+
+      {!canSendMessage && (
+        <div className="sticky right-0 bottom-0 left-0 flex justify-center pb-2">
+          <div className="rounded-full bg-gray-800/80 px-4 py-2 text-white shadow-lg backdrop-blur-sm">
+            <p className="caption2 text-center">상대방이 채팅방을 나갔습니다</p>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
