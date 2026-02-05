@@ -79,6 +79,7 @@ export interface ReceivedMessage {
 }
 
 export interface ReceivedMessageData {
+  chatRoomId: number;
   message: ReceivedMessage;
   isMine: boolean;
 }

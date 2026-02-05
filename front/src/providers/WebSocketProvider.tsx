@@ -99,7 +99,7 @@ export function WebSocketProvider({ children, enabled = true }: WebSocketProvide
         return { ...old, data: { ...old.data, content } };
       });
 
-      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.CHAT.UNREAD_COUNT() });
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.CHAT.ROOMS() });
     };
 
     const handleNotificationUpdate = (newData: NotificationUpdateData) => {

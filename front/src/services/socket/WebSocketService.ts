@@ -259,6 +259,7 @@ class WebSocketService {
       try {
         const parsed = JSON.parse(message.body);
         const messageData: ReceivedMessageData = {
+          chatRoomId: parsed.data.chatRoomId,
           message: parsed.data.message,
           isMine: parsed.data.isMine,
         };
