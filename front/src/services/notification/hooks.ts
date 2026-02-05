@@ -26,6 +26,7 @@ export const useAcceptNotificationMutation = () => {
 
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.NOTIFICATION.LIST() });
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.CHAT.ROOMS() });
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.HOME.SUMMARY() });
     },
   });
