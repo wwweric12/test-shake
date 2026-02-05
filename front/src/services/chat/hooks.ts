@@ -53,18 +53,14 @@ export const useReportChatRoomMutation = () => {
   });
 };
 
-// 신규: GET /chat/messages/unread-count - 전체 안 읽은 메시지 수 조회
+// GET /chat/messages/unread-count - 전체 안 읽은 메시지 수 조회
 export const useUnreadCount = () => {
   return useQuery({
     queryKey: QUERY_KEYS.CHAT.UNREAD_COUNT(),
     // queryFn: chatApi.getUnreadCount,
     queryFn: async () => {
       const response = await chatApi.getUnreadCount();
-      return response.data; // 👈 여기서 숫자만 추출
+      return response.data;
     },
-    staleTime: 10 * 1000, // 10초
-    refetchInterval: 30 * 1000, // 30초마다 자동 갱신
-    // gcTime: 1000 * 60 * 5,
-    // refetchOnWindowFocus: false,
   });
 };
