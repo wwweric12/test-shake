@@ -23,7 +23,7 @@ export default function ProfileCard({ dsti, profileImageUrl }: ProfileCardProps)
         <p className="subhead1 text-custom-realblack">[{dstiTitle}]</p>
       </div>
       <div className="flex w-full flex-col gap-2">
-        <div className="mb-2 flex flex-1 flex-col justify-between rounded-[10px] bg-white px-5 py-4 shadow-sm">
+        <div className="flex flex-1 flex-col justify-between rounded-[10px] bg-white px-5 py-4 shadow-sm">
           <div className="flex flex-col gap-1.5">
             {dsti.split('').map((char, index) => {
               const info = DSTI_INFO[char] || { label: char, desc: '' };
