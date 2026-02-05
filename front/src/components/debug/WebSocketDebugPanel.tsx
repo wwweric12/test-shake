@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 
-import { webSocketService } from '@/services/socket/WebSocketService';
+import { webSocketService } from '@/services/chat/websocket';
 import { ConnectionStatus } from '@/types/webSocket';
 
 interface LogEntry {
@@ -216,7 +216,6 @@ export function WebSocketDebugPanel() {
                       console.log(str);
                     }
                   },
-
                 });
                 addLog('info', '수동 연결 시도');
               }}
