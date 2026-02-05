@@ -39,7 +39,7 @@ export function useWebSocketChat({
       const msg = convertWsMessageToProfile(received);
       if (!msg.id) return;
       setRealtimeMessages((prev) => (prev.some((m) => m.id === msg.id) ? prev : [...prev, msg]));
-      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.CHAT.MESSAGES(received.chatRoomId) });
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.CHAT.MESSAGES(msg.chatRoomId) });
     },
     [queryClient],
   );

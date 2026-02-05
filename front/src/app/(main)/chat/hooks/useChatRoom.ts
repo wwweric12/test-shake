@@ -39,15 +39,7 @@ export function useChatRoom({ roomId, partnerInfo, enabled = true }: UseChatRoom
   });
 
   useEffect(() => {
-    if (!enabled || !roomId || !currentUserId) return;
-
-    queryClient.invalidateQueries({ queryKey: QUERY_KEYS.CHAT.ROOMS() });
-    queryClient.invalidateQueries({ queryKey: QUERY_KEYS.CHAT.UNREAD_COUNT() });
-  }, [roomId, currentUserId, enabled, queryClient]);
-
-  useEffect(() => {
     return () => {
-      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.CHAT.ROOMS() });
       queryClient.removeQueries({ queryKey: QUERY_KEYS.CHAT.MESSAGES(roomId) });
     };
   }, [queryClient, roomId]);
