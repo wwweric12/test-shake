@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 
 import { ChatMessageWithProfile } from '@/types/chat';
 import { ConnectionStatus, WebSocketError } from '@/types/webSocket';
@@ -70,48 +70,26 @@ export function ChatRoomView({
   // 이전 메시지 로딩 중인지 (자동 스크롤 제어용)
   const isLoadingPreviousRef = useRef(false);
 
-  // 핵심: input ref를 부모에서 관리
-  const inputRef = useRef<HTMLInputElement>(null);
-
-  // 핵심: 메시지 전송 후 포커스 복구
-  // requestAnimationFrame으로 브라우저 렌더링 사이클과 동기화
-  const handleSendMessage = useCallback(
-    (message: string) => {
-      // 기존 전송 로직
-      onSend(message);
-
-      // rAF로 포커스 복구 - 키보드 유지
-      requestAnimationFrame(() => {
-        inputRef.current?.focus();
-      });
-    },
-    [onSend],
-  );
-
   return (
-    <div className="bg-custom-lightpurple flex h-full flex-col">
+    <div className="bg-custom-lightpurple flex h-screen flex-col">
       {/* 헤더 */}
-      <div className="flex-shrink-0">
-        <ChatRoomHeader
-          roomId={roomId}
-          reporteeId={reporteeId}
-          roomName={roomName}
-          onBack={onBack}
-          connectionStatus={connectionStatus}
-        />
-      </div>
+      <ChatRoomHeader
+        roomId={roomId}
+        reporteeId={reporteeId}
+        roomName={roomName}
+        onBack={onBack}
+        connectionStatus={connectionStatus}
+      />
 
-      {/* 상태 배너 */}
-      <div className="flex-shrink-0">
-        <ChatRoomBanners
-          isConnected={isConnected}
-          connectionStatus={connectionStatus}
-          canSendMessage={canSendMessage}
-          messageError={messageError}
-          messageErrorType={messageErrorType}
-          onClearMessageError={onClearMessageError}
-        />
-      </div>
+      {/* 상태 배너들 */}
+      <ChatRoomBanners
+        isConnected={isConnected}
+        connectionStatus={connectionStatus}
+        canSendMessage={canSendMessage}
+        messageError={messageError}
+        messageErrorType={messageErrorType}
+        onClearMessageError={onClearMessageError}
+      />
 
       {/* 메시지 목록 */}
       <ChatMessageList
@@ -125,15 +103,8 @@ export function ChatRoomView({
         canSendMessage={canSendMessage}
       />
 
-      {/* 입력 영역 */}
-      <div className="bg-custom-blue flex-shrink-0">
-        <ChatMessageInput
-          onSend={handleSendMessage} // ✨ 래핑된 함수 전달
-          inputRef={inputRef} // ✨ ref 전달
-          isConnected={isConnected}
-          canSendMessage={canSendMessage}
-        />
-      </div>
+      {/* 메시지 입력 폼 */}
+      <ChatMessageInput onSend={onSend} isConnected={isConnected} canSendMessage={canSendMessage} />
     </div>
   );
 }
