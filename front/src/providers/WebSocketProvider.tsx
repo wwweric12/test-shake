@@ -98,8 +98,6 @@ export function WebSocketProvider({ children, enabled = true }: WebSocketProvide
 
         return { ...old, data: { ...old.data, content } };
       });
-
-      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.CHAT.ROOMS() });
     };
 
     const handleNotificationUpdate = (newData: NotificationUpdateData) => {
@@ -123,6 +121,7 @@ export function WebSocketProvider({ children, enabled = true }: WebSocketProvide
       });
 
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.HOME.SUMMARY() });
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.NOTIFICATION.LIST() });
     };
 
     const handleBadgeUpdate = (newData: HomeBadgeCountData) => {
