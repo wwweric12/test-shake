@@ -6,9 +6,9 @@ import { WS_URL } from '@/constants/api';
 import { QUERY_KEYS } from '@/constants/queryKeys';
 import { webSocketService } from '@/services/socket/WebSocketService';
 import { ChatListUpdateData, ChatRoom, ChatRoomListResponse } from '@/types/chat';
-import { HomeBadgeCountData, HomeBadgeCountResponse } from '@/types/home';
-import { NotificationUpdateData, NotificationUpdateResponse } from '@/types/notification';
-import { ConnectionStatus} from '@/types/webSocket';
+import { HomeBadgeCountData, HomeBadgeCountResponse, HomeSummaryResponse } from '@/types/home';
+import { NotificationUpdateData } from '@/types/notification';
+import { ConnectionStatus } from '@/types/webSocket';
 
 import { useQueryClient } from '@tanstack/react-query';
 
@@ -101,22 +101,22 @@ export function WebSocketProvider({ children, enabled = true }: WebSocketProvide
     };
 
     const handleNotificationUpdate = (newData: NotificationUpdateData) => {
-      queryClient.setQueryData<NotificationUpdateResponse >(QUERY_KEYS.HOME.SUMMARY(), (old) => {
+      queryClient.setQueryData<HomeSummaryResponse>(QUERY_KEYS.HOME.SUMMARY(), (old) => {
         if (!old?.data) return old;
 
         return {
           ...old,
-          totalLikeCount: newData.unreadCount,
-          others: {
-            profileImageUrl: [
-              newData.targetImageUrl,
-              ...(old.data.targetImageUrl || [])
-            ].slice(0, 3),
-            dsti: [
-              newData.dsti,
-              ...(old.data.dsti || [])
-            ].slice(0, 3),
-          }
+          data: {
+            ...old.data,
+            totalLikeCount: newData.unreadCount,
+            others: {
+              profileImageUrl: [
+                newData.targetImageUrl,
+                ...(old.data.others?.profileImageUrl || []),
+              ].slice(0, 3),
+              dsti: [newData.dsti, ...(old.data.others?.dsti || [])].slice(0, 3),
+            },
+          },
         };
       });
 
@@ -125,17 +125,17 @@ export function WebSocketProvider({ children, enabled = true }: WebSocketProvide
     };
 
     const handleBadgeUpdate = (newData: HomeBadgeCountData) => {
-    queryClient.setQueryData<HomeBadgeCountResponse>(QUERY_KEYS.HOME.SUMMARY(), (old) => {
-    if (!old?.data) return old;
+      queryClient.setQueryData<HomeBadgeCountResponse>(QUERY_KEYS.HOME.SUMMARY(), (old) => {
+        if (!old?.data) return old;
 
-      return {
-        ...old,
-        totalUnreadMessages: newData.totalUnreadMessages, 
-      };
-    });
+        return {
+          ...old,
+          totalUnreadMessages: newData.totalUnreadMessages,
+        };
+      });
 
-    queryClient.invalidateQueries({ queryKey: QUERY_KEYS.CHAT.UNREAD_COUNT() });
-  };
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.CHAT.UNREAD_COUNT() });
+    };
 
     webSocketService.subscribeChatListUpdate(handleUpdate);
     webSocketService.subscribeNotification(handleNotificationUpdate);
@@ -145,7 +145,7 @@ export function WebSocketProvider({ children, enabled = true }: WebSocketProvide
       webSocketService.unsubscribeChatListUpdate();
       webSocketService.unsubscribeNotification();
       webSocketService.unsubscribeHomeBadgeCount();
-    }
+    };
   }, [isConnected, queryClient]);
 
   return (
