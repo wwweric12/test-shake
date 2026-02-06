@@ -1,4 +1,4 @@
-import { FormEvent, KeyboardEvent, useState } from 'react';
+import { FormEvent, useState } from 'react';
 import Image from 'next/image';
 
 import SendIcon from '@/assets/icon/paper-plane-right.svg';
@@ -10,29 +10,10 @@ interface ChatMessageInputProps {
   onSend: (message: string) => void;
   isConnected: boolean;
   canSendMessage: boolean;
-  inputRef?: React.RefObject<HTMLInputElement | null>;
 }
 
-export function ChatMessageInput({
-  onSend,
-  isConnected,
-  canSendMessage,
-  inputRef,
-}: ChatMessageInputProps) {
+export function ChatMessageInput({ onSend, isConnected, canSendMessage }: ChatMessageInputProps) {
   const [input, setInput] = useState('');
-
-  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault(); // Enter만: 기본 동작 방지
-
-      // 전송 로직
-      const trimmed = input.trim();
-      if (!trimmed || !isConnected || !canSendMessage) return;
-      onSend(trimmed);
-      setInput('');
-    }
-    // Shift + Enter: preventDefault 안 함 → 줄바꿈
-  };
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -53,26 +34,23 @@ export function ChatMessageInput({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex h-14 items-center gap-2 p-2">
+    <form
+      onSubmit={handleSubmit}
+      className="bg-custom-blue sticky bottom-0 flex h-14 items-center gap-2 p-2"
+    >
       <Input
         value={input}
-        ref={inputRef}
         onChange={(e) => setInput(e.target.value)}
-        onKeyDown={handleKeyDown}
         placeholder={getPlaceholderText()}
         maxLength={MESSAGE_MAX_LENGTH}
         disabled={!isConnected || !canSendMessage}
         className="flex-1"
-        enterKeyHint="send"
-        autoComplete="off"
-        autoCorrect="off"
-        autoCapitalize="off"
       />
 
       <Button
         type="submit"
         size="icon"
-        className="bg-custom-blue sticky bottom-0"
+        className="bg-custom-blue"
         disabled={!canSendMessage || !input.trim() || !isConnected}
       >
         <Image src={SendIcon} alt="전송" width={20} height={20} />
