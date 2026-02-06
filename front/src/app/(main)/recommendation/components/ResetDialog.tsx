@@ -17,7 +17,10 @@ interface ResetDialogProps {
 export function ResetDialog({ open, onOpenChange, onConfirm }: ResetDialogProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="w-[90%] max-w-[355px] rounded-[20px] p-6">
+      <DialogContent
+        onOpenAutoFocus={(e) => e.preventDefault()}
+        className="w-[90%] max-w-[355px] rounded-[20px] p-6"
+      >
         <DialogHeader className="mb-2">
           <DialogTitle className="title3 mb-2 text-center">매칭 초기화</DialogTitle>
           <DialogDescription className="subhead3 text-custom-deepgray text-center">

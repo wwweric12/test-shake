@@ -26,7 +26,7 @@ export function RoomList({ rooms, onSelectRoom, isLoading, error }: RoomListProp
   // 로딩 중
   if (isLoading) {
     return (
-      <div className="flex h-screen items-center justify-center">
+      <div className="flex h-full min-h-[400px] items-center justify-center">
         <p className="text-gray-500">채팅방 목록을 불러오는 중...</p>
       </div>
     );
@@ -56,9 +56,9 @@ export function RoomList({ rooms, onSelectRoom, isLoading, error }: RoomListProp
   });
 
   return (
-    <div className="flex h-screen flex-col bg-gray-50">
+    <div className="flex h-full flex-col bg-gray-50">
       {/* 헤더 */}
-      <div className="bg-custom-white flex border-b px-4 py-3 shadow-sm">
+      <div className="bg-custom-white border-b px-4 py-3 shadow-sm">
         <h1 className="title2">채팅</h1>
         <div className="flex items-center px-2">
           {totalUnreadCount > 0 && (
@@ -73,7 +73,7 @@ export function RoomList({ rooms, onSelectRoom, isLoading, error }: RoomListProp
       <div className="bg-custom-white flex-1 overflow-y-auto">
         {sortedRooms.length === 0 ? (
           // 빈 상태
-          <div className="flex h-full flex-col items-center justify-center text-gray-400">
+          <div className="absolute inset-0 flex flex-col items-center justify-center text-gray-400">
             <Image src={EmptyChatIcon} alt="빈 채팅" width={48} height={48} />
             <p className="mt-2">채팅방이 없습니다</p>
           </div>

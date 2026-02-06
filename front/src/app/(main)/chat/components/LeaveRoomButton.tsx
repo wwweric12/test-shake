@@ -38,6 +38,7 @@ export function LeaveRoomButton({ roomId, onLeave }: LeaveRoomButtonProps) {
 
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent
+          onOpenAutoFocus={(e) => e.preventDefault()}
           className={`flex h-[150px] w-[90%] max-w-[355px] flex-col overflow-hidden rounded-[32px] border-none p-0 shadow-xl`}
         >
           <div className="flex h-full flex-col bg-white p-6">

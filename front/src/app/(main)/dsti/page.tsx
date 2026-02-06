@@ -18,7 +18,7 @@ export default function DstiPage() {
       {typeParam ? (
         <header className="bg-custom-white flex h-14 items-center px-5">
           <button
-            onClick={() => router.push('/dsti')}
+            onClick={() => router.back()}
             className="flex h-6 w-6 items-center justify-center transition-opacity hover:opacity-70"
           >
             <Image src={backIcon} alt="뒤로가기" />

@@ -12,7 +12,7 @@ export default function MatchingCard({ remainingSwipes, dailyLimit }: MatchingCa
   const isAvailable = remainingSwipes > 0;
 
   return (
-    <Link href="/recommendation" className="block w-full">
+    <Link href="/recommendation" className="flex w-full flex-1">
       <div
         className={`flex w-full flex-col items-center justify-center rounded-[10px] p-4 text-white shadow-sm ${
           isAvailable
@@ -22,7 +22,7 @@ export default function MatchingCard({ remainingSwipes, dailyLimit }: MatchingCa
       >
         <Image src={handshake} alt="handshake" width={36} height={36} className="mb-2" />
 
-        <div className="text-custom-white flex h-full flex-col items-center gap-2">
+        <div className="text-custom-white flex flex-col items-center gap-2">
           <h3 className="title1">{isAvailable ? '매칭 시작하기' : '내일 다시 매칭'}</h3>
           <p className="body1">
             오늘 남은 기회 {remainingSwipes} / {dailyLimit}
