@@ -9,7 +9,7 @@ export const useChatRooms = () => {
   return useQuery({
     queryKey: QUERY_KEYS.CHAT.ROOMS(),
     queryFn: chatApi.getChatRooms,
-    staleTime: 30 * 1000,
+    staleTime: 0,
   });
 };
 
