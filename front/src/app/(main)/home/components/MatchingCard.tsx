@@ -14,17 +14,17 @@ export default function MatchingCard({ remainingSwipes, dailyLimit }: MatchingCa
   return (
     <Link href="/recommendation" className="block w-full">
       <div
-        className={`relative flex w-full flex-col items-center justify-center rounded-[10px] p-6 text-white shadow-sm ${
+        className={`flex w-full flex-col items-center justify-center rounded-[10px] p-4 text-white shadow-sm ${
           isAvailable
             ? 'bg-[linear-gradient(90deg,#CEE2FF_0%,#B4A6FF_62%,#879EFE_100%)] shadow-indigo-200'
             : 'bg-custom-darkgray cursor-not-allowed'
         }`}
       >
-        <Image src={handshake} alt="handshake" width={36} height={36} className="mb-8" />
+        <Image src={handshake} alt="handshake" width={36} height={36} className="mb-2" />
 
-        <div className="text-custom-white flex flex-col items-center gap-2">
-          <h3 className="large-title mb-8">{isAvailable ? '매칭 시작하기' : '내일 다시 매칭'}</h3>
-          <p className="title3">
+        <div className="text-custom-white flex h-full flex-col items-center gap-2">
+          <h3 className="title1">{isAvailable ? '매칭 시작하기' : '내일 다시 매칭'}</h3>
+          <p className="body1">
             오늘 남은 기회 {remainingSwipes} / {dailyLimit}
           </p>
         </div>
