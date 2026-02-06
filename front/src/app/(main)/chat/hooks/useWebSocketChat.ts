@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { useWebSocket } from '@/providers/WebSocketProvider';
 import { useEnterChatRoom } from '@/services/chat/hooks';
@@ -27,22 +27,41 @@ export function useWebSocketChat({
   const [messageErrorType, setMessageErrorType] = useState<WebSocketError['type'] | null>(null);
   const [partnerLeft, setPartnerLeft] = useState(false);
 
+  const messageHandlerRef = useRef<(received: ReceivedMessageData) => void | undefined>(undefined);
+  
   const { data: enterData, isLoading, error } = useEnterChatRoom(chatRoomId, enabled);
   const currentUserId = enterData?.data?.userId;
 
-  const handleMessageReceived = useCallback(
-    (received: ReceivedMessageData) => {
-      const msg = convertWsMessageToProfile(received);
-      
-      if (!msg.chatRoomId) {
-      msg.chatRoomId = chatRoomId; 
-    }
-
+  const handleMessageReceived = useCallback((received: ReceivedMessageData) => {
+    console.log("실시간 수신 데이터:", received);
+    const msg = convertWsMessageToProfile(received);
+    
+    if (!msg.chatRoomId) msg.chatRoomId = chatRoomId;
     if (!msg.id) return;
-      setRealtimeMessages((prev) => (prev.some((m) => m.id === msg.id) ? prev : [...prev, msg]));
-    },
-    [chatRoomId],
-  );
+
+    setRealtimeMessages((prev) => (prev.some((m) => m.id === msg.id) ? prev : [...prev, msg]));
+  }, [chatRoomId]);
+
+  useEffect(() => {
+    messageHandlerRef.current = handleMessageReceived;
+  }, [handleMessageReceived]);
+
+  useEffect(() => {
+    if (!enabled || !chatRoomId || !isConnected) return;
+
+    webSocketService.enterChatRoom(chatRoomId);
+
+    const stableHandler = (data: ReceivedMessageData) => {
+      messageHandlerRef.current?.(data);
+    };
+
+    webSocketService.subscribeChatRoom(chatRoomId, stableHandler);
+
+    return () => {
+      webSocketService.leaveChatRoom(chatRoomId);
+      webSocketService.unsubscribeChatRoom?.(chatRoomId); 
+    };
+  }, [chatRoomId, enabled, isConnected]);
 
   const initialMessages = useMemo(() => {
     const content = enterData?.data?.content?.content;
