@@ -42,7 +42,7 @@ export default function ProfileCard({ dsti, profileImageUrl }: ProfileCardProps)
           href="/dsti"
           className="bg-custom-blue flex w-full items-center justify-center rounded-[10px] px-[14px] py-2 text-white shadow-sm"
         >
-          <span className="footout flex-1 text-center">DSTI 상세 정보</span>
+          <span className="footout flex-1 text-center">DSTI 유형 상세</span>
           <Image src={right_vector} alt="arrow-right" width={4} height={4} />
         </Link>
       </div>
