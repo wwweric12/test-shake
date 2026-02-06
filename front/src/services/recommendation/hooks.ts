@@ -1,4 +1,5 @@
 import { QUERY_KEYS } from '@/constants/queryKeys';
+import { ApiError } from '@/services/api';
 import { recommendationApi } from '@/services/recommendation/api';
 import { ActionRequest } from '@/types/recommendation';
 
@@ -20,6 +21,13 @@ export const useResetPreferencesMutation = () => {
     mutationFn: recommendationApi.resetPreferences,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.RECOMMENDATION.CANDIDATES() });
+    },
+    onError: (error: ApiError) => {
+      if (error.errorCode === 5302) {
+        alert(error.message); // "하루 3회까지 가능합니다" 메시지
+      } else {
+        alert(error.message || '초기화 중 오류가 발생했습니다.');
+      }
     },
   });
 };

@@ -1,5 +1,17 @@
 import { BASE_URL } from '@/constants/api';
 
+export class ApiError extends Error {
+  statusCode: number;
+  errorCode?: number;
+
+  constructor(message: string, statusCode: number, errorCode?: number) {
+    super(message);
+    this.name = 'ApiError';
+    this.statusCode = statusCode;
+    this.errorCode = errorCode;
+  }
+}
+
 async function fetchClient<T = unknown>(endpoint: string, options: RequestInit = {}): Promise<T> {
   const url = endpoint.startsWith('http') ? endpoint : `${BASE_URL}${endpoint}`;
 
@@ -20,13 +32,14 @@ async function fetchClient<T = unknown>(endpoint: string, options: RequestInit =
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
       const errorMessage = errorData.message || response.statusText || 'API 요청 실패';
+      const errorCode = errorData.errorCode;
 
       // TOOO: [401] 토큰 만료 시 처리
       if (response.status === 401) {
         throw new Error(`[401] 인증이 만료되었습니다.`);
       }
 
-      throw new Error(`[${response.status}] ${errorMessage}`);
+      throw new ApiError(errorMessage, response.status, errorCode);
     }
 
     if (response.status === 204) {
@@ -36,6 +49,9 @@ async function fetchClient<T = unknown>(endpoint: string, options: RequestInit =
     return response.json();
   } catch (error) {
     // TODO: 에러 추후에 정의
+    if (error instanceof ApiError) {
+      throw error;
+    }
     if (error instanceof Error) {
       throw error;
     }
