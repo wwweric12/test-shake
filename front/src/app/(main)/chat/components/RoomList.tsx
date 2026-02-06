@@ -58,15 +58,13 @@ export function RoomList({ rooms, onSelectRoom, isLoading, error }: RoomListProp
   return (
     <div className="flex h-full flex-col bg-gray-50">
       {/* 헤더 */}
-      <div className="bg-custom-white border-b px-4 py-3 shadow-sm">
+      <div className="bg-custom-white flex items-center gap-2 border-b px-4 py-3 shadow-sm">
         <h1 className="title2">채팅</h1>
-        <div className="flex items-center px-2">
-          {totalUnreadCount > 0 && (
-            <Badge className="bg-custom-red flex h-5 min-w-5 items-center justify-center px-1 text-white">
-              {totalUnreadCount > 99 ? '99+' : totalUnreadCount}
-            </Badge>
-          )}
-        </div>
+        {totalUnreadCount > 0 && (
+          <Badge className="bg-custom-red flex h-5 min-w-5 items-center justify-center px-1 leading-none text-white">
+            {totalUnreadCount > 99 ? '99+' : totalUnreadCount}
+          </Badge>
+        )}
       </div>
 
       {/* 채팅방 목록 */}
