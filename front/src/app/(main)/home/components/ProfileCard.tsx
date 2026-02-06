@@ -14,7 +14,7 @@ export default function ProfileCard({ dsti, profileImageUrl }: ProfileCardProps)
   const dstiTitle = DSTI_TITLES[dsti] || '알 수 없는 유형';
 
   return (
-    <div className="mb-8 flex gap-2">
+    <div className="mb-4 flex gap-2">
       <div className="flex min-w-[128px] flex-col items-center justify-center rounded-[10px] bg-white py-[18px] shadow-sm">
         <div className="bg-custom-deepgray/10 relative mb-3 h-[70px] w-[70px] overflow-hidden rounded-full">
           <Image src={characterImg} alt="profile-img" fill className="object-cover" priority />
